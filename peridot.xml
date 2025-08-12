@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
-  <remote name="git-hub" fetch="https://github.com/" />
-  <!-- Xiaomi-specific hardware -->
+  	<remote name="git-hub" fetch="https://github.com/" />
+  	<!-- Xiaomi-specific hardware -->
 	<project path="hardware/xiaomi" name="Voltage-Peridot/hardware_xiaomi" remote="git-hub" revision="15" />
 
-  <project path="device/xiaomi/peridot" name="Regloom/device_xiaomi_peridot" remote="git-hub" revision="GuidixX" /> 
-  <project path="device/xiaomi/peridot-kernel" name="GuidixX/device_xiaomi_peridot-kernel" remote="git-hub" revision="15" />
+  	<project path="device/xiaomi/peridot" name="Regloom/device_xiaomi_peridot" remote="git-hub" revision="GuidixX" /> 
+  	<project path="device/xiaomi/peridot-kernel" name="GuidixX/device_xiaomi_peridot-kernel" remote="git-hub" revision="15" />
 	<project path="vendor/xiaomi/peridot" name="GuidixX/vendor_xiaomi_peridot" remote="git-hub" revision="15" />
 
 	<!-- ViPER4AndroidFX -->
