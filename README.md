@@ -1,4 +1,4 @@
-# sm8635-dev Local Manifests
+# Local Manifests
 
 This repository contains local manifest overrides for the Android source tree, used by the Neon-Duchamp project. These manifests are cloned into .repo/local_manifests to extend or modify the default source manifest.
 
@@ -12,9 +12,18 @@ Instead of modifying the main manifest directly, we place additional project ent
 
 ## 📁 Usage
 
-Clone this repository into your local manifest directory:
+### Normal 
 
 ```bash
-git clone https://github.com/sm8635-dev/manifest.git -b hals .repo/local_manifests
+git clone https://github.com/Regloom/peridot_manifest.git -b hals .repo/local_manifests
+# or
+curl -L --create-dirs https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/peridot.xml -o .repo/local_manifests/local_manifest.xml
 
 repo sync -j$(nproc --all)
+```
+
+### Crave.io
+
+```bash
+crave run --clean --no-patch -- "curl https://gist.githubusercontent.com/Regloom/dc650e6f9ba6a035b994f9bb714206b6/raw/crave.sh | bash"
+```
