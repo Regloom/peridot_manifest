@@ -15,9 +15,8 @@ Instead of modifying the main manifest directly, we place additional project ent
 ### Normal 
 
 ```bash
-git clone https://github.com/Regloom/peridot_manifest.git -b hals .repo/local_manifests
-# or
-curl -L --create-dirs https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/peridot.xml -o .repo/local_manifests/local_manifest.xml
+# git clone https://github.com/Regloom/peridot_manifest.git -b hals .repo/local_manifests
+curl -L --create-dirs https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/local_manifest.xml -o .repo/local_manifests/local_manifest.xml
 
 repo sync -j$(nproc --all)
 ```
