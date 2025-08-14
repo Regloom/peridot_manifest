@@ -63,7 +63,7 @@
 	<project path="device/qcom/sepolicy_vndr/sm8650" name="sm8635-dev/device_qcom_sepolicy_vndr" groups="qcom,lanai-vendor" revision="lineage-22.2-caf-sm8650" remote="git-hub" />
 
 	<remove-project name="LineageOS/android_vendor_qcom_opensource_display-core" />
-	<remove-project path="LineageOS/android_hardware_qcom_display" />
-	<remove-project path="LineageOS/android_vendor_qcom_opensource_display-intf" /> 
+	<remove-project name="LineageOS/android_hardware_qcom_display" />
+	<remove-project name="LineageOS/android_vendor_qcom_opensource_display-intf" /> 
 	
 </manifest>
