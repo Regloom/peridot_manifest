@@ -24,5 +24,5 @@ repo sync -j$(nproc --all)
 ### Crave.io
 
 ```bash
-crave run --clean --no-patch -- "curl https://gist.githubusercontent.com/Regloom/dc650e6f9ba6a035b994f9bb714206b6/raw/crave.sh | bash"
+crave run --clean --no-patch -- "curl https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/crave.sh | bash"
 ```
