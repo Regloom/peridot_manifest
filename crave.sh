@@ -19,15 +19,14 @@ rm -rf hardware/qcom-caf/common
 rm -rf hardware/qcom-caf/sm8650
 rm -rf device/qcom/sepolicy_vndr/sm8650
 
-rm -rf hardware/qcom-caf/sm8750/display/hal
-rm -rf hardware/qcom-caf/sm8750/display/core
-rm -rf hardware/qcom-caf/sm8750/display/intf
-
 # Manifest
 curl -L --create-dirs https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/peridot.xml -o .repo/local_manifests/local_manifest.xml
 
 # Build Sync
 /opt/crave/resync.sh
+
+# Don't need sm8750 ...
+rm -rf hardware/qcom-caf/sm8750
 
 # Build
 . build/envsetup.sh
