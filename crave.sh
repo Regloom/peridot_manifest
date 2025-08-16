@@ -26,7 +26,7 @@ curl -L --create-dirs https://raw.githubusercontent.com/Regloom/peridot_manifest
 /opt/crave/resync.sh
 
 # Don't need sm8750 ...
-rm -rf hardware/qcom-caf/sm8750
+# rm -rf hardware/qcom-caf/sm8750
 
 # Build
 . build/envsetup.sh
