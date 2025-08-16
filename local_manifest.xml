@@ -13,7 +13,7 @@
 
 	<!-- HALS -->
 	<remove-project path="hardware/qcom-caf/common"/>
-	<project path="hardware/qcom-caf/common" name="sm8635-dev/hardware_qcom-caf_common" groups="qcom" remote="git-hub" revision="lineage-22.2">
+	<project path="hardware/qcom-caf/common" name="Regloom/hardware_qcom-caf_common" groups="qcom" remote="git-hub" revision="lineage-22.2">
 		<!-- add guard for AOSP hardware/qcom dir -->
 		<linkfile src="os_pickup_aosp.mk" dest="hardware/qcom/Android.mk"/>
 		<!-- add guards for CAF repositories -->
@@ -65,5 +65,6 @@
 	<remove-project path="hardware/qcom-caf/sm8750/display/hal"/>
 	<remove-project path="hardware/qcom-caf/sm8750/display/core"/>
 	<remove-project path="hardware/qcom-caf/sm8750/display/intf"/>
+
 
 </manifest>
