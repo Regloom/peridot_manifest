@@ -99,4 +99,6 @@ fi
 
 # Build
 . build/envsetup.sh
-lunch lineage_peridot-bp1a-userdebug && m bacon
+lunch lineage_peridot-bp1a-userdebug 
+make installclean
+m bacon
