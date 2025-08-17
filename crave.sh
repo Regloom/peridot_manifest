@@ -3,20 +3,17 @@
 # Run sample
 # crave run --clean --no-patch -- "curl https://gist.githubusercontent.com/Regloom/dc650e6f9ba6a035b994f9bb714206b6/raw/crave.sh | bash"
 
-# LOS 22.2 Repo init
-rm -rf .repo/local_manifests
+# Repo Init
 repo init -u https://github.com/LineageOS/android.git -b lineage-22.2 --git-lfs
-rm -rf prebuilts/clang/host/linux-x86
+
+# Sync the repositories
 /opt/crave/resync.sh
 
 # Cleansing
-rm -rf out/target/product/peridot
 rm -rf device/xiaomi/peridot
 rm -rf vendor/xiaomi/peridot
 rm -rf device/xiaomi/peridot-kernel
 rm -rf hardware/xiaomi
-
-# HALS cleansing
 rm -rf hardware/qcom-caf/common
 rm -rf hardware/qcom-caf/sm8650
 rm -rf device/qcom/sepolicy_vndr/sm8650
@@ -33,7 +30,6 @@ git clone https://github.com/Regloom/device_xiaomi_peridot -b GuidixX device/xia
 git clone https://github.com/GuidixX/device_xiaomi_peridot-kernel -b 15 device/xiaomi/peridot-kernel
 git clone https://github.com/GuidixX/vendor_xiaomi_peridot -b 15 vendor/xiaomi/peridot
 git clone https://github.com/TogoFire/packages_apps_ViPER4AndroidFX -b v4a packages/apps/ViPER4AndroidFX
-
 git clone https://github.com/Regloom/hardware_qcom-caf_common -b 15-qpr2 hardware/qcom-caf/common
 git clone https://github.com/sm8635-dev/vendor_qcom_opensource_agm -b lineage-22.2-caf-sm8650 hardware/qcom-caf/sm8650/audio/agm
 git clone https://github.com/sm8635-dev/vendor_qcom_opensource_arpal-lx -b lineage-22.2-caf-sm8650 hardware/qcom-caf/sm8650/audio/pal
