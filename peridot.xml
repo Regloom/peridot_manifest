@@ -66,12 +66,12 @@
 	<remove-project name="LineageOS/android_vendor_qcom_opensource_display-intf" path="hardware/qcom-caf/sm8750/display/intf" /> 
 	
 	<!-- msm8996 -->
-	<remove-project name="LineageOS/android_hardware_qcom_display" path="hardware/qcom-caf/msm8996/display" />
+	<!--<remove-project name="LineageOS/android_hardware_qcom_display" path="hardware/qcom-caf/msm8996/display" />  -->
 	<remove-project name="LineageOS/android_hardware_qcom_media"   path="hardware/qcom-caf/msm8996/media" />
 	<remove-project name="LineageOS/android_hardware_qcom_audio"   path="hardware/qcom-caf/msm8996/audio" />
 
 	<!-- msm8998 -->
-	<remove-project name="LineageOS/android_hardware_qcom_display" path="hardware/qcom-caf/msm8998/display" />
+	<!-- <remove-project name="LineageOS/android_hardware_qcom_display" path="hardware/qcom-caf/msm8998/display" />  -->
 	<remove-project name="LineageOS/android_hardware_qcom_media"   path="hardware/qcom-caf/msm8998/media" />
 	<remove-project name="LineageOS/android_hardware_qcom_audio"   path="hardware/qcom-caf/msm8998/audio" />
 	
