@@ -18,6 +18,7 @@ echo "============================"
 
 # Cleanup unused HAL display, media, audio
 rm -rf /tmp/src/android/hardware/qcom-caf/{msm8996,msm8998,sdm845,sm8150,sm8250}/{display,media,audio}
+rm -rf /tmp/src/android/hardware/qcom-caf/sm8750
 
 # Sync the repositories
 /opt/crave/resync.sh
@@ -25,6 +26,7 @@ echo "============================"
 
 # Cleanup unused HAL display, media, audio
 rm -rf hardware/qcom-caf/{msm8996,msm8998,sdm845,sm8150,sm8250}/{display,media,audio}
+rm -rf hardware/qcom-caf/sm8750
 
 # Export
 export BUILD_USERNAME=regloom
