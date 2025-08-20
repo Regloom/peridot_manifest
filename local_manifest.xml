@@ -56,7 +56,7 @@
   	<project path="hardware/qcom-caf/sm8650/dataipa" name="LineageOS/android_vendor_qcom_opensource_dataipa" groups="qcom,lanai-vendor" revision="lineage-22.2-caf-sm8650" />
   	<project path="hardware/qcom-caf/sm8650/display" name="LineageOS/android_hardware_qcom_display" groups="qcom" revision="lineage-22.2-caf-sm8650" />
 	-->
-	
+	<!-- 
 	<remove-project path="hardware/qcom-caf/sm8650/audio/agm"/>
 	<project path="hardware/qcom-caf/sm8650/audio/agm" name="sm8635-dev/vendor_qcom_opensource_agm" groups="qcom,lanai-audio" revision="lineage-22.2-caf-sm8650" remote="git-hub"/>
 
@@ -66,13 +66,12 @@
 	<remove-project path="hardware/qcom-caf/sm8650/audio/primary-hal"/>
 	<project path="hardware/qcom-caf/sm8650/audio/primary-hal" name="sm8635-dev/hardware_qcom_audio-ar" groups="qcom,lanai-audio" revision="lineage-22.2-caf-sm8650" remote="git-hub"/>
 
-	<!-- Seems to be the same as "LineageOS/android_hardware_qcom_display"
 	<remove-project path="hardware/qcom-caf/sm8650/display"/>
 	<project path="hardware/qcom-caf/sm8650/display" name="sm8635-dev/hardware_qcom_display" groups="qcom" revision="lineage-22.2-caf-sm8650" remote="git-hub"/>
-	-->
 	
 	<remove-project path="device/qcom/sepolicy_vndr/sm8650"/>
 	<project path="device/qcom/sepolicy_vndr/sm8650" name="sm8635-dev/device_qcom_sepolicy_vndr" groups="qcom,lanai-vendor" revision="lineage-22.2-caf-sm8650" remote="git-hub"/>
+	-->
 
 	<remove-project path="hardware/qcom-caf/sm8750/display/hal"/>
 	<remove-project path="hardware/qcom-caf/sm8750/display/core"/>
@@ -80,5 +79,6 @@
 
 
 </manifest>
+
 
 
