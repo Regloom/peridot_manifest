@@ -47,6 +47,10 @@
 		<linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8750/Android.bp"/>
 	</project>
 
+	<!--Building shims in vendor...-->
+	<remove-project path="hardware/lineage/compat"/>
+	<project path="hardware/lineage/compat" name="VoltageOS/hardware_lineage_compat" revision="16" remote="git-hub"/>
+	
 	<!-- 
 	<project path="hardware/qcom-caf/sm8650/audio/agm" name="LineageOS/android_vendor_qcom_opensource_agm" groups="qcom,lanai-audio" revision="lineage-22.2-caf-sm8650" />
   	<project path="hardware/qcom-caf/sm8650/audio/graphservices" name="LineageOS/android_vendor_qcom_opensource_audioreach-graphservices" groups="qcom" revision="lineage-22.2-caf-sm8650" />
@@ -65,7 +69,7 @@
 
 	<remove-project path="hardware/qcom-caf/sm8650/audio/primary-hal"/>
 	<project path="hardware/qcom-caf/sm8650/audio/primary-hal" name="sm8635-dev/hardware_qcom_audio-ar" groups="qcom,lanai-audio" revision="lineage-22.2-caf-sm8650" remote="git-hub"/>
-
+	
 	<!-- 
 	<remove-project path="hardware/qcom-caf/sm8650/display"/>
 	<project path="hardware/qcom-caf/sm8650/display" name="sm8635-dev/hardware_qcom_display" groups="qcom" revision="lineage-22.2-caf-sm8650" remote="git-hub"/>
@@ -80,6 +84,7 @@
 
 
 </manifest>
+
 
 
 
