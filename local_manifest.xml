@@ -11,6 +11,10 @@
 	<!-- ViPER4AndroidFX fix -->
 	<project path="packages/apps/ViPER4AndroidFX" name="TogoFire/packages_apps_ViPER4AndroidFX" remote="git-hub" revision="v4a"/>
 
+	<!-- SHIMS -->
+	<remove-project path="hardware/lineage/compat"/>
+    <project path="hardware/lineage/compat" name="LineageOS/android_hardware_lineage_compat" remote="git-hub" revision="lineage-23.0">
+	
 	<!-- HALS -->
 	<remove-project path="hardware/qcom-caf/common"/>
 	<project path="hardware/qcom-caf/common" name="Regloom/hardware_qcom-caf_common" groups="qcom" remote="git-hub" revision="15-qpr2">
@@ -80,6 +84,7 @@
 
 
 </manifest>
+
 
 
 
