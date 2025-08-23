@@ -13,7 +13,7 @@
 
 	<!-- SHIMS -->
 	<remove-project path="hardware/lineage/compat"/>
-    <project path="hardware/lineage/compat" name="LineageOS/android_hardware_lineage_compat" remote="git-hub" revision="lineage-23.0">
+    <project path="hardware/lineage/compat" name="LineageOS/android_hardware_lineage_compat" remote="git-hub" revision="lineage-23.0"/>
 	
 	<!-- HALS -->
 	<remove-project path="hardware/qcom-caf/common"/>
@@ -84,6 +84,7 @@
 
 
 </manifest>
+
 
 
 
