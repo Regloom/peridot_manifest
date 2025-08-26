@@ -40,7 +40,8 @@ echo "======= Export Done ======"
 echo "====== Envsetup Done ======="
 
 # Lunch
-lunch lineage_peridot-bp1a-userdebug 
+# lunch lineage_peridot-bp1a-userdebug
+brunch peridot userdebug
 echo "============="
 
 # Install clean
