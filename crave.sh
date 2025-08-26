@@ -32,6 +32,7 @@ rm -rf hardware/qcom-caf/sm8750
 export BUILD_USERNAME=regloom
 export BUILD_HOSTNAME=crave
 export TZ="Europe/Berlin"
+export TARGET_RELEASE=bp1a
 echo "======= Export Done ======"
 
 # Set up build environment
