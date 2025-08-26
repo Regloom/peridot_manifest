@@ -2,7 +2,7 @@
 <manifest>
 	<remote name="git-hub" fetch="https://github.com/"/>
 	<!-- Xiaomi-specific hardware -->
-	<project path="hardware/xiaomi" name="VoltageOS/hardware_xiaomi" remote="git-hub" revision="15"/>
+	<project path="hardware/xiaomi" name="VoltageOS/hardware_xiaomi" remote="git-hub" revision="15-qpr2"/>
 
 	<project path="device/xiaomi/peridot" name="Regloom/device_xiaomi_peridot" remote="git-hub" revision="GuidixX"/>
 	<project path="device/xiaomi/peridot-kernel" name="GuidixX/device_xiaomi_peridot-kernel" remote="git-hub" revision="15"/>
@@ -84,6 +84,7 @@
 
 
 </manifest>
+
 
 
 
