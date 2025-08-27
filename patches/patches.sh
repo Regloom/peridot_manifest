@@ -1,11 +1,8 @@
 #!/bin/bash
 
-# @YuanziX (kit) request
-
 # Массив патчей в формате: "директория:URL"
 patches=(
-    "frameworks/base:https://github.com/AxionAOSP/android_frameworks_base/commit/fb7a2f2409441823270cadf2b4323708df954ce3.patch"
-	"frameworks/base:https://github.com/AxionAOSP/android_frameworks_base/commit/311d1bff99a2c02708d8af74ed48748dcfa7a1bf.patch"
+    "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0002-VoWiFI-Roaming.patch"
 )
 
 echo "Начинаем применение патчей..."
@@ -17,7 +14,7 @@ for patch in "${patches[@]}"; do
 
     # curl -fLSs https://github.com/${patch_url}.patch | git am cd -
 
-    if curl -L "$url" | git am; then
+    if curl -L "$url" | git am --ignore-whitespace; then
         echo "✓ Патч успешно применен в $directory"
     else
         echo "✗ Ошибка применения патча в $directory"
@@ -31,8 +28,8 @@ for patch in "${patches[@]}"; do
 done
 
 # Ручные правки
-cd frameworks/base
-git am 0001-HDR-settings.patch
-cd - > /dev/null
+# cd packages/apps/Settings
+# git am ../../../0001-HDR-settings.patch
+# cd - > /dev/null
 
 echo "Все патчи успешно применены!"
