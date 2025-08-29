@@ -28,6 +28,27 @@ echo "============================"
 rm -rf hardware/qcom-caf/{msm8996,msm8998,sdm845,sm8150,sm8250}/{display,media,audio}
 rm -rf hardware/qcom-caf/sm8750
 
+
+echo "======= Patches ======"
+patches=(
+    "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0002-VoWiFI-Roaming.patch"
+)
+
+for patch in "${patches[@]}"; do
+    IFS=":" read -r directory url <<< "$patch"
+    cd "$directory" || { echo "Ошибка: не могу перейти в $directory"; exit 1; }
+    if curl -L "$url" | git am --ignore-whitespace; then
+        echo "✓ Патч успешно применен в $directory"
+    else
+        echo "✗ Ошибка применения патча в $directory"
+        exit 1
+    fi
+    # Возвращаемся назад
+    cd - > /dev/null
+    echo "----------------------------------------"
+done
+echo "======= Patching Done ======"
+
 # Export
 export BUILD_USERNAME=regloom
 export BUILD_HOSTNAME=crave
