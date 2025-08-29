@@ -10,10 +10,14 @@
 
 	<!-- ViPER4AndroidFX fix -->
 	<project path="packages/apps/ViPER4AndroidFX" name="TogoFire/packages_apps_ViPER4AndroidFX" remote="git-hub" revision="v4a" />
+
+	<!--CrDroid Dialer-->
+	<remove-project name="LineageOS/android_packages_apps_Dialer" />
+	<project path="packages/apps/Dialer" name="crdroidandroid/android_packages_apps_Dialer" groups="pdk-fs" remote="git-hub" revision="15.0" />
 	
 	<!-- SHIMS -->
 	<remove-project name="LineageOS/android_hardware_lineage_compat"/>
-	<project path="hardware/lineage/compat" name="LineageOS/android_hardware_lineage_compat" remote="git-hub" revision="lineage-23.0"/>
+	<project path="hardware/lineage/compat" name="LineageOS/android_hardware_lineage_compat" remote="git-hub" revision="lineage-23.0" />
 
 	<!-- HALS -->
 	<remove-project name="LineageOS/android_hardware_qcom-caf_common" />
@@ -59,13 +63,13 @@
   	<project path="hardware/qcom-caf/sm8650/display" name="LineageOS/android_hardware_qcom_display" groups="qcom" revision="lineage-22.2-caf-sm8650" />
 	-->
 	<remove-project name="LineageOS/android_vendor_qcom_opensource_agm" />
-	<project path="hardware/qcom-caf/sm8650/audio/agm" name="voltage-peridot/vendor_qcom_opensource_agm-sm8650" groups="qcom,lanai-audio" revision="16" remote="git-hub"/>
+	<project path="hardware/qcom-caf/sm8650/audio/agm" name="voltage-peridot/vendor_qcom_opensource_agm-sm8650" groups="qcom,lanai-audio" revision="16" remote="git-hub" />
 
 	<remove-project name="LineageOS/android_vendor_qcom_opensource_arpal-lx" />
-	<project path="hardware/qcom-caf/sm8650/audio/pal" name="yaap/vendor_qcom_opensource_arpal-lx-sm8650" groups="qcom,lanai-audio" revision="sixteen" remote="git-hub"/>
+	<project path="hardware/qcom-caf/sm8650/audio/pal" name="yaap/vendor_qcom_opensource_arpal-lx-sm8650" groups="qcom,lanai-audio" revision="sixteen" remote="git-hub" />
 
 	<remove-project name="LineageOS/android_hardware_qcom_audio-ar" />
-	<project path="hardware/qcom-caf/sm8650/audio/primary-hal" name="yaap/hardware_qcom_audio-ar-sm8650" groups="qcom,lanai-audio" revision="sixteen" remote="git-hub"/>
+	<project path="hardware/qcom-caf/sm8650/audio/primary-hal" name="yaap/hardware_qcom_audio-ar-sm8650" groups="qcom,lanai-audio" revision="sixteen" remote="git-hub" />
 
 	<!--
 	<remove-project name="LineageOS/android_hardware_qcom_display" />
