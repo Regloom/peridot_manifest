@@ -56,13 +56,14 @@ export TZ="Europe/Berlin"
 export TARGET_RELEASE=bp1a
 echo "======= Export Done ======"
 
+. build/envsetup.sh
+echo "====== Envsetup Done ======="
+
 # Build auto
 brunch peridot userdebug
 echo "============="
 
 # Build manual
-#. build/envsetup.sh
-# echo "====== Envsetup Done ======="
 
 # lunch lineage_peridot-bp1a-userdebug
 # m installclean
