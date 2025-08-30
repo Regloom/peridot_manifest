@@ -11,7 +11,7 @@
 	<!-- ViPER4AndroidFX fix -->
 	<project path="packages/apps/ViPER4AndroidFX" name="TogoFire/packages_apps_ViPER4AndroidFX" remote="git-hub" revision="v4a" />
 
-	<!--CrDroid Dialer-->
+	<!-- Dialer-->
 	<remove-project name="LineageOS/android_packages_apps_Dialer" />
 	<project path="packages/apps/Dialer" name="VoltageOS/packages_apps_Dialer" groups="pdk-fs" remote="git-hub" revision="15-qpr2" />
 	
@@ -80,7 +80,7 @@
 	-->
 	
 	<!--sm8750-->
-	<!--<remove-project name="LineageOS/android_hardware_qcom_display" path="hardware/qcom-caf/sm8750/display/hal" />-->
+	<remove-project name="LineageOS/android_hardware_qcom_display" path="hardware/qcom-caf/sm8750/display/hal" />
 	<remove-project name="LineageOS/android_vendor_qcom_opensource_display-core" path="hardware/qcom-caf/sm8750/display/core" />
 	<remove-project name="LineageOS/android_vendor_qcom_opensource_display-intf" path="hardware/qcom-caf/sm8750/display/intf" /> 
 	
