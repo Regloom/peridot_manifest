@@ -83,11 +83,17 @@
 	<remove-project name="LineageOS/android_hardware_qcom_display" path="hardware/qcom-caf/sm8750/display/hal" />
 	<remove-project name="LineageOS/android_vendor_qcom_opensource_display-core" path="hardware/qcom-caf/sm8750/display/core" />
 	<remove-project name="LineageOS/android_vendor_qcom_opensource_display-intf" path="hardware/qcom-caf/sm8750/display/intf" /> 
-	<remove-project name="LineageOS/android_vendor_qcom_opensource_audioreach-graphservices" path="hardware/qcom-caf/sm8750/audio/graphservices" />
+	<remove-project name="LineageOS/android_vendor_qcom_opensource_audioreach-graphservices" path="hardware/qcom-caf/sm8750/audio/graphservices" />	
+	<remove-project name="LineageOS/android_vendor_qcom_opensource_data-ipa-cfg-mgr" path="hardware/qcom-caf/sm8750/data-ipa-cfg-mgr" />
+	<remove-project name="LineageOS/android_vendor_qcom_opensource_dataipa" path="hardware/qcom-caf/sm8750/dataipa" />
+	
 	<!--
 	<remove-project name="LineageOS/android_vendor_qcom_opensource_agm" path="hardware/qcom-caf/sm8750/audio/agm" />
 	<remove-project name="LineageOS/android_vendor_qcom_opensource_arpal-lx" path="hardware/qcom-caf/sm8750/audio/pal" />
 	<remove-project name="LineageOS/android_hardware_qcom_audio-ar" path="hardware/qcom-caf/sm8750/audio/primary-hal" />
+	<remove-project name="LineageOS/android_vendor_qcom_opensource_display-core" path="hardware/qcom-caf/sm8750/display/core" />
+	<remove-project name="LineageOS/android_hardware_qcom_display" path="hardware/qcom-caf/sm8750/display/hal" />
+	<remove-project name="LineageOS/android_vendor_qcom_opensource_display-intf" path="hardware/qcom-caf/sm8750/display/intf" />
 	-->
 	
 	<!-- msm8996 -->
