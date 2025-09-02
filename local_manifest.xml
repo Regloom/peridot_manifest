@@ -66,7 +66,7 @@
 	<remove-project path="hardware/qcom-caf/sm8650/audio/agm"/>
 	<remove-project path="hardware/qcom-caf/sm8650/audio/pal"/>
 	<remove-project path="hardware/qcom-caf/sm8650/audio/primary-hal"/>
-	<project path="hardware/qcom-caf/sm8650/display" name="LineageOS/android_hardware_qcom_display" groups="qcom" revision="lineage-23.0-caf-sm8650" remote="git-hub"/> 
+	<project path="hardware/qcom-caf/sm8650/display" name="yaap/hardware_qcom-caf_sm8650_display" groups="qcom" revision="sixteen" remote="git-hub"/> 
 	<project path="hardware/qcom-caf/sm8650/audio/agm" name="voltage-peridot/vendor_qcom_opensource_agm-sm8650" groups="qcom,lanai-audio" revision="16" remote="git-hub"/>
 	<project path="hardware/qcom-caf/sm8650/audio/pal" name="yaap/vendor_qcom_opensource_arpal-lx-sm8650" groups="qcom,lanai-audio" revision="sixteen" remote="git-hub"/>
 	<project path="hardware/qcom-caf/sm8650/audio/primary-hal" name="yaap/hardware_qcom_audio-ar-sm8650" groups="qcom,lanai-audio" revision="sixteen" remote="git-hub"/>	
@@ -117,6 +117,7 @@
 	
 
 </manifest>
+
 
 
 
