@@ -17,7 +17,7 @@
 	
 	<!-- SHIMS -->
 	<remove-project path="hardware/lineage/compat"/>
-    <project path="hardware/lineage/compat" name="LineageOS/android_hardware_lineage_compat" remote="git-hub" revision="lineage-23.0"/>
+	<project path="hardware/lineage/compat" name="LineageOS/android_hardware_lineage_compat" remote="git-hub" revision="lineage-23.0"/>
 	
 	<!-- HALS -->
 	<remove-project path="hardware/qcom-caf/common"/>
@@ -27,21 +27,21 @@
 		<!-- add guards for CAF repositories -->
 		<linkfile src="os_pickup_sepolicy_vndr.mk" dest="device/qcom/sepolicy_vndr/SEPolicy.mk"/>
 		<!--Lineage 22.2 -->
-	    <linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/msm8953/Android.bp" />
-	    <linkfile src="os_pickup.bp" dest="hardware/qcom-caf/msm8996/Android.bp" />
-	    <linkfile src="os_pickup.mk" dest="hardware/qcom-caf/msm8996/Android.mk" />
-	    <linkfile src="os_pickup.bp" dest="hardware/qcom-caf/msm8998/Android.bp" />
-	    <linkfile src="os_pickup.mk" dest="hardware/qcom-caf/msm8998/Android.mk" />
-	    <linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sdm660/Android.bp" />
-	    <linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sdm845/Android.bp" />
-	    <linkfile src="os_pickup.mk" dest="hardware/qcom-caf/sdm845/Android.mk" />
-	    <linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8150/Android.bp" />
-	    <linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8250/Android.bp" />
-	    <linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8350/Android.bp" />
-	    <linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8450/Android.bp" />
-	    <linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8550/Android.bp" />
-	    <linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8650/Android.bp" />
-	    <linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8750/Android.bp" />
+		<linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/msm8953/Android.bp" />
+		<linkfile src="os_pickup.bp" dest="hardware/qcom-caf/msm8996/Android.bp" />
+		<linkfile src="os_pickup.mk" dest="hardware/qcom-caf/msm8996/Android.mk" />
+		<linkfile src="os_pickup.bp" dest="hardware/qcom-caf/msm8998/Android.bp" />
+		<linkfile src="os_pickup.mk" dest="hardware/qcom-caf/msm8998/Android.mk" />
+		<linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sdm660/Android.bp" />
+		<linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sdm845/Android.bp" />
+		<linkfile src="os_pickup.mk" dest="hardware/qcom-caf/sdm845/Android.mk" />
+		<linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8150/Android.bp" />
+		<linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8250/Android.bp" />
+		<linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8350/Android.bp" />
+		<linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8450/Android.bp" />
+		<linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8550/Android.bp" />
+		<linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8650/Android.bp" />
+		<linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8750/Android.bp" />
 	</project>
 
 	<!-- 
@@ -114,6 +114,7 @@
 	<remove-project name="LineageOS/android_hardware_qcom_media"   path="hardware/qcom-caf/sm8250/media" /> -->
 
 </manifest>
+
 
 
 
