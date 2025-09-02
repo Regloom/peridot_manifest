@@ -27,7 +27,7 @@
 		<!-- add guards for CAF repositories -->
 		<linkfile src="os_pickup_sepolicy_vndr.mk" dest="device/qcom/sepolicy_vndr/SEPolicy.mk"/>
 		<!--Lineage 22.2 -->
-	    <linkfile src="os_pickup.mk" dest="hardware/qcom-caf/msm8953/Android.mk" />
+	    <linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/msm8953/Android.bp" />
 	    <linkfile src="os_pickup.bp" dest="hardware/qcom-caf/msm8996/Android.bp" />
 	    <linkfile src="os_pickup.mk" dest="hardware/qcom-caf/msm8996/Android.mk" />
 	    <linkfile src="os_pickup.bp" dest="hardware/qcom-caf/msm8998/Android.bp" />
@@ -36,21 +36,14 @@
 	    <linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sdm845/Android.bp" />
 	    <linkfile src="os_pickup.mk" dest="hardware/qcom-caf/sdm845/Android.mk" />
 	    <linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8150/Android.bp" />
-	    <linkfile src="os_pickup.mk" dest="hardware/qcom-caf/sm8150/Android.mk" />
 	    <linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8250/Android.bp" />
-	    <linkfile src="os_pickup.mk" dest="hardware/qcom-caf/sm8250/Android.mk" />
 	    <linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8350/Android.bp" />
-	    <linkfile src="os_pickup.mk" dest="hardware/qcom-caf/sm8350/Android.mk" />
-	    <linkfile src="os_pickup_audio-ar.mk" dest="hardware/qcom-caf/sm8450/audio/Android.mk" />
 	    <linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8450/Android.bp" />
-	    <linkfile src="os_pickup_audio-ar.mk" dest="hardware/qcom-caf/sm8550/audio/Android.mk" />
 	    <linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8550/Android.bp" />
-	    <linkfile src="os_pickup_audio-ar.mk" dest="hardware/qcom-caf/sm8650/audio/Android.mk" />
 	    <linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8650/Android.bp" />
-	    <linkfile src="os_pickup_audio-ar.mk" dest="hardware/qcom-caf/sm8750/audio/Android.mk" />
 	    <linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8750/Android.bp" />
 	</project>
-	
+
 	<!-- 
 	<project path="hardware/qcom-caf/sm8650/audio/agm" name="LineageOS/android_vendor_qcom_opensource_agm" groups="qcom,lanai-audio" revision="lineage-22.2-caf-sm8650" />
   	<project path="hardware/qcom-caf/sm8650/audio/graphservices" name="LineageOS/android_vendor_qcom_opensource_audioreach-graphservices" groups="qcom" revision="lineage-22.2-caf-sm8650" />
@@ -60,7 +53,7 @@
   	<project path="hardware/qcom-caf/sm8650/dataipa" name="LineageOS/android_vendor_qcom_opensource_dataipa" groups="qcom,lanai-vendor" revision="lineage-22.2-caf-sm8650" />
   	<project path="hardware/qcom-caf/sm8650/display" name="LineageOS/android_hardware_qcom_display" groups="qcom" revision="lineage-22.2-caf-sm8650" />
 	-->
-
+	
 	<!--sm8650-->
 	<remove-project path="hardware/qcom-caf/sm8650/display"/>
 	<remove-project path="hardware/qcom-caf/sm8650/audio/agm"/>
@@ -89,34 +82,39 @@
 	<remove-project name="LineageOS/android_vendor_qcom_opensource_audioreach-graphservices" path="hardware/qcom-caf/sm8750/audio/graphservices" />	
 	<remove-project name="LineageOS/android_vendor_qcom_opensource_data-ipa-cfg-mgr" path="hardware/qcom-caf/sm8750/data-ipa-cfg-mgr" />
 	<remove-project name="LineageOS/android_vendor_qcom_opensource_dataipa" path="hardware/qcom-caf/sm8750/dataipa" />
+
+	<!-- REMOVE ALL  -->
+	<remove-project name="LineageOS/android_hardware_qcom_audio" />
+	<remove-project name="LineageOS/android_hardware_qcom_display" />  
+	<remove-project name="LineageOS/android_hardware_qcom_media" />
 	
 	<!-- msm8996 -->
-	<remove-project name="LineageOS/android_hardware_qcom_display" path="hardware/qcom-caf/msm8996/display" />
+<!-- 	<remove-project name="LineageOS/android_hardware_qcom_display" path="hardware/qcom-caf/msm8996/display" />
 	<remove-project name="LineageOS/android_hardware_qcom_audio"   path="hardware/qcom-caf/msm8996/audio" />
-	<remove-project name="LineageOS/android_hardware_qcom_media"   path="hardware/qcom-caf/msm8996/media" />
+	<remove-project name="LineageOS/android_hardware_qcom_media"   path="hardware/qcom-caf/msm8996/media" /> -->
 
 	<!-- msm8998 -->
-	<remove-project name="LineageOS/android_hardware_qcom_display" path="hardware/qcom-caf/msm8998/display" />
+<!-- 	<remove-project name="LineageOS/android_hardware_qcom_display" path="hardware/qcom-caf/msm8998/display" />
 	<remove-project name="LineageOS/android_hardware_qcom_audio"   path="hardware/qcom-caf/msm8998/audio" />
-	<remove-project name="LineageOS/android_hardware_qcom_media"   path="hardware/qcom-caf/msm8998/media" />
+	<remove-project name="LineageOS/android_hardware_qcom_media"   path="hardware/qcom-caf/msm8998/media" /> -->
 
 	<!-- sdm845  -->
-	<remove-project name="LineageOS/android_hardware_qcom_display" path="hardware/qcom-caf/sdm845/display" />
+<!-- 	<remove-project name="LineageOS/android_hardware_qcom_display" path="hardware/qcom-caf/sdm845/display" />
 	<remove-project name="LineageOS/android_hardware_qcom_audio"   path="hardware/qcom-caf/sdm845/audio" />
-	<remove-project name="LineageOS/android_hardware_qcom_media"   path="hardware/qcom-caf/sdm845/media" />
+	<remove-project name="LineageOS/android_hardware_qcom_media"   path="hardware/qcom-caf/sdm845/media" /> -->
 
 	<!-- sm8150  -->
-	<remove-project name="LineageOS/android_hardware_qcom_display" path="hardware/qcom-caf/sm8150/display" />
+<!-- 	<remove-project name="LineageOS/android_hardware_qcom_display" path="hardware/qcom-caf/sm8150/display" />
 	<remove-project name="LineageOS/android_hardware_qcom_audio"   path="hardware/qcom-caf/sm8150/audio" />
-	<remove-project name="LineageOS/android_hardware_qcom_media"   path="hardware/qcom-caf/sm8150/media" />
+	<remove-project name="LineageOS/android_hardware_qcom_media"   path="hardware/qcom-caf/sm8150/media" /> -->
 
 	<!-- sm8250  -->
-	<remove-project name="LineageOS/android_hardware_qcom_display" path="hardware/qcom-caf/sm8250/display" />
+<!-- 	<remove-project name="LineageOS/android_hardware_qcom_display" path="hardware/qcom-caf/sm8250/display" />
 	<remove-project name="LineageOS/android_hardware_qcom_audio"   path="hardware/qcom-caf/sm8250/audio" />
-	<remove-project name="LineageOS/android_hardware_qcom_media"   path="hardware/qcom-caf/sm8250/media" />
-	
+	<remove-project name="LineageOS/android_hardware_qcom_media"   path="hardware/qcom-caf/sm8250/media" /> -->
 
 </manifest>
+
 
 
 
