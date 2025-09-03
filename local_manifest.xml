@@ -36,19 +36,35 @@
 		<linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sdm845/Android.bp" />
 		<linkfile src="os_pickup.mk" dest="hardware/qcom-caf/sdm845/Android.mk" />
 		<linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8150/Android.bp" />
+		<linkfile src="os_pickup.mk" dest="hardware/qcom-caf/sm8150/Android.mk" />
 		<linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8250/Android.bp" />
+		<linkfile src="os_pickup.mk" dest="hardware/qcom-caf/sm8250/Android.mk" />
 		<linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8350/Android.bp" />
+		<linkfile src="os_pickup.mk" dest="hardware/qcom-caf/sm8350/Android.mk" />
+		<linkfile src="os_pickup_audio-ar.mk" dest="hardware/qcom-caf/sm8450/audio/Android.mk" />
 		<linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8450/Android.bp" />
+		<linkfile src="os_pickup_audio-ar.mk" dest="hardware/qcom-caf/sm8550/audio/Android.mk" />
 		<linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8550/Android.bp" />
+		<linkfile src="os_pickup_audio-ar.mk" dest="hardware/qcom-caf/sm8650/audio/Android.mk" />
 		<linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8650/Android.bp" />
+		<linkfile src="os_pickup_audio-ar.mk" dest="hardware/qcom-caf/sm8750/audio/Android.mk" />
 		<linkfile src="os_pickup_qssi.bp" dest="hardware/qcom-caf/sm8750/Android.bp" />
 	</project>
-
 
 	<!-- REMOVE ALL  -->
 	<remove-project name="LineageOS/android_hardware_qcom_audio" />
 	<remove-project name="LineageOS/android_hardware_qcom_display" />  
 	<remove-project name="LineageOS/android_hardware_qcom_media" />
+
+	<!--sm8450-->
+	<remove-project name="LineageOS/android_vendor_qcom_opensource_audioreach-graphservices" path="hardware/qcom-caf/sm8450/audio/graphservices" />	
+	<remove-project name="LineageOS/android_vendor_qcom_opensource_data-ipa-cfg-mgr" path="hardware/qcom-caf/sm8450/data-ipa-cfg-mgr" />
+	
+	<!--sm8550-->
+	<remove-project name="LineageOS/android_vendor_qcom_opensource_audioreach-graphservices" path="hardware/qcom-caf/sm8550/audio/graphservices" />	
+	<remove-project name="LineageOS/android_vendor_qcom_opensource_data-ipa-cfg-mgr" path="hardware/qcom-caf/sm8550/data-ipa-cfg-mgr" />
+	<remove-project name="LineageOS/android_vendor_qcom_opensource_dataipa" path="hardware/qcom-caf/sm8550/dataipa" />
+	
 	<!--sm8750-->
 	<remove-project name="LineageOS/android_vendor_qcom_opensource_display-core" path="hardware/qcom-caf/sm8750/display/core" />
 	<remove-project name="LineageOS/android_vendor_qcom_opensource_display-intf" path="hardware/qcom-caf/sm8750/display/intf" /> 
@@ -56,7 +72,6 @@
 	<remove-project name="LineageOS/android_vendor_qcom_opensource_data-ipa-cfg-mgr" path="hardware/qcom-caf/sm8750/data-ipa-cfg-mgr" />
 	<remove-project name="LineageOS/android_vendor_qcom_opensource_dataipa" path="hardware/qcom-caf/sm8750/dataipa" />
 
-	
 	<!-- 
 	<project path="hardware/qcom-caf/sm8650/audio/agm" name="LineageOS/android_vendor_qcom_opensource_agm" groups="qcom,lanai-audio" revision="lineage-22.2-caf-sm8650" />
   	<project path="hardware/qcom-caf/sm8650/audio/graphservices" name="LineageOS/android_vendor_qcom_opensource_audioreach-graphservices" groups="qcom" revision="lineage-22.2-caf-sm8650" />
@@ -81,6 +96,7 @@
 	-->
 
 </manifest>
+
 
 
 
