@@ -8,6 +8,10 @@
 	<project path="device/xiaomi/peridot-kernel" name="Regloom/device_xiaomi_peridot-kernel" remote="git-hub" revision="main"/>
 	<project path="vendor/xiaomi/peridot" name="Regloom/vendor_xiaomi_peridot" remote="git-hub" revision="15"/>
 
+	<!-- System: Storage manager-->
+	<remove-project path="packages/apps/StorageManager" />
+	<project path="packages/apps/StorageManager" name="GrapheneOS/platform_packages_apps_StorageManager" remote="git-hub" revision="15-qpr2"/>
+	
 	<!-- ViPER4AndroidFX fix -->
 	<project path="packages/apps/ViPER4AndroidFX" name="TogoFire/packages_apps_ViPER4AndroidFX" remote="git-hub" revision="v4a"/>
 
@@ -97,6 +101,7 @@
 	<project path="device/qcom/sepolicy_vndr/sm8650" name="LineageOS/android_device_qcom_sepolicy_vndr" groups="qcom,lanai-vendor" revision="lineage-23.0-caf-sm8650" remote="git-hub"/>
 	-->
 </manifest>
+
 
 
 
