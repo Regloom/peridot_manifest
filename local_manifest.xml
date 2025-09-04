@@ -10,7 +10,7 @@
 
 	<!-- System: Storage manager-->
 	<remove-project path="packages/apps/StorageManager" />
-	<project path="packages/apps/StorageManager" name="GrapheneOS/platform_packages_apps_StorageManager" remote="git-hub" revision="15-qpr2"/>
+	<project path="packages/apps/StorageManager" name="GrapheneOS/platform_packages_apps_StorageManager" groups="pdk-fs" remote="git-hub" revision="15-qpr2"/>
 	
 	<!-- ViPER4AndroidFX fix -->
 	<project path="packages/apps/ViPER4AndroidFX" name="TogoFire/packages_apps_ViPER4AndroidFX" remote="git-hub" revision="v4a"/>
@@ -101,6 +101,7 @@
 	<project path="device/qcom/sepolicy_vndr/sm8650" name="LineageOS/android_device_qcom_sepolicy_vndr" groups="qcom,lanai-vendor" revision="lineage-23.0-caf-sm8650" remote="git-hub"/>
 	-->
 </manifest>
+
 
 
 
