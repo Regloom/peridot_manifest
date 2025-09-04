@@ -52,9 +52,12 @@
 	</project>
 
 	<!-- REMOVE ALL  -->
-	<remove-project name="LineageOS/android_hardware_qcom_audio" />
 	<remove-project name="LineageOS/android_hardware_qcom_display" />  
+	<remove-project name="LineageOS/android_hardware_qcom_audio" />
 	<remove-project name="LineageOS/android_hardware_qcom_media" />
+	<remove-project name="LineageOS/android_vendor_qcom_opensource_agm" />
+	<remove-project name="LineageOS/android_vendor_qcom_opensource_arpal-lx" />
+	<remove-project name="LineageOS/android_hardware_qcom_audio-ar" />
 
 	<!--sm8450-->
 	<remove-project name="LineageOS/android_vendor_qcom_opensource_audioreach-graphservices" path="hardware/qcom-caf/sm8450/audio/graphservices" />	
@@ -83,20 +86,18 @@
 	-->
 	
 	<!--sm8650-->
-	<remove-project name="LineageOS/android_vendor_qcom_opensource_agm" />
-	<remove-project name="LineageOS/android_vendor_qcom_opensource_arpal-lx" />
-	<remove-project name="LineageOS/android_hardware_qcom_audio-ar" />
+	<project path="hardware/qcom-caf/sm8650/display" name="LineageOS/android_hardware_qcom_display" groups="qcom" revision="lineage-22.2-caf-sm8650" />
 	<project path="hardware/qcom-caf/sm8650/audio/agm" name="voltage-peridot/vendor_qcom_opensource_agm-sm8650" groups="qcom,lanai-audio" revision="16" remote="git-hub"/>
 	<project path="hardware/qcom-caf/sm8650/audio/pal" name="yaap/vendor_qcom_opensource_arpal-lx-sm8650" groups="qcom,lanai-audio" revision="sixteen" remote="git-hub"/>
 	<project path="hardware/qcom-caf/sm8650/audio/primary-hal" name="yaap/hardware_qcom_audio-ar-sm8650" groups="qcom,lanai-audio" revision="sixteen" remote="git-hub"/>
 
-	<project path="hardware/qcom-caf/sm8650/display" name="LineageOS/android_hardware_qcom_display" groups="qcom" revision="lineage-22.2-caf-sm8650" />
 	<!--
 	<project path="hardware/qcom-caf/sm8650/display" name="yaap/hardware_qcom-caf_sm8650_display" groups="qcom" revision="sixteen" remote="git-hub"/> 
 	<remove-project path="device/qcom/sepolicy_vndr/sm8650"/>
 	<project path="device/qcom/sepolicy_vndr/sm8650" name="LineageOS/android_device_qcom_sepolicy_vndr" groups="qcom,lanai-vendor" revision="lineage-23.0-caf-sm8650" remote="git-hub"/>
 	-->
 </manifest>
+
 
 
 
