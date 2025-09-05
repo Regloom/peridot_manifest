@@ -11,13 +11,18 @@
 	<!-- System: Storage manager-->
 	<remove-project path="packages/apps/StorageManager" />
 	<project path="packages/apps/StorageManager" name="GrapheneOS/platform_packages_apps_StorageManager" groups="pdk-fs" remote="git-hub" revision="15-qpr2"/>
-	
-	<!-- ViPER4AndroidFX fix -->
-	<project path="packages/apps/ViPER4AndroidFX" name="TogoFire/packages_apps_ViPER4AndroidFX" remote="git-hub" revision="v4a"/>
 
 	<!--Dialer with calls recording-->
 	<remove-project path="packages/apps/Dialer" />
 	<project path="packages/apps/Dialer" name="VoltageOS/packages_apps_Dialer" groups="pdk-fs" remote="git-hub" revision="15-qpr2" />
+
+	<!--Keyboard-->
+	<remove-project path="packages/inputmethods/LatinIME" />
+	<project path="packages/inputmethods/LatinIME" name="VoltageOS/packages_inputmethods_LatinIME" groups="pdk-fs" remote="git-hub" revision="15-qpr2" />
+
+	
+	<!-- ViPER4AndroidFX fix -->
+	<project path="packages/apps/ViPER4AndroidFX" name="TogoFire/packages_apps_ViPER4AndroidFX" remote="git-hub" revision="v4a"/>
 	
 	<!-- SHIMS -->
 	<remove-project path="hardware/lineage/compat"/>
@@ -101,6 +106,7 @@
 	<project path="device/qcom/sepolicy_vndr/sm8650" name="LineageOS/android_device_qcom_sepolicy_vndr" groups="qcom,lanai-vendor" revision="lineage-23.0-caf-sm8650" remote="git-hub"/>
 	-->
 </manifest>
+
 
 
 
