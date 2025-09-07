@@ -1,0 +1,26 @@
+From ce8307e5dcfa1ea30fe8a1c03fce5239b653efcb Mon Sep 17 00:00:00 2001
+From: rmp22 <195054967+rmp22@users.noreply.github.com>
+Date: Tue, 1 Apr 2025 09:46:38 +0800
+Subject: [PATCH] ManageStoragePreferenceController: Explicitly disable storage
+ management preference
+
+broken and shows empty space
+
+Change-Id: I2e9ab26c5a1c92a812f86253809664ae67a2973a
+---
+ .../deviceinfo/storage/ManageStoragePreferenceController.java   | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/com/android/settings/deviceinfo/storage/ManageStoragePreferenceController.java b/src/com/android/settings/deviceinfo/storage/ManageStoragePreferenceController.java
+index 442531bae26..669168739f5 100644
+--- a/src/com/android/settings/deviceinfo/storage/ManageStoragePreferenceController.java
++++ b/src/com/android/settings/deviceinfo/storage/ManageStoragePreferenceController.java
+@@ -53,7 +53,7 @@ public void setUserId(int userId) {
+ 
+     @Override
+     public int getAvailabilityStatus() {
+-        return mManageStorageDrawable == null ? CONDITIONALLY_UNAVAILABLE : AVAILABLE;
++        return UNSUPPORTED_ON_DEVICE;
+     }
+ 
+     @Override
