@@ -4,7 +4,8 @@
 patches=(
     "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0002-VoWiFI-Roaming.patch"
     "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0003-VRR-Disable.patch"
-    "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0004-free-up-space.patch"
+#    "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0004-free-up-space.patch"
+    "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0005-disable-storage.patch"
 )
 
 echo "Начинаем применение патчей..."
