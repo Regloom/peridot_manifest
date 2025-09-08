@@ -20,6 +20,19 @@ echo "============================"
 rm -rf /tmp/src/android/hardware/qcom-caf/{msm8996,msm8998,sdm845,sm8150,sm8250}/{display,media,audio}
 rm -rf /tmp/src/android/hardware/qcom-caf/sm8750
 
+# Cleanup pending patches: .git/rebase-*
+echo "Cleanup pending patches..."
+find . -name ".git" -type d | while read gitdir; do
+    if [ -d "$gitdir/rebase-apply" ] || [ -d "$gitdir/rebase-merge" ]; then
+        echo "Clean uncommited patch in: $(dirname $gitdir)"
+        cd $(dirname $gitdir)
+        git am --abort 2>/dev/null || true
+        rm -rf .git/rebase-apply .git/rebase-merge 2>/dev/null
+        git reset --hard HEAD
+        cd - >/dev/null
+    fi
+done
+
 # Sync the repositories
 /opt/crave/resync.sh
 echo "============================"
