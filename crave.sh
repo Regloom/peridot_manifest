@@ -4,6 +4,9 @@
 rm -rf .repo/local_manifests/
 rm -rf prebuilts/clang/host/linux-x86
 
+rm -rf /tmp/src/android/frameworks/base
+rm -rf frameworks/base
+
 # Repo Init
 repo init -u https://github.com/LineageOS/android.git -b lineage-22.2 --git-lfs
 echo "=================="
@@ -19,9 +22,6 @@ echo "============================"
 # Cleanup unused HAL display, media, audio
 rm -rf /tmp/src/android/hardware/qcom-caf/{msm8996,msm8998,sdm845,sm8150,sm8250}/{display,media,audio}
 rm -rf /tmp/src/android/hardware/qcom-caf/sm8750
-
-# Cleanup pending patches: .git/rebase-*
-rm -rf /tmp/src/android/frameworks/base
 
 # Sync the repositories
 /opt/crave/resync.sh
