@@ -1,0 +1,69 @@
+From 19a3c6b02a75dd10725b25a96868465f5ee6171c Mon Sep 17 00:00:00 2001
+From: xyyx <xyyx@mail.ru>
+Date: Thu, 19 Nov 2020 15:09:12 +0200
+Subject: [PATCH] Settings: Expose radio info (*#*#4636#*#*)
+
+idoybh edits: Move to about phone in settings
+
+Signed-off-by: Omkar Chandorkar <gotenksIN@aosip.dev>
+Change-Id: I7cf1ee8685749212ddeee9b4e7135af3185f78b8
+---
+ res/values-ru/custom.xml   |  7 +++++++
+ res/values/custom.xml      |  7 +++++++
+ res/xml/my_device_info.xml | 10 ++++++++++
+ 3 files changed, 24 insertions(+)
+ create mode 100644 res/values-ru/custom.xml
+ create mode 100644 res/values/custom.xml
+
+diff --git a/res/values-ru/custom.xml b/res/values-ru/custom.xml
+new file mode 100644
+index 00000000000..4a7f7cb58ed
+--- /dev/null
++++ b/res/values-ru/custom.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
++
++    <!-- Radio Info -->
++    <string name="radio_info_title">Информация о сети</string>
++
++</resources>
+\ No newline at end of file
+diff --git a/res/values/custom.xml b/res/values/custom.xml
+new file mode 100644
+index 00000000000..cd7bfdc0b74
+--- /dev/null
++++ b/res/values/custom.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
++
++    <!-- Radio Info -->
++    <string name="radio_info_title">Radio info</string>
++
++</resources>
+\ No newline at end of file
+diff --git a/res/xml/my_device_info.xml b/res/xml/my_device_info.xml
+index 500cff5fcb7..2b875748bac 100644
+--- a/res/xml/my_device_info.xml
++++ b/res/xml/my_device_info.xml
+@@ -93,6 +93,16 @@
+         android:selectable="false"
+         android:title="@string/my_device_info_device_details_category_title">
+ 
++        <Preference
++            android:key="radio_info_settings"
++            android:order="6"
++            android:title="@string/radio_info_title">
++            <intent android:action="android.intent.action.MAIN"
++                    android:targetPackage="com.android.phone"
++                    android:targetClass="com.android.phone.settings.RadioInfo" />
++         </Preference>
++
++
+         <!-- SIM status -->
+         <Preference
+             android:key="sim_status"
+-- 
+2.34.1
+
