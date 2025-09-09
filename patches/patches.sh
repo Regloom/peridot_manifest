@@ -7,6 +7,7 @@ patches=(
 #    "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0004-free-up-space.patch"
     "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0005-disable-storage.patch"
     "packages/apps/Trebuchet:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0001-Launcher3-Show-clear-all-button-in-recents-overview.patch"
+    "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0006-radio-info.patch"
 )
 
 echo "Начинаем применение патчей..."
