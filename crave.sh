@@ -4,9 +4,6 @@
 rm -rf .repo/local_manifests/
 rm -rf prebuilts/clang/host/linux-x86
 
-rm -rf /tmp/src/android/frameworks/base
-rm -rf frameworks/base
-
 # Repo Init
 repo init -u https://github.com/LineageOS/android.git -b lineage-22.2 --git-lfs
 echo "=================="
