@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
-	<remote name="git-hub" fetch="https://github.com/"/>
+	<remote name="git-hub" fetch="https://github.com/" />
 	<!-- Xiaomi-specific hardware -->
-	<project path="hardware/xiaomi" name="VoltageOS/hardware_xiaomi" remote="git-hub" revision="16"/>
+	<project path="hardware/xiaomi" name="VoltageOS/hardware_xiaomi" remote="git-hub" revision="16" />
 	
 	<!-- Device Tree -->
-	<project path="device/xiaomi/peridot" name="Regloom/device_xiaomi_peridot" remote="git-hub" revision="GuidixX"/>
-	<project path="vendor/xiaomi/peridot" name="Regloom/vendor_xiaomi_peridot" remote="git-hub" revision="guidixx"/>
+	<project path="device/xiaomi/peridot" name="Regloom/device_xiaomi_peridot" remote="git-hub" revision="GuidixX" />
+	<project path="vendor/xiaomi/peridot" name="Regloom/vendor_xiaomi_peridot" remote="git-hub" revision="guidixx" />
 
 	<!-- Kernel -->
 	<project path="kernel/xiaomi/sm8635" name="rifsxd/android_kernel_xiaomi_sm8635" remote="git-hub" revision="lineage-23.0-next"/>
@@ -20,7 +20,7 @@
 		 name="rd-stuffs/packages_apps_XiaomiParts"
 		 name="Xiaomi-Development/packages_apps_XiaomiParts"
 	--> 
-	<project path="packages/apps/XiaomiParts" name="angelomds42/packages_apps_XiaomiParts" remote="git-hub" revision="sixteen"/>
+	<project path="packages/apps/XiaomiParts" name="GuidixX/packages_apps_XiaomiParts" remote="git-hub" revision="16"/>
 	
 	<!--Dialer with calls recording-->
 	<remove-project path="packages/apps/Dialer" />
@@ -31,9 +31,10 @@
 	<project path="packages/inputmethods/LatinIME" name="VoltageOS/packages_inputmethods_LatinIME" groups="pdk-fs" remote="git-hub" revision="16" />
 
 	<!-- ViPER4AndroidFX fix -->
-	<project path="packages/apps/ViPER4AndroidFX" name="TogoFire/packages_apps_ViPER4AndroidFX" remote="git-hub" revision="v4a"/>
+	<project path="packages/apps/ViPER4AndroidFX" name="GuidixX/packages_apps_ViPER4AndroidFX" remote="git-hub" revision="v4a" />
 	
 </manifest>
+
 
 
 
