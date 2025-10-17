@@ -1,4 +1,4 @@
-From ce8307e5dcfa1ea30fe8a1c03fce5239b653efcb Mon Sep 17 00:00:00 2001
+From 4406efc8e21ba1c11c012f63bd464ddf68903f77 Mon Sep 17 00:00:00 2001
 From: rmp22 <195054967+rmp22@users.noreply.github.com>
 Date: Tue, 1 Apr 2025 09:46:38 +0800
 Subject: [PATCH] ManageStoragePreferenceController: Explicitly disable storage
@@ -15,7 +15,7 @@ diff --git a/src/com/android/settings/deviceinfo/storage/ManageStoragePreference
 index 442531bae26..669168739f5 100644
 --- a/src/com/android/settings/deviceinfo/storage/ManageStoragePreferenceController.java
 +++ b/src/com/android/settings/deviceinfo/storage/ManageStoragePreferenceController.java
-@@ -53,7 +53,7 @@ public void setUserId(int userId) {
+@@ -53,7 +53,7 @@ public class ManageStoragePreferenceController extends BasePreferenceController
  
      @Override
      public int getAvailabilityStatus() {
@@ -24,3 +24,6 @@ index 442531bae26..669168739f5 100644
      }
  
      @Override
+-- 
+2.34.1
+

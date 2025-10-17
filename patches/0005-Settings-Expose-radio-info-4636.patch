@@ -1,4 +1,4 @@
-From 19a3c6b02a75dd10725b25a96868465f5ee6171c Mon Sep 17 00:00:00 2001
+From f1f1e6de5a54ccccc5a5f15f289f5b8f364114f7 Mon Sep 17 00:00:00 2001
 From: xyyx <xyyx@mail.ru>
 Date: Thu, 19 Nov 2020 15:09:12 +0200
 Subject: [PATCH] Settings: Expose radio info (*#*#4636#*#*)
@@ -44,7 +44,7 @@ index 00000000000..cd7bfdc0b74
 +</resources>
 \ No newline at end of file
 diff --git a/res/xml/my_device_info.xml b/res/xml/my_device_info.xml
-index 500cff5fcb7..2b875748bac 100644
+index 500cff5fcb7..3b6dfef076a 100644
 --- a/res/xml/my_device_info.xml
 +++ b/res/xml/my_device_info.xml
 @@ -93,6 +93,16 @@
