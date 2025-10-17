@@ -11,7 +11,7 @@ echo "Repo init success"
 echo "=================="
 
 # Clone local_manifests repository
-curl -L --create-dirs https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/local_manifest.xml -o .repo/local_manifests/local_manifest.xml
+curl -L --create-dirs https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/peridot.xml -o .repo/local_manifests/local_manifest.xml
 echo "============================"
 echo "Local manifest clone success"
 echo "============================"
