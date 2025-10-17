@@ -2,12 +2,12 @@
 
 # Массив патчей в формате: "директория:URL"
 patches=(
-    "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0002-VoWiFI-Roaming.patch"
-    "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0003-VRR-Disable.patch"
-#    "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0004-free-up-space.patch"
-    "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0005-disable-storage.patch"
-    "packages/apps/Trebuchet:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0001-Launcher3-Show-clear-all-button-in-recents-overview.patch"
-    "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0006-radio-info.patch"
+    "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/22.2/patches/0002-VoWiFI-Roaming.patch"
+    "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/22.2/patches/0003-VRR-Disable.patch"
+#    "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/22.2/patches/0004-free-up-space.patch"
+    "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/22.2/patches/0005-disable-storage.patch"
+    "packages/apps/Trebuchet:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/22.2/patches/0001-Launcher3-Show-clear-all-button-in-recents-overview.patch"
+    "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/22.2/patches/0006-radio-info.patch"
 )
 
 echo "Начинаем применение патчей..."

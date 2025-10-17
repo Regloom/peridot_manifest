@@ -1,5 +1,5 @@
 #!/bin/bash
-# crave run --clean --no-patch -- "curl https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/crave.sh | bash"
+# crave run --clean --no-patch -- "curl https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/22.2/crave.sh | bash"
 
 rm -rf .repo/local_manifests/
 rm -rf prebuilts/clang/host/linux-x86
@@ -11,7 +11,7 @@ echo "Repo init success"
 echo "=================="
 
 # Clone local_manifests repository
-curl -L --create-dirs https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/peridot.xml -o .repo/local_manifests/local_manifest.xml
+curl -L --create-dirs https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/22.2/peridot.xml -o .repo/local_manifests/local_manifest.xml
 echo "============================"
 echo "Local manifest clone success"
 echo "============================"
@@ -31,11 +31,11 @@ rm -rf hardware/qcom-caf/sm8750
 
 echo "======= Patches ======"
 patches=(
-    "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0002-VoWiFI-Roaming.patch"
-    "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0003-VRR-Disable.patch"
-    "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0005-disable-storage.patch"
-    "packages/apps/Trebuchet:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0001-Launcher3-Show-clear-all-button-in-recents-overview.patch"
-    "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0006-radio-info.patch"
+    "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/22.2/patches/0002-VoWiFI-Roaming.patch"
+    "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/22.2/patches/0003-VRR-Disable.patch"
+    "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/22.2/patches/0005-disable-storage.patch"
+    "packages/apps/Trebuchet:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/22.2/patches/0001-Launcher3-Show-clear-all-button-in-recents-overview.patch"
+    "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/22.2/patches/0006-radio-info.patch"
 )
 
 for patch in "${patches[@]}"; do
