@@ -27,7 +27,7 @@ echo "============================"
 
 # rifsxd: KernelSU Next
 echo "======= KSU init ======"
-
+rm -rf kernel/xiaomi/sm8635
 git clone --recurse-submodules https://github.com/rifsxd/android_kernel_xiaomi_sm8635 -b lineage-23.0-next kernel/xiaomi/sm8635
 echo "======= Done ======"
 
