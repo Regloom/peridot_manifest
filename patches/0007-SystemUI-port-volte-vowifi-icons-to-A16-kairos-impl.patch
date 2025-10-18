@@ -1,0 +1,415 @@
+From dc29e1bed959500c847aaeb581bf8eef1021f50f Mon Sep 17 00:00:00 2001
+From: Dmitrii <bankersenator@gmail.com>
+Date: Tue, 24 Jun 2025 00:20:35 +0000
+Subject: [PATCH] SystemUI: port volte/vowifi icons to A16 kairos impl
+
+Signed-off-by: Dmitrii <bankersenator@gmail.com>
+Signed-off-by: Pranav Vashi <neobuddy89@gmail.com>
+---
+ .../MobileConnectionRepositoryKairos.kt       |  6 ++++
+ .../DemoMobileConnectionRepositoryKairos.kt   |  3 ++
+ ...CarrierMergedConnectionRepositoryKairos.kt |  3 ++
+ .../FullMobileConnectionRepositoryKairos.kt   |  3 ++
+ ...MobileConnectionRepositoryKairosAdapter.kt |  3 ++
+ .../MobileConnectionRepositoryKairosImpl.kt   |  6 ++++
+ .../MobileConnectionsRepositoryKairosImpl.kt  |  3 ++
+ .../domain/interactor/MobileIconInteractor.kt |  4 +--
+ .../interactor/MobileIconInteractorKairos.kt  | 33 ++++++++++++++++++-
+ .../MobileIconInteractorKairosAdapter.kt      |  8 +++++
+ .../interactor/MobileIconsInteractorKairos.kt | 20 ++++++++++-
+ .../MobileIconsInteractorKairosAdapter.kt     | 14 ++++++++
+ 12 files changed, 102 insertions(+), 4 deletions(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/MobileConnectionRepositoryKairos.kt b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/MobileConnectionRepositoryKairos.kt
+index 2e796263afa9a..ff4d847743715 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/MobileConnectionRepositoryKairos.kt
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/MobileConnectionRepositoryKairos.kt
+@@ -20,6 +20,7 @@ import android.telephony.CellSignalStrength
+ import android.telephony.TelephonyManager
+ import com.android.systemui.kairos.ExperimentalKairosApi
+ import com.android.systemui.kairos.State
++import com.android.systemui.statusbar.pipeline.ims.data.model.ImsStateModel
+ import com.android.systemui.log.table.TableLogBuffer
+ import com.android.systemui.statusbar.pipeline.mobile.data.model.DataConnectionState
+ import com.android.systemui.statusbar.pipeline.mobile.data.model.NetworkNameModel
+@@ -164,6 +165,11 @@ interface MobileConnectionRepositoryKairos {
+      */
+     val hasPrioritizedNetworkCapabilities: State<Boolean>
+ 
++    /**
++     * The current state of the IMS with its capabilities
++     */
++    val imsState: State<ImsStateModel>
++
+     /**
+      * True if this connection is in emergency callback mode.
+      *
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/demo/DemoMobileConnectionRepositoryKairos.kt b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/demo/DemoMobileConnectionRepositoryKairos.kt
+index a244feb1739a6..5aba2069d7583 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/demo/DemoMobileConnectionRepositoryKairos.kt
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/demo/DemoMobileConnectionRepositoryKairos.kt
+@@ -34,6 +34,7 @@ import com.android.systemui.kairos.util.Either.Second
+ import com.android.systemui.kairos.util.firstOrNull
+ import com.android.systemui.kairosBuilder
+ import com.android.systemui.log.table.TableLogBuffer
++import com.android.systemui.statusbar.pipeline.ims.data.model.ImsStateModel
+ import com.android.systemui.log.table.logDiffsForTable
+ import com.android.systemui.statusbar.pipeline.mobile.data.model.DataConnectionState
+ import com.android.systemui.statusbar.pipeline.mobile.data.model.NetworkNameModel
+@@ -259,6 +260,8 @@ class DemoMobileConnectionRepositoryKairos(
+ 
+     override val isInEcmMode: State<Boolean> = stateOf(false)
+ 
++    override val imsState: State<ImsStateModel> = stateOf(ImsStateModel())
++
+     private fun TransactionScope.resolvedNetworkTypeForIconGroup(
+         iconGroup: SignalIcon.MobileIconGroup?
+     ) = DefaultNetworkType(mobileMappingsReverseLookup.sample()[iconGroup] ?: "dis")
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/prod/CarrierMergedConnectionRepositoryKairos.kt b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/prod/CarrierMergedConnectionRepositoryKairos.kt
+index d61d11bcf6b79..ce3426f132ce3 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/prod/CarrierMergedConnectionRepositoryKairos.kt
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/prod/CarrierMergedConnectionRepositoryKairos.kt
+@@ -29,6 +29,7 @@ import com.android.systemui.kairos.map
+ import com.android.systemui.kairos.stateOf
+ import com.android.systemui.kairosBuilder
+ import com.android.systemui.log.table.TableLogBuffer
++import com.android.systemui.statusbar.pipeline.ims.data.model.ImsStateModel
+ import com.android.systemui.statusbar.pipeline.mobile.data.model.DataConnectionState
+ import com.android.systemui.statusbar.pipeline.mobile.data.model.NetworkNameModel
+ import com.android.systemui.statusbar.pipeline.mobile.data.model.ResolvedNetworkType
+@@ -174,6 +175,8 @@ class CarrierMergedConnectionRepositoryKairos(
+      */
+     override val hasPrioritizedNetworkCapabilities: State<Boolean> = stateOf(false)
+ 
++    override val imsState: State<ImsStateModel> = stateOf(ImsStateModel())
++
+     override val dataEnabled: State<Boolean>
+         get() = isWifiEnabled
+ 
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/prod/FullMobileConnectionRepositoryKairos.kt b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/prod/FullMobileConnectionRepositoryKairos.kt
+index f4afc248d11ab..d4e2538ea287f 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/prod/FullMobileConnectionRepositoryKairos.kt
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/prod/FullMobileConnectionRepositoryKairos.kt
+@@ -26,6 +26,7 @@ import com.android.systemui.kairos.combine
+ import com.android.systemui.kairos.flatMap
+ import com.android.systemui.kairosBuilder
+ import com.android.systemui.log.table.TableLogBuffer
++import com.android.systemui.statusbar.pipeline.ims.data.model.ImsStateModel
+ import com.android.systemui.log.table.logDiffsForTable
+ import com.android.systemui.statusbar.pipeline.mobile.data.model.DataConnectionState
+ import com.android.systemui.statusbar.pipeline.mobile.data.model.NetworkNameModel
+@@ -205,6 +206,8 @@ constructor(
+ 
+     override val isInEcmMode: State<Boolean> = activeRepo.flatMap { it.isInEcmMode }
+ 
++    override val imsState: State<ImsStateModel> = activeRepo.flatMap { it.imsState }
++
+     fun dump(pw: PrintWriter) {
+         val cache = dumpCache ?: return
+         val ipw = IndentingPrintWriter(pw, "  ")
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/prod/MobileConnectionRepositoryKairosAdapter.kt b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/prod/MobileConnectionRepositoryKairosAdapter.kt
+index 9b37f48968780..96bb56feda9ff 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/prod/MobileConnectionRepositoryKairosAdapter.kt
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/prod/MobileConnectionRepositoryKairosAdapter.kt
+@@ -19,6 +19,7 @@ package com.android.systemui.statusbar.pipeline.mobile.data.repository.prod
+ import com.android.systemui.kairos.BuildScope
+ import com.android.systemui.kairos.ExperimentalKairosApi
+ import com.android.systemui.log.table.TableLogBuffer
++import com.android.systemui.statusbar.pipeline.ims.data.model.ImsStateModel
+ import com.android.systemui.statusbar.pipeline.mobile.data.model.DataConnectionState
+ import com.android.systemui.statusbar.pipeline.mobile.data.model.NetworkNameModel
+ import com.android.systemui.statusbar.pipeline.mobile.data.model.ResolvedNetworkType
+@@ -59,6 +60,7 @@ fun BuildScope.MobileConnectionRepositoryKairosAdapter(
+         networkName = kairosRepo.networkName.toStateFlow(),
+         carrierName = kairosRepo.carrierName.toStateFlow(),
+         isAllowedDuringAirplaneMode = kairosRepo.isAllowedDuringAirplaneMode.toStateFlow(),
++	imsState = kairosRepo.imsState.toStateFlow(),
+         hasPrioritizedNetworkCapabilities =
+             kairosRepo.hasPrioritizedNetworkCapabilities.toStateFlow(),
+         isInEcmMode = { kairosNetwork.transact { kairosRepo.isInEcmMode.sample() } },
+@@ -90,6 +92,7 @@ class MobileConnectionRepositoryKairosAdapter(
+     override val networkName: StateFlow<NetworkNameModel>,
+     override val carrierName: StateFlow<NetworkNameModel>,
+     override val isAllowedDuringAirplaneMode: StateFlow<Boolean>,
++    override val imsState: StateFlow<ImsStateModel>,
+     override val hasPrioritizedNetworkCapabilities: StateFlow<Boolean>,
+     private val isInEcmMode: Producer<Boolean>,
+ ) : MobileConnectionRepository {
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/prod/MobileConnectionRepositoryKairosImpl.kt b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/prod/MobileConnectionRepositoryKairosImpl.kt
+index abe72e17163bf..8ee3d35fe1211 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/prod/MobileConnectionRepositoryKairosImpl.kt
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/prod/MobileConnectionRepositoryKairosImpl.kt
+@@ -43,6 +43,8 @@ import android.telephony.TelephonyManager.NETWORK_TYPE_UNKNOWN
+ import android.telephony.TelephonyManager.UNKNOWN_CARRIER_ID
+ import com.android.settingslib.Utils
+ import com.android.systemui.KairosBuilder
++import com.android.systemui.statusbar.pipeline.ims.data.model.ImsStateModel
++import com.android.systemui.statusbar.pipeline.ims.data.repository.ImsRepository
+ import com.android.systemui.broadcast.BroadcastDispatcher
+ import com.android.systemui.dagger.qualifiers.Background
+ import com.android.systemui.flags.FeatureFlagsClassic
+@@ -110,6 +112,7 @@ constructor(
+     @Background private val bgDispatcher: CoroutineDispatcher,
+     logger: MobileInputLogger,
+     @Assisted override val tableLogBuffer: TableLogBuffer,
++    @Assisted private val imsRepo: ImsRepository,
+     flags: FeatureFlagsClassic,
+ ) : MobileConnectionRepositoryKairos, KairosBuilder by kairosBuilder() {
+ 
+@@ -467,6 +470,8 @@ constructor(
+             .holdState(false)
+     }
+ 
++    override val imsState: State<ImsStateModel> = buildState { imsRepo.imsState.toState() }
++
+     @AssistedFactory
+     fun interface Factory {
+         fun create(
+@@ -477,6 +482,7 @@ constructor(
+             networkNameSeparator: String,
+             systemUiCarrierConfig: SystemUiCarrierConfig,
+             telephonyManager: TelephonyManager,
++            imsRepo: ImsRepository,
+         ): MobileConnectionRepositoryKairosImpl
+     }
+ }
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/prod/MobileConnectionsRepositoryKairosImpl.kt b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/prod/MobileConnectionsRepositoryKairosImpl.kt
+index e6c29214e3d66..88d43472bcb43 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/prod/MobileConnectionsRepositoryKairosImpl.kt
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/data/repository/prod/MobileConnectionsRepositoryKairosImpl.kt
+@@ -83,6 +83,7 @@ import com.android.systemui.statusbar.pipeline.mobile.data.model.SubscriptionMod
+ import com.android.systemui.statusbar.pipeline.mobile.data.repository.CarrierConfigRepository
+ import com.android.systemui.statusbar.pipeline.mobile.data.repository.MobileConnectionRepositoryKairos
+ import com.android.systemui.statusbar.pipeline.mobile.data.repository.MobileConnectionsRepositoryKairos
++import com.android.systemui.statusbar.pipeline.ims.data.repository.ImsRepositoryImpl
+ import com.android.systemui.statusbar.pipeline.mobile.util.MobileMappingsProxy
+ import com.android.systemui.statusbar.pipeline.mobile.util.SubscriptionManagerProxy
+ import com.android.systemui.statusbar.pipeline.shared.data.model.DefaultConnectionModel
+@@ -533,6 +534,7 @@ constructor(
+     private val telephonyManager: TelephonyManager,
+     private val mobileRepoFactory: MobileConnectionRepositoryKairosImpl.Factory,
+     private val mergedRepoFactory: CarrierMergedConnectionRepositoryKairos.Factory,
++    private val imsRepoFactory: ImsRepositoryImpl.Factory,
+ ) : MobileConnectionsRepositoryKairosImpl.ConnectionRepoFactory {
+ 
+     private val networkNameSeparator: String =
+@@ -556,6 +558,7 @@ constructor(
+                     networkNameSeparator,
+                     carrierConfigRepo.getOrCreateConfigForSubId(subId),
+                     telephonyManager.createForSubscriptionId(subId),
++		    imsRepoFactory.build(subId),
+                 )
+             }
+             FullMobileConnectionRepositoryKairos(
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconInteractor.kt b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconInteractor.kt
+index dfac77d45be8d..28629bfffb518 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconInteractor.kt
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconInteractor.kt
+@@ -138,13 +138,13 @@ interface MobileIconInteractor {
+     val carrierNetworkChangeActive: Flow<Boolean>
+ 
+     /** True when VoLTE/VONR available */
+-    val isMobileHd: StateFlow<Boolean>
++    val isMobileHd: Flow<Boolean>
+ 
+     /** See [MobileIconsInteractor.isMobileHdForceHidden]. */
+     val isMobileHdForceHidden: Flow<Boolean>
+ 
+     /** True when VoWifi available */
+-    val isVoWifi: StateFlow<Boolean>
++    val isVoWifi: Flow<Boolean>
+ 
+     /** See [MobileIconsInteractor.isVoWifiForceHidden]. */
+     val isVoWifiForceHidden: Flow<Boolean>
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconInteractorKairos.kt b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconInteractorKairos.kt
+index 0f17228f73951..8d44be0b88a98 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconInteractorKairos.kt
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconInteractorKairos.kt
+@@ -127,6 +127,18 @@ interface MobileIconInteractorKairos {
+     /** See [MobileIconsInteractor.isRoamingForceHidden]. */
+     val isRoamingForceHidden: State<Boolean>
+ 
++    /** True when VoLTE/VONR available */
++    val isMobileHd: State<Boolean>
++
++    /** See [MobileIconsInteractor.isMobileHdForceHidden]. */
++    val isMobileHdForceHidden: State<Boolean>
++
++    /** True when VoWifi available */
++    val isVoWifi: State<Boolean>
++
++    /** See [MobileIconsInteractor.isVoWifiForceHidden]. */
++    val isVoWifiForceHidden: State<Boolean>
++
+     /** See [MobileConnectionRepository.isAllowedDuringAirplaneMode]. */
+     val isAllowedDuringAirplaneMode: State<Boolean>
+ 
+@@ -147,6 +159,8 @@ class MobileIconInteractorKairosImpl(
+     isDefaultConnectionFailed: State<Boolean>,
+     override val isForceHidden: State<Boolean>,
+     override val isRoamingForceHidden: State<Boolean>,
++    override val isMobileHdForceHidden: State<Boolean>,
++    override val isVoWifiForceHidden: State<Boolean>,
+     private val connectionRepository: MobileConnectionRepositoryKairos,
+     private val context: Context,
+     private val carrierIdOverrides: MobileIconCarrierIdOverrides =
+@@ -262,6 +276,14 @@ class MobileIconInteractorKairosImpl(
+             }
+         }
+ 
++    private val showRoaming: State<Boolean> =
++        combine(
++            isRoaming,
++            isRoamingForceHidden
++        ) { roaming, roamingForceHidden ->
++            roaming && !roamingForceHidden
++        }
++
+     private val level: State<Int> =
+         combine(
+             connectionRepository.isGsm,
+@@ -332,12 +354,14 @@ class MobileIconInteractorKairosImpl(
+             numberOfLevels,
+             showExclamationMark,
+             carrierNetworkChangeActive,
+-        ) { cellularShownLevel, numberOfLevels, showExclamationMark, carrierNetworkChange ->
++            showRoaming,
++        ) { cellularShownLevel, numberOfLevels, showExclamationMark, carrierNetworkChange, showRoaming ->
+             SignalIconModel.Cellular(
+                 cellularShownLevel,
+                 numberOfLevels,
+                 showExclamationMark,
+                 carrierNetworkChange,
++                showRoaming,
+             )
+         }
+ 
+@@ -361,4 +385,11 @@ class MobileIconInteractorKairosImpl(
+                 }
+             }
+             .also { onActivated { logDiffsForTable(it, tableLogBuffer, columnPrefix = "icon") } }
++
++    override val isMobileHd: State<Boolean> =
++        connectionRepository.imsState.map { it.isHdVoiceCapable() }
++
++    override val isVoWifi: State<Boolean> =
++        connectionRepository.imsState.map { it.isVoWifiAvailable() }
++
+ }
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconInteractorKairosAdapter.kt b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconInteractorKairosAdapter.kt
+index ab4237d543b68..5ca8c0c4c3e20 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconInteractorKairosAdapter.kt
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconInteractorKairosAdapter.kt
+@@ -51,6 +51,10 @@ fun BuildScope.MobileIconInteractorKairosAdapter(
+             isRoaming = isRoaming.toStateFlow(),
+             isForceHidden = isForceHidden.toColdConflatedFlow(kairosNetwork),
+ 	    isRoamingForceHidden = isRoamingForceHidden.toColdConflatedFlow(kairosNetwork),
++            isMobileHd = isMobileHd.toStateFlow(),
++            isMobileHdForceHidden = isMobileHdForceHidden.toColdConflatedFlow(kairosNetwork),
++            isVoWifi = isVoWifi.toStateFlow(),
++            isVoWifiForceHidden = isVoWifiForceHidden.toColdConflatedFlow(kairosNetwork),
+             isAllowedDuringAirplaneMode = isAllowedDuringAirplaneMode.toStateFlow(),
+             carrierNetworkChangeActive = carrierNetworkChangeActive.toStateFlow(),
+         )
+@@ -75,6 +79,10 @@ private class MobileIconInteractorKairosAdapter(
+     override val isRoaming: StateFlow<Boolean>,
+     override val isForceHidden: Flow<Boolean>,
+     override val isRoamingForceHidden: Flow<Boolean>,
++    override val isMobileHd: StateFlow<Boolean>,
++    override val isMobileHdForceHidden: Flow<Boolean>,
++    override val isVoWifi: StateFlow<Boolean>,
++    override val isVoWifiForceHidden: Flow<Boolean>,
+     override val isAllowedDuringAirplaneMode: StateFlow<Boolean>,
+     override val carrierNetworkChangeActive: StateFlow<Boolean>,
+ ) : MobileIconInteractor
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconsInteractorKairos.kt b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconsInteractorKairos.kt
+index edc4bfe712989..065563ae99882 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconsInteractorKairos.kt
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconsInteractorKairos.kt
+@@ -48,6 +48,7 @@ import com.android.systemui.statusbar.core.NewStatusBarIcons
+ import com.android.systemui.statusbar.core.StatusBarRootModernization
+ import com.android.systemui.statusbar.pipeline.dagger.MobileSummaryLog
+ import com.android.systemui.statusbar.pipeline.mobile.data.model.SubscriptionModel
++import com.android.systemui.statusbar.pipeline.ims.data.repository.CommonImsRepository
+ import com.android.systemui.statusbar.pipeline.mobile.data.repository.MobileConnectionRepositoryKairos
+ import com.android.systemui.statusbar.pipeline.mobile.data.repository.MobileConnectionsRepositoryKairos
+ import com.android.systemui.statusbar.pipeline.mobile.domain.model.SignalIconModel
+@@ -126,6 +127,12 @@ interface MobileIconsInteractorKairos {
+     /** True if we're configured to force-hide the roaming icon and false otherwise. */
+     val isRoamingForceHidden: State<Boolean>
+ 
++    /** True if we're configured to force-hide the hd (VoLTE/VoNR) icon and false otherwise. */
++    val isMobileHdForceHidden: State<Boolean>
++
++    /** True if we're configured to force-hide the VoWifi icon and false otherwise. */
++    val isVoWifiForceHidden: State<Boolean>
++
+     /**
+      * True if the device-level service state (with -1 subscription id) reports emergency calls
+      * only. This value is only useful when there are no other subscriptions OR all existing
+@@ -145,6 +152,7 @@ constructor(
+     connectivityRepository: ConnectivityRepository,
+     userSetupRepo: UserSetupRepository,
+     private val context: Context,
++    commonImsRepo: CommonImsRepository,
+     private val featureFlagsClassic: FeatureFlagsClassic,
+ ) : MobileIconsInteractorKairos, KairosBuilder by kairosBuilder() {
+ 
+@@ -415,6 +423,14 @@ constructor(
+         }
+     }
+ 
++    override val isMobileHdForceHidden: State<Boolean> = buildState {
++        commonImsRepo.imsIconState.toState().map { !it.showHdIcon }
++    }
++
++    override val isVoWifiForceHidden: State<Boolean> = buildState {
++        commonImsRepo.imsIconState.toState().map { !it.showVowifiIcon }
++    }
++
+     override val isDeviceInEmergencyCallsOnlyMode: State<Boolean>
+         get() = mobileConnectionsRepo.isDeviceEmergencyCallCapable
+ 
+@@ -432,7 +448,9 @@ constructor(
+             defaultMobileIconGroup,
+             isDefaultConnectionFailed,
+             isForceHidden,
+-	    isRoamingForceHidden,
++            isRoamingForceHidden,
++            isMobileHdForceHidden,
++            isVoWifiForceHidden,
+             repo,
+             context,
+         )
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconsInteractorKairosAdapter.kt b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconsInteractorKairosAdapter.kt
+index 808015e3b04af..a775b0873bf64 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconsInteractorKairosAdapter.kt
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconsInteractorKairosAdapter.kt
+@@ -114,6 +114,16 @@ constructor(
+             .toColdConflatedFlow(kairosNetwork)
+             .stateIn(scope, SharingStarted.WhileSubscribed(), false)
+ 
++    override val isMobileHdForceHidden: Flow<Boolean> =
++        kairosInteractor.isMobileHdForceHidden
++            .toColdConflatedFlow(kairosNetwork)
++            .stateIn(scope, SharingStarted.WhileSubscribed(), true)
++
++    override val isVoWifiForceHidden: Flow<Boolean> =
++        kairosInteractor.isVoWifiForceHidden
++            .toColdConflatedFlow(kairosNetwork)
++            .stateIn(scope, SharingStarted.WhileSubscribed(), true)
++
+     override val activeMobileDataSubscriptionId: StateFlow<Int?>
+         get() = repo.activeMobileDataSubscriptionId
+ 
+@@ -197,6 +207,10 @@ constructor(
+             override val isRoaming: Flow<Boolean> = latest { isRoaming }
+             override val isForceHidden: Flow<Boolean> = latest { isForceHidden }
+             override val isRoamingForceHidden: Flow<Boolean> = latest { isRoamingForceHidden }
++            override val isMobileHd: Flow<Boolean> = latest { isMobileHd }
++            override val isMobileHdForceHidden: Flow<Boolean> = latest { isMobileHdForceHidden }
++            override val isVoWifi: Flow<Boolean> = latest { isVoWifi }
++            override val isVoWifiForceHidden: Flow<Boolean> = latest { isVoWifiForceHidden }
+             override val isAllowedDuringAirplaneMode: Flow<Boolean> = latest {
+                 isAllowedDuringAirplaneMode
+             }
