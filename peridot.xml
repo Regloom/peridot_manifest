@@ -9,7 +9,7 @@
 	<project path="vendor/xiaomi/peridot" name="Regloom/vendor_xiaomi_peridot" remote="git-hub" revision="guidixx" />
 
 	<!-- Kernel -->
-	<project path="kernel/xiaomi/sm8635" name="rifsxd/android_kernel_xiaomi_sm8635" remote="git-hub" revision="lineage-23.0-next"/>
+	<!-- <project path="kernel/xiaomi/sm8635" name="rifsxd/android_kernel_xiaomi_sm8635" remote="git-hub" revision="lineage-23.0-next"/> -->
 	<project path="kernel/xiaomi/sm8635-modules" name="GuidixX/kernel_xiaomi_sm8635-modules" remote="git-hub" revision="16"/>
 	<project path="kernel/xiaomi/sm8635-devicetrees" name="GuidixX/kernel_xiaomi_sm8635-devicetrees" remote="git-hub" revision="16"/>
 
