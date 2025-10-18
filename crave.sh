@@ -19,17 +19,18 @@ echo "============================"
 # Cleanup unused HAL display, media, audio
 # rm -rf /tmp/src/android/hardware/qcom-caf/{msm8996,msm8998,sdm845,sm8150,sm8250}/{display,media,audio}
 # rm -rf /tmp/src/android/hardware/qcom-caf/sm8750
-rm -rf /tmp/src/android/kernel/xiaomi/sm8635
 
 # Sync the repositories
 /opt/crave/resync.sh
 echo "============================"
 
-# rifsxd: KernelSU Next
-echo "======= KSU init ======"
-rm -rf kernel/xiaomi/sm8635
-git clone --recurse-submodules https://github.com/rifsxd/android_kernel_xiaomi_sm8635 -b lineage-23.0-next kernel/xiaomi/sm8635
-echo "======= Done ======"
+# KernelSU Next setup
+cd kernel/xiaomi/sm8635
+echo "======== Inside kernel/xiaomi/sm8635 ========"
+curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next/kernel/setup.sh" | bash -
+echo "======== Added KSU successfully ========"
+cd ../../..
+echo "======== Returned to root directory ========"
 
 # Cleanup unused HAL display, media, audio
 # rm -rf hardware/qcom-caf/{msm8996,msm8998,sdm845,sm8150,sm8250}/{display,media,audio}
