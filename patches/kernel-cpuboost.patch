@@ -1,0 +1,196 @@
+From 83303e0ef94de467e59877d399330735b715f9f8 Mon Sep 17 00:00:00 2001
+From: John Galt <johngaltfirstrun@gmail.com>
+Date: Tue, 23 Sep 2025 10:21:10 -0400
+Subject: [PATCH] cpufreq: Introduce a simple cpu (max) boost driver
+
+---
+ drivers/cpufreq/Kconfig     |   6 ++
+ drivers/cpufreq/Makefile    |   2 +
+ drivers/cpufreq/cpu_boost.c | 132 ++++++++++++++++++++++++++++++++++++
+ include/linux/cpu_boost.h   |  11 +++
+ 4 files changed, 151 insertions(+)
+ create mode 100644 drivers/cpufreq/cpu_boost.c
+ create mode 100644 include/linux/cpu_boost.h
+
+diff --git a/drivers/cpufreq/Kconfig b/drivers/cpufreq/Kconfig
+index f94426506fe2b..38518ba7ea399 100644
+--- a/drivers/cpufreq/Kconfig
++++ b/drivers/cpufreq/Kconfig
+@@ -260,6 +260,12 @@ config CPUFREQ_DUMMY
+ 
+ 	  If in doubt, say N
+ 
++config CPU_BOOST_MAX
++	bool "Max CPU frequency boost helper"
++	depends on CPU_FREQ && PM
++	help
++	  A simple driver for kernelspace max cpufreq boosting
++
+ if X86
+ source "drivers/cpufreq/Kconfig.x86"
+ endif
+diff --git a/drivers/cpufreq/Makefile b/drivers/cpufreq/Makefile
+index f75a876e3e629..1e444b1d6099c 100644
+--- a/drivers/cpufreq/Makefile
++++ b/drivers/cpufreq/Makefile
+@@ -121,3 +121,5 @@ obj-$(CONFIG_LOONGSON1_CPUFREQ)		+= loongson1-cpufreq.o
+ obj-$(CONFIG_SH_CPU_FREQ)		+= sh-cpufreq.o
+ obj-$(CONFIG_SPARC_US2E_CPUFREQ)	+= sparc-us2e-cpufreq.o
+ obj-$(CONFIG_SPARC_US3_CPUFREQ)		+= sparc-us3-cpufreq.o
++
++obj-$(CONFIG_CPU_BOOST_MAX)		+= cpu_boost.o
+diff --git a/drivers/cpufreq/cpu_boost.c b/drivers/cpufreq/cpu_boost.c
+new file mode 100644
+index 0000000000000..4b8bffd9a60ab
+--- /dev/null
++++ b/drivers/cpufreq/cpu_boost.c
+@@ -0,0 +1,132 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/init.h>
++#include <linux/export.h>
++#include <linux/kernel.h>
++#include <linux/cpu.h>
++#include <linux/cpufreq.h>
++#include <linux/pm_qos.h>
++#include <linux/workqueue.h>
++#include <linux/threads.h>
++#include <linux/bitops.h>
++#include <linux/bitmap.h>
++#include <linux/jiffies.h>
++#include <linux/atomic.h>
++#include <linux/cpu_boost.h>
++
++static struct freq_qos_request boost_min_req[NR_CPUS];
++static DECLARE_BITMAP(boost_req_active, NR_CPUS);
++
++static atomic_long_t boost_expires = ATOMIC_LONG_INIT(0);
++
++static struct delayed_work boost_disable_work;
++
++static struct notifier_block boost_policy_nb;
++
++static inline bool boost_window_expired(unsigned long now, unsigned long exp)
++{
++	return time_after(now, exp);
++}
++
++static void cpu_boost_worker(struct work_struct *work)
++{
++	unsigned long now = jiffies;
++	unsigned long exp = atomic_long_read(&boost_expires);
++	unsigned long delay;
++	int cpu, leader;
++	struct cpufreq_policy *policy;
++
++	if (!boost_window_expired(now, exp)) {
++		delay = time_after(exp, now) ? exp - now : 0;
++		mod_delayed_work(system_unbound_wq, &boost_disable_work, delay);
++		return;
++	}
++
++	for_each_online_cpu(cpu) {
++		policy = cpufreq_cpu_get(cpu);
++
++		if (!policy)
++			continue;
++
++		leader = policy->cpu;
++		if (cpu == leader) {
++			if (test_and_clear_bit(leader, boost_req_active))
++				freq_qos_remove_request(&boost_min_req[leader]);
++		}
++
++		cpufreq_cpu_put(policy);
++	}
++}
++
++/* Boost all cpus to max for specified duration (ms) */
++void cpu_boost_all(unsigned int duration_ms)
++{
++	unsigned long now = jiffies;
++	unsigned long new_exp = now + msecs_to_jiffies(duration_ms);
++	unsigned long old = atomic_long_read(&boost_expires);
++	int cpu, leader, ret;
++	struct cpufreq_policy *policy;
++	s32 max_khz;
++
++	for (;;) {
++		if (time_after(old, new_exp))
++			break;
++
++		if (atomic_long_try_cmpxchg(&boost_expires, &old, new_exp))
++			break;
++	}
++
++	{
++		unsigned long exp = atomic_long_read(&boost_expires);
++		unsigned long delay = time_after(exp, now) ? exp - now : 0;
++		mod_delayed_work(system_unbound_wq, &boost_disable_work, delay);
++	}
++
++	for_each_online_cpu(cpu) {
++		policy = cpufreq_cpu_get(cpu);
++
++		if (!policy)
++			continue;
++
++		leader = policy->cpu;
++		if (cpu == leader) {
++			max_khz = (s32)policy->cpuinfo.max_freq;
++			if (!test_and_set_bit(leader, boost_req_active)) {
++				ret = freq_qos_add_request(&policy->constraints,
++							   &boost_min_req[leader],
++							   FREQ_QOS_MIN, max_khz);
++				if (ret < 0)
++					clear_bit(leader, boost_req_active);
++			} else {
++				ret = freq_qos_update_request(&boost_min_req[leader],
++							      max_khz);
++				(void)ret;
++			}
++		}
++		cpufreq_cpu_put(policy);
++	}
++}
++
++static int boost_policy_notifier(struct notifier_block *nb,
++				 unsigned long val, void *data)
++{
++	struct cpufreq_policy *policy = data;
++	int leader = policy ? policy->cpu : -1;
++
++	if (val == CPUFREQ_REMOVE_POLICY) {
++		if (leader >= 0 && test_and_clear_bit(leader, boost_req_active))
++			freq_qos_remove_request(&boost_min_req[leader]);
++	}
++	return 0;
++}
++
++static int __init cpu_boost_init(void)
++{
++	INIT_DELAYED_WORK(&boost_disable_work, cpu_boost_worker);
++	boost_policy_nb.notifier_call = boost_policy_notifier;
++	cpufreq_register_notifier(&boost_policy_nb, CPUFREQ_POLICY_NOTIFIER);
++	pr_info("cpu_boost driver initialized\n");
++	return 0;
++}
++
++late_initcall(cpu_boost_init);
++EXPORT_SYMBOL_GPL(cpu_boost_all);
+diff --git a/include/linux/cpu_boost.h b/include/linux/cpu_boost.h
+new file mode 100644
+index 0000000000000..9a1652b8f7eb6
+--- /dev/null
++++ b/include/linux/cpu_boost.h
+@@ -0,0 +1,11 @@
++#ifndef _CPU_BOOST_H
++#define _CPU_BOOST_H
++
++#if IS_ENABLED(CONFIG_CPU_BOOST_MAX)
++void cpu_boost_all(unsigned int duration_ms);
++#else
++static inline void cpu_boost_all(unsigned int duration_ms)
++{
++}
++#endif /* CONFIG_CPU_BOOST_MAX */
++#endif /* _CPU_BOOST_H */
