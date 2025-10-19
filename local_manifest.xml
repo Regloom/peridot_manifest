@@ -9,9 +9,9 @@
 	<project path="vendor/xiaomi/peridot" name="Regloom/vendor_xiaomi_peridot" remote="git-hub" revision="guidixx" />
 
 	<!-- Kernel -->
-	<project path="kernel/xiaomi/sm8635" name="rifsxd/android_kernel_xiaomi_sm8635" remote="git-hub" revision="lineage-23.0-next"/>
-	<project path="kernel/xiaomi/sm8635-modules" name="GuidixX/kernel_xiaomi_sm8635-modules" remote="git-hub" revision="16"/>
-	<project path="kernel/xiaomi/sm8635-devicetrees" name="GuidixX/kernel_xiaomi_sm8635-devicetrees" remote="git-hub" revision="16"/>
+	<project path="kernel/xiaomi/sm8635" name="GuidixX/kernel_xiaomi_sm8635" remote="git-hub" revision="16" />
+	<project path="kernel/xiaomi/sm8635-modules" name="GuidixX/kernel_xiaomi_sm8635-modules" remote="git-hub" revision="16" />
+	<project path="kernel/xiaomi/sm8635-devicetrees" name="GuidixX/kernel_xiaomi_sm8635-devicetrees" remote="git-hub" revision="16" />
 	
 	<!-- Prebuilt Kernel -->
 	<!-- <project path="device/xiaomi/peridot-kernel" name="Regloom/device_xiaomi_peridot-kernel" remote="git-hub" revision="main"/> -->
@@ -20,7 +20,7 @@
 		 name="rd-stuffs/packages_apps_XiaomiParts"
 		 name="Xiaomi-Development/packages_apps_XiaomiParts"
 	--> 
-	<project path="packages/apps/XiaomiParts" name="GuidixX/packages_apps_XiaomiParts" remote="git-hub" revision="16"/>
+	<project path="packages/apps/XiaomiParts" name="Regloom/packages_apps_XiaomiParts" remote="git-hub" revision="16"/>
 	
 	<!--Dialer with calls recording-->
 	<remove-project path="packages/apps/Dialer" />
@@ -34,6 +34,7 @@
 	<project path="packages/apps/ViPER4AndroidFX" name="GuidixX/packages_apps_ViPER4AndroidFX" remote="git-hub" revision="v4a" />
 	
 </manifest>
+
 
 
 
