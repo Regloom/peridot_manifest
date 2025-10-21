@@ -2,7 +2,7 @@
 <manifest>
 	<remote name="git-hub" fetch="https://github.com/" />
 	<!-- Xiaomi-specific hardware -->
-	<project path="hardware/xiaomi" name="VoltageOS/hardware_xiaomi" remote="git-hub" revision="16" />
+	<project path="hardware/xiaomi" name="GuidixX/hardware_xiaomi_vos" remote="git-hub" revision="16" />
 	
 	<!-- Device Tree -->
 	<project path="device/xiaomi/peridot" name="Regloom/device_xiaomi_peridot" remote="git-hub" revision="GuidixX" />
@@ -34,6 +34,7 @@
 	<project path="packages/apps/ViPER4AndroidFX" name="Regloom/packages_apps_ViPER4AndroidFX" remote="git-hub" revision="v4a" />
 	
 </manifest>
+
 
 
 
