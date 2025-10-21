@@ -16,7 +16,7 @@ Instead of modifying the main manifest directly, we place additional project ent
 
 ```bash
 # git clone https://github.com/Regloom/peridot_manifest.git -b hals .repo/local_manifests
-curl -L --create-dirs https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/local_manifest.xml -o .repo/local_manifests/local_manifest.xml
+curl -L --create-dirs https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23ag/local_manifest.xml -o .repo/local_manifests/local_manifest.xml
 
 repo sync -j$(nproc --all)
 ```
@@ -24,5 +24,5 @@ repo sync -j$(nproc --all)
 ### Crave.io
 
 ```bash
-crave run --clean --no-patch -- "curl https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/crave.sh | bash"
+crave run --no-patch -- "curl https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23ag/crave.sh | bash"
 ```
