@@ -1,26 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
 	<remote name="git-hub" fetch="https://github.com/" />
-	<!-- Xiaomi-specific hardware -->
-	<project path="hardware/xiaomi" name="GuidixX/hardware_xiaomi_vos" remote="git-hub" revision="16" />
-	
+    <!-- Xiaomi-specific hardware -->
+    <project path="hardware/xiaomi" name="peridot-dev/android_hardware_xiaomi" remote="git-hub" revision="lineage-23.0" />
+
 	<!-- Device Tree -->
-	<project path="device/xiaomi/peridot" name="Regloom/device_xiaomi_peridot" remote="git-hub" revision="GuidixX" />
-	<project path="vendor/xiaomi/peridot" name="GuidixX/vendor_xiaomi_peridot" remote="git-hub" revision="16" />
+	<project path="device/xiaomi/peridot" name="peridot-dev/android_device_xiaomi_peridot" remote="git-hub" revision="lineage-23.0" />
+	<project path="vendor/xiaomi/peridot" name="peridot-dev/proprietary_vendor_xiaomi_peridot" remote="git-hub" revision="lineage-23.0" />
 
 	<!-- Kernel -->
-	<project path="kernel/xiaomi/sm8635" name="GuidixX/kernel_xiaomi_sm8635" remote="git-hub" revision="16" />
-	<project path="kernel/xiaomi/sm8635-modules" name="GuidixX/kernel_xiaomi_sm8635-modules" remote="git-hub" revision="16" />
-	<project path="kernel/xiaomi/sm8635-devicetrees" name="GuidixX/kernel_xiaomi_sm8635-devicetrees" remote="git-hub" revision="16" />
-	
-	<!-- Prebuilt Kernel -->
-	<!-- <project path="device/xiaomi/peridot-kernel" name="Regloom/device_xiaomi_peridot-kernel" remote="git-hub" revision="main"/> -->
-	
-	<!-- 
-		 name="rd-stuffs/packages_apps_XiaomiParts"
-		 name="Xiaomi-Development/packages_apps_XiaomiParts"
-	--> 
-	<project path="packages/apps/XiaomiParts" name="Regloom/packages_apps_XiaomiParts" remote="git-hub" revision="16"/>
+	<project path="kernel/xiaomi/sm8635" name="peridot-dev/android_kernel_xiaomi_sm8635" remote="git-hub" revision="lineage-23.0"/>
+	<project path="kernel/xiaomi/sm8635-modules" name="peridot-dev/android_kernel_xiaomi_sm8635-modules" remote="git-hub" revision="lineage-23.0"/>
+	<project path="kernel/xiaomi/sm8635-devicetrees" name="peridot-dev/android_kernel_xiaomi_sm8635-devicetrees" remote="git-hub" revision="lineage-23.0"/>
+
+	<!-- XiaomiDolby -->
+	<project path="packages/apps/XiaomiDolby" name="android_packages_apps_XiaomiDolby" remote="git-hub" revision="lineage-23.0"/>
 	
 	<!--Dialer with calls recording-->
 	<remove-project path="packages/apps/Dialer" />
@@ -29,9 +23,6 @@
 	<!--Keyboard-->
 	<remove-project path="packages/inputmethods/LatinIME" />
 	<project path="packages/inputmethods/LatinIME" name="VoltageOS/packages_inputmethods_LatinIME" groups="pdk-fs" remote="git-hub" revision="16" />
-
-	<!-- ViPER4AndroidFX fix -->
-	<project path="packages/apps/ViPER4AndroidFX" name="Regloom/packages_apps_ViPER4AndroidFX" remote="git-hub" revision="v4a" />
 	
 </manifest>
 
