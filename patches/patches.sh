@@ -9,6 +9,7 @@ patches=(
     "packages/apps/Launcher3:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0004-Launcher3-Show-clear-all-button-in-recents-overview.patch"
     "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0005-Settings-Expose-radio-info-4636.patch"
     "kernel/xiaomi/sm8635-modules:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/kernelmodules-qcom-Drop-MIN-macros.patch"
+    "kernel/xiaomi/sm8635:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/kernel-bringback-msm-perf"
 #    "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0006-ManageStoragePreferenceController-Explicitly-disable.patch"
 #    RIFSXD KERNEL
 #    "kernel/xiaomi/sm8635:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/kernel-videodev2.patch"
