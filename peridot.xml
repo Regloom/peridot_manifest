@@ -14,7 +14,7 @@
 	<project path="kernel/xiaomi/sm8635-devicetrees" name="peridot-dev/android_kernel_xiaomi_sm8635-devicetrees" remote="git-hub" revision="lineage-23.0"/>
 
 	<!-- XiaomiDolby -->
-	<project path="packages/apps/XiaomiDolby" name="android_packages_apps_XiaomiDolby" remote="git-hub" revision="lineage-23.0"/>
+	<project path="packages/apps/XiaomiDolby" name="peridot-dev/android_packages_apps_XiaomiDolby" remote="git-hub" revision="lineage-23.0"/>
 	
 	<!--Dialer with calls recording-->
 	<remove-project name="LineageOS/android_packages_apps_Dialer" />
