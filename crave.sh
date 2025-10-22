@@ -11,12 +11,13 @@ echo "Repo init success"
 echo "=================="
 
 # Clone local_manifests repository
-curl -L --create-dirs https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/peridot.xml -o .repo/local_manifests/local_manifest.xml
+curl -L --create-dirs https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23ag/peridot.xml -o .repo/local_manifests/local_manifest.xml
 echo "============================"
 echo "Local manifest clone success"
 echo "============================"
 
 # Cleanup unused HAL display, media, audio
+# rm -rf /tmp/src/android/kernel/xiaomi/sm8635*
 # rm -rf /tmp/src/android/hardware/qcom-caf/{msm8996,msm8998,sdm845,sm8150,sm8250}/{display,media,audio}
 # rm -rf /tmp/src/android/hardware/qcom-caf/sm8750
 
