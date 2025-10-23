@@ -28,8 +28,10 @@ echo "============================"
 # KernelSU Next setup
 cd kernel/xiaomi/sm8635
 echo "======== Inside kernel/xiaomi/sm8635 ========"
-curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next/kernel/setup.sh" | bash -
-echo "======== Added KSU successfully ========"
+# curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next/kernel/setup.sh" | bash -
+# echo "======== Added KSU successfully ========"
+git submodule update --init
+echo "======== Initialized submodules ========"
 cd ../../..
 echo "======== Returned to root directory ========"
 
@@ -48,7 +50,8 @@ patches=(
     "kernel/xiaomi/sm8635-modules:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23ag/patches/kernelmodules-qcom-Drop-MIN-macros.patch"
 #    "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/hals/patches/0006-ManageStoragePreferenceController-Explicitly-disable.patch"
 #    RIFSXD KERNEL
-    "kernel/xiaomi/sm8635:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23ag/patches/wip/kernel-videodev2.patch"
+#    "kernel/xiaomi/sm8635:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23ag/patches/wip/kernel-videodev2.patch"
+#    GUIDIX KERNEL
 #    "kernel/xiaomi/sm8635:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/kernel-cpuboost.patch"
 #    "kernel/xiaomi/sm8635:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/kernel-drvboost.patch"
 
