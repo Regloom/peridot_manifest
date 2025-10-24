@@ -32,6 +32,8 @@ echo "======== Inside kernel/xiaomi/sm8635 ========"
 # echo "======== Added KSU successfully ========"
 git submodule update --init
 echo "======== Initialized submodules ========"
+# Modify SELinux path in Baseband-guard/sepatch.txt 
+sed -i 's|SELINUX_PATH := \$(shell dirname \$(abspath \$(lastword \$(MAKEFILE_LIST))))|SELINUX_PATH := /tmp/src/android/kernel/xiaomi/sm8635/security/selinux|' Baseband-guard/sepatch.txt
 cd ../../..
 echo "======== Returned to root directory ========"
 
