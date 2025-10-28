@@ -9,7 +9,7 @@
 	<project path="vendor/xiaomi/peridot" name="peridot-dev/proprietary_vendor_xiaomi_peridot" remote="git-hub" revision="lineage-23.0" />
 
 	<!-- Kernel -->
-	<project path="kernel/xiaomi/sm8635" name="peridot-dev/android_kernel_xiaomi_sm8635" remote="git-hub" revision="lineage-23.0-next"/>
+	<project path="kernel/xiaomi/sm8635" name="peridot-dev/android_kernel_xiaomi_sm8635" remote="git-hub" revision="lineage-23.0"/>
 	<project path="kernel/xiaomi/sm8635-modules" name="peridot-dev/android_kernel_xiaomi_sm8635-modules" remote="git-hub" revision="lineage-23.0"/>
 	<project path="kernel/xiaomi/sm8635-devicetrees" name="peridot-dev/android_kernel_xiaomi_sm8635-devicetrees" remote="git-hub" revision="lineage-23.0"/>
 
@@ -25,6 +25,7 @@
 	<project path="packages/inputmethods/LatinIME" name="VoltageOS/packages_inputmethods_LatinIME" groups="pdk-fs" remote="git-hub" revision="16" />
 	
 </manifest>
+
 
 
 
