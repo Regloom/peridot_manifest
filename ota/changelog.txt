@@ -1,0 +1,13 @@
+LineageOS 23
+Build Date: 21/10/2025
+- Initial a16 release build
+- Based on @Guidix device tree
+- Chidori 6.1.155 kernel:
+-- add MSM_performance module
+-- KernelSu-Next v1.1.1
+-- no SUSFS 
+- Extra patches:
+-- VoltageOS dialer & keyboard
+-- VoFiWi/VoLTE(HD)/Roaming status bar icons
+-- Quick access to radio settings
+-- VoWiFi (WiFi-calling) RU settings
