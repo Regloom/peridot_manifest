@@ -2,11 +2,11 @@
 <manifest>
     <remote name="git-hub" fetch="https://github.com/" />
     <!-- Xiaomi-specific hardware -->
-    <project path="hardware/xiaomi" name="GuidixX/hardware_xiaomi_vos" remote="git-hub" revision="16" />
+    <project path="hardware/xiaomi" name="GuidixX/hardware_xiaomi_vos" remote="git-hub" revision="16"/>
 
 	<!-- Device Tree -->
-	<project path="device/xiaomi/peridot" name="Regloom/device_xiaomi_peridot" remote="git-hub" revision="GuidixX" />
-	<project path="vendor/xiaomi/peridot" name="GuidixX/vendor_xiaomi_peridot" remote="git-hub" revision="16" />
+	<project path="device/xiaomi/peridot" name="Regloom/device_xiaomi_peridot" remote="git-hub" revision="GuidixX"/>
+	<project path="vendor/xiaomi/peridot" name="GuidixX/vendor_xiaomi_peridot" remote="git-hub" revision="16"/>
 
 	<!-- Kernel -->
 	<project path="kernel/xiaomi/sm8635" name="GuidixX/kernel_xiaomi_sm8635" remote="git-hub" revision="16"/>
@@ -14,17 +14,17 @@
 	<project path="kernel/xiaomi/sm8635-devicetrees" name="GuidixX/kernel_xiaomi_sm8635-devicetrees" remote="git-hub" revision="16"/>
 
 	<!-- XiaomiParts -->
-	<project path="packages/apps/XiaomiParts" name="Regloom/packages_apps_XiaomiParts" remote="git-hub" revision="16"/>
+	<project path="packages/apps/XiaomiParts" name="GuidixX/packages_apps_XiaomiParts" remote="git-hub" revision="16"/>
 	
 	<!--Dialer with calls recording-->
 	<remove-project name="LineageOS/android_packages_apps_Dialer" />
-	<project path="packages/apps/Dialer" name="VoltageOS/packages_apps_Dialer" groups="pdk-fs" remote="git-hub" revision="16" />
+	<project path="packages/apps/Dialer" name="VoltageOS/packages_apps_Dialer" groups="pdk-fs" remote="git-hub" revision="16"/>
 
 	<!--Keyboard-->
 	<remove-project name="LineageOS/android_packages_inputmethods_LatinIME" />
-	<project path="packages/inputmethods/LatinIME" name="VoltageOS/packages_inputmethods_LatinIME" groups="pdk-fs" remote="git-hub" revision="16" />
+	<project path="packages/inputmethods/LatinIME" name="VoltageOS/packages_inputmethods_LatinIME" groups="pdk-fs" remote="git-hub" revision="16"/>
 
 	<!-- ViPER4AndroidFX fix -->
-	<project path="packages/apps/ViPER4AndroidFX" name="Regloom/packages_apps_ViPER4AndroidFX" remote="git-hub" revision="v4a"/>
+	<project path="packages/apps/ViPER4AndroidFX" name="GuidixX/packages_apps_ViPER4AndroidFX" remote="git-hub" revision="v4a"/>
 	
 </manifest>
