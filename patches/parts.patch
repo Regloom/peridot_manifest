@@ -1,0 +1,23 @@
+From e83b510463e847f37ea2d6c2437ccf7748bcac74 Mon Sep 17 00:00:00 2001
+From: EgorT <egor.tokarev@outlook.com>
+Date: Fri, 31 Oct 2025 05:15:28 +0100
+Subject: [PATCH] Add ACTION_KPROFILE_SETTING_CHANGED constant
+
+Added a new constant for KProfile setting change action.
+---
+ Kprofiles/src/com/android/kprofiles/Constants.java | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Kprofiles/src/com/android/kprofiles/Constants.java b/Kprofiles/src/com/android/kprofiles/Constants.java
+index c448840..31b1f79 100644
+--- a/Kprofiles/src/com/android/kprofiles/Constants.java
++++ b/Kprofiles/src/com/android/kprofiles/Constants.java
+@@ -3,6 +3,8 @@
+ import java.util.UUID;
+ 
+ public class Constants {
++    /* Intent Actions and Extras */
++    public static final String ACTION_KPROFILE_SETTING_CHANGED = "devicesettings.intent.action.kprofile_setting_changed";
+ 
+     /* KProfiles */
+     public static final String KEY_KPROFILES_AUTO = "pref_kprofiles_auto";
