@@ -36,7 +36,8 @@
 	<project path="packages/apps/ViPER4AndroidFX" name="GuidixX/packages_apps_ViPER4AndroidFX" remote="git-hub" revision="v4a"/>
 
 	<!-- OpenEUICC -->
-	<project path="packages/apps/OpenEUICC" name="PeterCxy/OpenEUICC" remote="angryim" revision="master" sync-s="true" />	
+	<project path="packages/apps/OpenEUICC" name="PeterCxy/OpenEUICC" remote="angryim" revision="master" sync-s="true"/>
+		<project path="prebuilts/openeuicc-deps" name="PeterCxy/android_prebuilts_openeuicc-deps" remote="angryim" revision="master"/>
 </manifest>
 
 
