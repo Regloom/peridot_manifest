@@ -1,4 +1,10 @@
 LineageOS 23
+Build Date: 01/11/2025
+- Introduce OTA & Changelogs
+- Chidori 6.1.155 kernel:
+-- drop MSM_performance module
+
+LineageOS 23
 Build Date: 21/10/2025
 - Initial a16 release build
 - Based on @Guidix device tree
