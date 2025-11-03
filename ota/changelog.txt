@@ -1,6 +1,7 @@
 LineageOS 23
-Build Date: 01/11/2025
+Build Date: 03/11/2025
 - Introduce OTA & Changelogs
+- Add OpenEUICC: eSIM Profile Assistant
 - Chidori 6.1.155 kernel:
 -- drop MSM_performance module
 
