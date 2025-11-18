@@ -1,6 +1,12 @@
 #!/bin/bash
+#curl -LSs "https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/patches.sh" | bash -
 
-# Массив патчей в формате: "директория:URL"
+echo "KernelSU Next setup"
+cd kernel/xiaomi/sm8635
+curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next/kernel/setup.sh" | bash -
+cd ../../..
+
+# Patches array: "directory:URL"
 patches=(
     "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0001-SystemUI-Update-buildNumber-flow-to-return-null.patch"
     "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0002-SystemUI-Add-roaming-indicator-to-statusbar-tuner.patch"
@@ -8,35 +14,21 @@ patches=(
     "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0007-SystemUI-port-volte-vowifi-icons-to-A16-kairos-impl.patch"
     "packages/apps/Launcher3:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0004-Launcher3-Show-clear-all-button-in-recents-overview.patch"
     "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0005-Settings-Expose-radio-info-4636.patch"
-    "kernel/xiaomi/sm8635-modules:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/kernelmodules-qcom-Drop-MIN-macros.patch"
-#    "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0006-ManageStoragePreferenceController-Explicitly-disable.patch"
-#    KERNEL
-#    "kernel/xiaomi/sm8635:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/wip/kernel-bringback-msm-perf.patch"
-#    "kernel/xiaomi/sm8635:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/wip/kernel-videodev2.patch"
-#    "kernel/xiaomi/sm8635:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/wip/kernel-cpuboost.patch"
-#    "kernel/xiaomi/sm8635:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/wip/kernel-drvboost.patch"
 )
 
-echo "Начинаем применение патчей..."
+echo "Begin patching..."
 
 for patch in "${patches[@]}"; do
-    # Разделяем директорию и URL
     IFS=":" read -r directory url <<< "$patch"
-    cd "$directory" || { echo "Ошибка: не могу перейти в $directory"; exit 1; }
-
-    # curl -fLSs https://github.com/${patch_url}.patch | git am cd -
-
+    cd "$directory" || { echo "Error: can't enter $directory"; exit 1; }
     if curl -L "$url" | git am --ignore-whitespace; then
-        echo "✓ Патч успешно применен в $directory"
+        echo "✓ Patch OK in $directory"
     else
-        echo "✗ Ошибка применения патча в $directory"
-        echo "Если есть конфликты, разрешите их и выполните: git am --continue"
-        echo "Или отмените применение: git am --abort"
+        echo "✗ Patch NOK in $directory"
         exit 1
     fi
-    # Возвращаемся назад
     cd - > /dev/null
     echo "----------------------------------------"
 done
 
-echo "Все патчи успешно применены!"
+echo "Patches applied OK!"
