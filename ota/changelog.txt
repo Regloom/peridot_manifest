@@ -2,7 +2,6 @@ LineageOS 23
 Build Date: 19/11/2025
 - Update Vendor Blobs From OS2.0.206.0.VNPMIXM
 - Label some wakeup nodes and more selinux denials
-- Add support for torch light control
 - Add some missing media properties
 Kernel (Chidori 1.2)
 - boeffla_wl_blocker: Block hal_bluetooth_lock wakelock
