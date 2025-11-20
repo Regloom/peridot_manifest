@@ -1,5 +1,5 @@
 LineageOS 23
-Build Date: 19/11/2025
+Build Date: 20/11/2025
 - Update Vendor Blobs From OS2.0.206.0.VNPMIXM
 - Label some wakeup nodes and more selinux denials
 - Add some missing media properties
