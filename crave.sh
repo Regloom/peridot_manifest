@@ -5,7 +5,7 @@ rm -rf .repo/local_manifests/
 rm -rf prebuilts/clang/host/linux-x86
 
 # Repo Init
-repo init -u https://github.com/LineageOS/android.git -b lineage-23.0 --git-lfs
+repo init -u https://github.com/LineageOS/android.git -b lineage-23.2 --git-lfs
 echo "=================="
 echo "Repo init success"
 echo "=================="
@@ -73,7 +73,7 @@ echo "======= Patching Done ======"
 export BUILD_USERNAME=regloom
 export BUILD_HOSTNAME=crave
 export TZ="Europe/Berlin"
-export TARGET_RELEASE=bp2a
+export TARGET_RELEASE=bp4a
 #- error: libandroid's ABI has INCOMPATIBLE CHANGES.
 export SKIP_ABI_CHECKS=true
 echo "======= Export Done ======"
