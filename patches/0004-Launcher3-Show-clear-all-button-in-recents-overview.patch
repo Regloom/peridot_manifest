@@ -1,4 +1,4 @@
-From 12488b40ecb0ea73155a708f1d628f27b7981936 Mon Sep 17 00:00:00 2001
+From 4800e1e46c0b7c700aa2b64f57e7bfe90466b2f3 Mon Sep 17 00:00:00 2001
 From: jhonboy121 <alfredmathew05@gmail.com>
 Date: Tue, 15 Mar 2022 18:55:35 +0530
 Subject: [PATCH] Launcher3: Show clear all button in recents overview
@@ -13,10 +13,9 @@ Signed-off-by: Pranav Vashi <neobuddy89@gmail.com>
  .../states/BackgroundAppState.java            |  1 -
  .../uioverrides/states/OverviewState.java     |  4 ++--
  .../android/quickstep/TaskOverlayFactory.java | 15 +++++++++++++++
- .../quickstep/fallback/RecentsState.java      |  2 +-
  .../quickstep/views/OverviewActionsView.java  |  5 ++++-
  .../android/quickstep/views/RecentsView.java  |  4 ++++
- 8 files changed, 54 insertions(+), 5 deletions(-)
+ 7 files changed, 53 insertions(+), 4 deletions(-)
  create mode 100644 quickstep/res/drawable/ic_clear_all.xml
 
 diff --git a/quickstep/res/drawable/ic_clear_all.xml b/quickstep/res/drawable/ic_clear_all.xml
@@ -46,11 +45,11 @@ index 0000000000..00e8fd42a3
 +</vector>
 \ No newline at end of file
 diff --git a/quickstep/res/layout/overview_actions_container.xml b/quickstep/res/layout/overview_actions_container.xml
-index fcd2e5495a..8b53f92b43 100644
+index ce54028256..36ac392382 100644
 --- a/quickstep/res/layout/overview_actions_container.xml
 +++ b/quickstep/res/layout/overview_actions_container.xml
 @@ -45,6 +45,15 @@
-             android:theme="@style/ThemeControlHighlightWorkspaceColor"
+             android:text="@string/action_split"
              android:visibility="gone" />
  
 +        <Button
@@ -66,44 +65,44 @@ index fcd2e5495a..8b53f92b43 100644
  
      <!-- Currently, the only "group action button" is this save app pair button. If more are added,
 diff --git a/quickstep/src/com/android/launcher3/uioverrides/states/BackgroundAppState.java b/quickstep/src/com/android/launcher3/uioverrides/states/BackgroundAppState.java
-index a5b1ee7b53..93c82e315e 100644
+index c02af3ef43..b660b1c610 100644
 --- a/quickstep/src/com/android/launcher3/uioverrides/states/BackgroundAppState.java
 +++ b/quickstep/src/com/android/launcher3/uioverrides/states/BackgroundAppState.java
-@@ -76,7 +76,6 @@ public class BackgroundAppState extends OverviewState {
-     public int getVisibleElements(Launcher launcher) {
-         return super.getVisibleElements(launcher)
+@@ -79,7 +79,6 @@ public class BackgroundAppState extends OverviewState {
+     public int getVisibleElements(LauncherUiState launcherUiState) {
+         return super.getVisibleElements(launcherUiState)
                  & ~OVERVIEW_ACTIONS
 -                & ~CLEAR_ALL_BUTTON
                  & ~VERTICAL_SWIPE_INDICATOR
                  & ~ADD_DESK_BUTTON;
      }
 diff --git a/quickstep/src/com/android/launcher3/uioverrides/states/OverviewState.java b/quickstep/src/com/android/launcher3/uioverrides/states/OverviewState.java
-index c774143328..380a723daf 100644
+index 6191afd20e..ce27b1dd3e 100644
 --- a/quickstep/src/com/android/launcher3/uioverrides/states/OverviewState.java
 +++ b/quickstep/src/com/android/launcher3/uioverrides/states/OverviewState.java
-@@ -113,7 +113,7 @@ public class OverviewState extends LauncherState {
+@@ -116,7 +116,7 @@ public class OverviewState extends LauncherState {
  
      @Override
-     public int getVisibleElements(Launcher launcher) {
+     public int getVisibleElements(LauncherUiState launcherUiState) {
 -        int elements = CLEAR_ALL_BUTTON | OVERVIEW_ACTIONS | ADD_DESK_BUTTON;
 +        int elements = OVERVIEW_ACTIONS | ADD_DESK_BUTTON;
-         DeviceProfile dp = launcher.getDeviceProfile();
          boolean showFloatingSearch;
-         if (dp.isPhone) {
-@@ -127,7 +127,7 @@ public class OverviewState extends LauncherState {
+         DeviceProfile dp = launcherUiState.getDeviceProfileRef().getValue();
+         if (dp.getDeviceProperties().isPhone()) {
+@@ -130,7 +130,7 @@ public class OverviewState extends LauncherState {
              elements |= FLOATING_SEARCH_BAR;
          }
-         if (launcher.isSplitSelectionActive()) {
+         if (launcherUiState.isSplitSelectActiveRef().getValue()) {
 -            elements &= ~CLEAR_ALL_BUTTON & ~ADD_DESK_BUTTON;
 +            elements &= ~ADD_DESK_BUTTON;
          }
          return elements;
      }
 diff --git a/quickstep/src/com/android/quickstep/TaskOverlayFactory.java b/quickstep/src/com/android/quickstep/TaskOverlayFactory.java
-index 5bf4451fad..e9038a7892 100644
+index e0586c5de3..b343ed6d26 100644
 --- a/quickstep/src/com/android/quickstep/TaskOverlayFactory.java
 +++ b/quickstep/src/com/android/quickstep/TaskOverlayFactory.java
-@@ -256,6 +256,11 @@ public class TaskOverlayFactory implements ResourceBasedOverride {
+@@ -270,6 +270,11 @@ public class TaskOverlayFactory {
                      .saveAppPair(taskView);
          }
  
@@ -115,7 +114,7 @@ index 5bf4451fad..e9038a7892 100644
          /**
           * Called when the overlay is no longer used.
           */
-@@ -402,17 +407,25 @@ public class TaskOverlayFactory implements ResourceBasedOverride {
+@@ -424,17 +429,25 @@ public class TaskOverlayFactory {
              }
  
              @SuppressLint("NewApi")
@@ -141,7 +140,7 @@ index 5bf4451fad..e9038a7892 100644
          }
      }
  
-@@ -429,5 +442,7 @@ public class TaskOverlayFactory implements ResourceBasedOverride {
+@@ -451,5 +464,7 @@ public class TaskOverlayFactory {
  
          /** User wants to save an app pair with current group of apps. */
          void onSaveAppPair();
@@ -149,24 +148,11 @@ index 5bf4451fad..e9038a7892 100644
 +        void onClearAllTasksRequested();
      }
  }
-diff --git a/quickstep/src/com/android/quickstep/fallback/RecentsState.java b/quickstep/src/com/android/quickstep/fallback/RecentsState.java
-index 77aac4176d..358f36dedc 100644
---- a/quickstep/src/com/android/quickstep/fallback/RecentsState.java
-+++ b/quickstep/src/com/android/quickstep/fallback/RecentsState.java
-@@ -140,7 +140,7 @@ public class RecentsState implements BaseState<RecentsState> {
-      * For this state, whether clear all button should be shown.
-      */
-     public boolean hasClearAllButton() {
--        return hasFlag(FLAG_CLEAR_ALL_BUTTON);
-+        return false;
-     }
- 
-     /**
 diff --git a/quickstep/src/com/android/quickstep/views/OverviewActionsView.java b/quickstep/src/com/android/quickstep/views/OverviewActionsView.java
-index 7b0ec4ed04..ea0a93b56e 100644
+index 674ce5b821..8c89ac0bf6 100644
 --- a/quickstep/src/com/android/quickstep/views/OverviewActionsView.java
 +++ b/quickstep/src/com/android/quickstep/views/OverviewActionsView.java
-@@ -185,6 +185,7 @@ public class OverviewActionsView<T extends OverlayUICallbacks> extends FrameLayo
+@@ -216,6 +216,7 @@ public class OverviewActionsView<T extends OverlayUICallbacks> extends FrameLayo
          mSplitButton = findViewById(R.id.action_split);
          mSplitButton.setOnClickListener(this);
          mSaveAppPairButton.setOnClickListener(this);
@@ -174,7 +160,7 @@ index 7b0ec4ed04..ea0a93b56e 100644
      }
  
      /**
-@@ -201,13 +202,15 @@ public class OverviewActionsView<T extends OverlayUICallbacks> extends FrameLayo
+@@ -232,13 +233,15 @@ public class OverviewActionsView<T extends OverlayUICallbacks> extends FrameLayo
          if (mCallbacks == null) {
              return;
          }
@@ -192,10 +178,10 @@ index 7b0ec4ed04..ea0a93b56e 100644
      }
  
 diff --git a/quickstep/src/com/android/quickstep/views/RecentsView.java b/quickstep/src/com/android/quickstep/views/RecentsView.java
-index 3e4b953b5b..b90cdc7f6a 100644
+index 111c99b53a..9cf47daf23 100644
 --- a/quickstep/src/com/android/quickstep/views/RecentsView.java
 +++ b/quickstep/src/com/android/quickstep/views/RecentsView.java
-@@ -4730,6 +4730,10 @@ public abstract class RecentsView<
+@@ -4661,6 +4661,10 @@ public abstract class RecentsView<
          mContainer.getStatsLogManager().logger().log(LAUNCHER_TASK_CLEAR_ALL);
      }
  
