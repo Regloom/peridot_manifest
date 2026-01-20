@@ -8,7 +8,7 @@
 
 	<!-- Device Tree -->
 	<project path="device/xiaomi/peridot" name="Regloom/device_xiaomi_peridot" remote="git-hub" revision="GuidixX"/>
-	<project path="vendor/xiaomi/peridot" name="GuidixX/vendor_xiaomi_peridot" remote="git-hub" revision="16"/>
+	<project path="vendor/xiaomi/peridot" name="GuidixX/vendor_xiaomi_peridot" remote="git-hub" revision="16.2"/>
 
 	<!-- Kernel -->
 	<project path="kernel/xiaomi/sm8635" name="GuidixX/kernel_xiaomi_sm8635" remote="git-hub" revision="16.2"/>
