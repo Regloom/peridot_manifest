@@ -27,7 +27,7 @@ echo "============================"
 # KernelSU Next setup
 cd kernel/xiaomi/sm8635
 echo "======== Inside kernel/xiaomi/sm8635 ========"
-curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next/kernel/setup.sh" | bash -
+curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s v3.0.0
 echo "======== Added KSU successfully ========"
 cd ../../..
 echo "======== Returned to root directory ========"
