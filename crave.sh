@@ -72,7 +72,7 @@ export BUILD_HOSTNAME=crave
 export TZ="Europe/Berlin"
 export TARGET_RELEASE=bp4a
 #- error: libandroid's ABI has INCOMPATIBLE CHANGES.
-# export SKIP_ABI_CHECKS=true
+export SKIP_ABI_CHECKS=true
 echo "======= Export Done ======"
 
 source build/envsetup.sh
