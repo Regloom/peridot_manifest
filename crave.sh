@@ -32,6 +32,12 @@ echo "======== Added KSU successfully ========"
 cd ../../..
 echo "======== Returned to root directory ========"
 
+# TEMP FIX:
+# vendor/xiaomi/peridot
+sed -i 's#hardware/voltage/interfaces/power-libperfmgr#hardware/lineage/interfaces/power-libperfmgr#g' vendor/xiaomi/peridot/Android.bp
+# device/xiaomi/peridot-miuicamera/
+cp packages/apps/XiaomiParts/Android.bp device/xiaomi/peridot-miuicamera/
+
 # Cleanup unused HAL display, media, audio
 # rm -rf hardware/qcom-caf/{msm8996,msm8998,sdm845,sm8150,sm8250}/{display,media,audio}
 # rm -rf hardware/qcom-caf/sm8750
@@ -41,17 +47,8 @@ patches=(
     "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0001-SystemUI-Update-buildNumber-flow-to-return-null.patch"
     "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0002-SystemUI-Add-roaming-indicator-to-statusbar-tuner.patch"
     "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0003-SystemUI-Forward-port-HD-wifi-calling-statusbar-icon.patch"
-    "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0007-SystemUI-port-volte-vowifi-icons-to-A16-kairos-impl.patch"
     "packages/apps/Launcher3:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0004-Launcher3-Show-clear-all-button-in-recents-overview.patch"
     "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0005-Settings-Expose-radio-info-4636.patch"
-#    "kernel/xiaomi/sm8635-modules:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/kernelmodules-qcom-Drop-MIN-macros.patch"
-#    "packages/apps/XiaomiParts:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/parts.patch"
-#    "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0006-ManageStoragePreferenceController-Explicitly-disable.patch"
-#    KERNEL
-#    "kernel/xiaomi/sm8635:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/wip/kernel-bringback-msm-perf.patch"
-#    "kernel/xiaomi/sm8635:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/wip/kernel-videodev2.patch"
-#    "kernel/xiaomi/sm8635:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/wip/kernel-cpuboost.patch"
-#    "kernel/xiaomi/sm8635:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/wip/kernel-drvboost.patch"
 )
 
 for patch in "${patches[@]}"; do
@@ -75,7 +72,7 @@ export BUILD_HOSTNAME=crave
 export TZ="Europe/Berlin"
 export TARGET_RELEASE=bp4a
 #- error: libandroid's ABI has INCOMPATIBLE CHANGES.
-export SKIP_ABI_CHECKS=true
+# export SKIP_ABI_CHECKS=true
 echo "======= Export Done ======"
 
 source build/envsetup.sh

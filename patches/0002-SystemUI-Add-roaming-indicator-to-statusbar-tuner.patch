@@ -1,13 +1,14 @@
-From a03fa60c04d87f97a350395bd46633f95cd301e3 Mon Sep 17 00:00:00 2001
+From fd8f708df15838777cb2540c5f9f7e44e4c0d4d2 Mon Sep 17 00:00:00 2001
 From: Adithya R <gh0strider.2k18.reborn@gmail.com>
 Date: Mon, 7 Mar 2022 22:06:27 +0530
 Subject: [PATCH] SystemUI: Add roaming indicator to statusbar tuner
 
 Dhina17: Ported to 14
-shutter-cat: port to A16
+shutter-cat: adapt to A16 qpr0, qpr1
 
 Change-Id: I326e1d54019179f0505a558b7e57ab6a2479cdf2
 Co-authored-by: Dhina17 <dhinalogu@gmail.com>
+Co-authored-by: Dmitrii <bankersenator@gmail.com>
 Signed-off-by: Mohammad Hasan Keramat J <ikeramat@protonmail.com>
 Signed-off-by: Pranav Vashi <neobuddy89@gmail.com>
 Signed-off-by: Dmitrii <bankersenator@gmail.com>
@@ -18,14 +19,15 @@ Signed-off-by: Dmitrii <bankersenator@gmail.com>
  .../SystemUI/res/xml/status_bar_prefs.xml     |  5 ++++
  .../domain/interactor/MobileIconInteractor.kt |  4 +++
  .../interactor/MobileIconInteractorKairos.kt  |  4 +++
- .../MobileIconInteractorKairosAdapter.kt      |  8 ++++++
+ .../MobileIconInteractorKairosAdapter.kt      |  9 ++++++-
  .../interactor/MobileIconsInteractor.kt       |  9 +++++++
  .../interactor/MobileIconsInteractorKairos.kt | 10 ++++++++
- .../MobileIconsInteractorKairosAdapter.kt     |  9 +++++++
+ .../MobileIconsInteractorKairosAdapter.kt     |  6 +++++
  .../mobile/ui/binder/MobileIconBinder.kt      |  2 +-
  .../ui/viewmodel/MobileIconViewModel.kt       | 17 +++++++++++++
+ .../viewmodel/MobileIconsViewModelKairos.kt   |  1 +
  .../shared/data/model/ConnectivitySlots.kt    |  5 +++-
- 13 files changed, 106 insertions(+), 2 deletions(-)
+ 14 files changed, 104 insertions(+), 3 deletions(-)
  create mode 100644 packages/SystemUI/res/drawable/ic_statusbar_roaming.xml
  create mode 100644 packages/SystemUI/res/values-ru/custom_strings.xml
  create mode 100644 packages/SystemUI/res/values/custom_strings.xml
@@ -146,24 +148,32 @@ index f9be9e49de55..c53799b8c632 100644
      private val context: Context,
      private val carrierIdOverrides: MobileIconCarrierIdOverrides =
 diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconInteractorKairosAdapter.kt b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconInteractorKairosAdapter.kt
-index c725cc92478e..e95e02c44c94 100644
+index c725cc92478e..99dcd38312ab 100644
 --- a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconInteractorKairosAdapter.kt
 +++ b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconInteractorKairosAdapter.kt
 @@ -131,6 +131,13 @@ fun BuildScope.MobileIconInteractorKairosAdapter(
                          "MobileIconInteractorKairosAdapter(subId=$subscriptionId).isForceHidden"
                      },
                  ),
-+            isRoamingForceHidden = 
++            isRoamingForceHidden =
 +                isRoamingForceHidden.toColdConflatedFlow(
 +                    kairosNetwork,
 +                    nameTag {
 +                        "MobileIconInteractorKairosAdapter(subId=$subscriptionId).isRoamingForceHidden"
 +                    },
-+            ),
++                ),
              isAllowedDuringAirplaneMode =
                  isAllowedDuringAirplaneMode.toStateFlow(
                      nameTag {
-@@ -165,6 +172,7 @@ private class MobileIconInteractorKairosAdapter(
+@@ -145,7 +152,6 @@ fun BuildScope.MobileIconInteractorKairosAdapter(
+                 ),
+         )
+     }
+-
+ private class MobileIconInteractorKairosAdapter(
+     override val subscriptionId: Int,
+     override val tableLogBuffer: TableLogBuffer,
+@@ -165,6 +171,7 @@ private class MobileIconInteractorKairosAdapter(
      override val isSingleCarrier: StateFlow<Boolean>,
      override val isRoaming: StateFlow<Boolean>,
      override val isForceHidden: Flow<Boolean>,
@@ -206,7 +216,7 @@ index e468c0556326..9b1a0fc80823 100644
                  context,
              )
 diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconsInteractorKairos.kt b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconsInteractorKairos.kt
-index c3385abe0214..be169c2faae7 100644
+index c3385abe0214..baf393e96a58 100644
 --- a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconsInteractorKairos.kt
 +++ b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconsInteractorKairos.kt
 @@ -124,6 +124,9 @@ interface MobileIconsInteractorKairos {
@@ -224,9 +234,9 @@ index c3385abe0214..be169c2faae7 100644
      }
  
 +    override val isRoamingForceHidden: State<Boolean> = buildState {
-+        connectivityRepository.forceHiddenSlots
-+            .toState(nameTag("MobileIconsInteractorKairosImpl.isRoamingForceHidden"))
-+            .map { it.contains(ConnectivitySlot.ROAMING) }
++        connectivityRepository.forceHiddenSlots.toState().map {
++            it.contains(ConnectivitySlot.ROAMING)
++        }
 +    }
 +
      override val isDeviceInEmergencyCallsOnlyMode: State<Boolean>
@@ -236,30 +246,27 @@ index c3385abe0214..be169c2faae7 100644
              defaultMobileIconGroup,
              isDefaultConnectionFailed,
              isForceHidden,
-+	        isRoamingForceHidden,
++	    isRoamingForceHidden,
              repo,
              context,
          )
 diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconsInteractorKairosAdapter.kt b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconsInteractorKairosAdapter.kt
-index e22fb922250b..359b20770b39 100644
+index e22fb922250b..111c076b1989 100644
 --- a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconsInteractorKairosAdapter.kt
 +++ b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/domain/interactor/MobileIconsInteractorKairosAdapter.kt
-@@ -123,6 +123,14 @@ constructor(
+@@ -123,6 +123,11 @@ constructor(
              )
              .stateIn(scope, SharingStarted.WhileSubscribed(), false)
  
 +    override val isRoamingForceHidden: Flow<Boolean> =
 +        kairosInteractor.isRoamingForceHidden
-+            .toColdConflatedFlow(
-+                kairosNetwork,
-+                nameTag("MobileIconsInteractorKairosAdapter.isRoamingForceHidden"),
-+            )
++            .toColdConflatedFlow(kairosNetwork)
 +            .stateIn(scope, SharingStarted.WhileSubscribed(), false)
 +
      override val activeMobileDataSubscriptionId: StateFlow<Int?>
          get() = repo.activeMobileDataSubscriptionId
  
-@@ -233,6 +241,7 @@ constructor(
+@@ -233,6 +238,7 @@ constructor(
              override val isSingleCarrier: Flow<Boolean> = latest { isSingleCarrier }
              override val isRoaming: Flow<Boolean> = latest { isRoaming }
              override val isForceHidden: Flow<Boolean> = latest { isForceHidden }
@@ -329,6 +336,18 @@ index 3b40cdec8721..df905e0ce806 100644
      private val activity: Flow<DataActivityModel?> =
          if (!constants.shouldShowActivityConfig) {
              flowOf(null)
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/ui/viewmodel/MobileIconsViewModelKairos.kt b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/ui/viewmodel/MobileIconsViewModelKairos.kt
+index 0457fbbbd231..4184f80b2889 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/ui/viewmodel/MobileIconsViewModelKairos.kt
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/mobile/ui/viewmodel/MobileIconsViewModelKairos.kt
+@@ -165,6 +165,7 @@ constructor(
+             override val isSingleCarrier: State<Boolean> = latest(true) { isSingleCarrier }
+             override val isRoaming: State<Boolean> = latest(false) { isRoaming }
+             override val isForceHidden: State<Boolean> = latest(false) { isForceHidden }
++            override val isRoamingForceHidden: State<Boolean> = latest(false) { isRoamingForceHidden }
+             override val isAllowedDuringAirplaneMode: State<Boolean> =
+                 latest(false) { isAllowedDuringAirplaneMode }
+             override val carrierNetworkChangeActive: State<Boolean> =
 diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/shared/data/model/ConnectivitySlots.kt b/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/shared/data/model/ConnectivitySlots.kt
 index d52d0fb91b82..9850784d6608 100644
 --- a/packages/SystemUI/src/com/android/systemui/statusbar/pipeline/shared/data/model/ConnectivitySlots.kt
@@ -357,5 +376,5 @@ index d52d0fb91b82..9850784d6608 100644
      WIFI,
  }
 -- 
-2.34.1
+2.47.3
 
