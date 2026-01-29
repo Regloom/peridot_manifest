@@ -36,7 +36,6 @@ echo "======== Returned to root directory ========"
 # vendor/xiaomi/peridot
 sed -i 's#hardware/voltage/interfaces/power-libperfmgr#hardware/lineage/interfaces/power-libperfmgr#g' vendor/xiaomi/peridot/Android.bp
 # device/xiaomi/peridot-miuicamera/
-cp packages/apps/XiaomiParts/Android.bp device/xiaomi/peridot-miuicamera/
 
 # Cleanup unused HAL display, media, audio
 # rm -rf hardware/qcom-caf/{msm8996,msm8998,sdm845,sm8150,sm8250}/{display,media,audio}

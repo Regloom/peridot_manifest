@@ -2,11 +2,15 @@
 <manifest>
 	<remote name="git-hub" fetch="https://github.com/" />
 	<remote name="angryim" fetch="https://gitea.angry.im/" />
+	<!--<remote name="local" fetch="file:////media/master/sources" />-->
 	
 	<!-- Xiaomi-specific hardware -->
 	<project path="hardware/xiaomi" name="GuidixX/hardware_xiaomi_vos" remote="git-hub" revision="16"/>
-	
+    <project name="GuidixX/device_xiaomi_peridot-miuicamera" path="device/xiaomi/peridot-miuicamera" remote="git-hub" revision="16.2" />
+    <project name="GuidixX/vendor_xiaomi_peridot-miuicamera" path="vendor/xiaomi/peridot-miuicamera" remote="git-hub" revision="16.2" />
+
 	<!-- Device Tree -->
+	<!--<project path="device/xiaomi/peridot" name="guidixx_device" remote="local" revision="16.2"/>-->
 	<project path="device/xiaomi/peridot" name="Regloom/device_xiaomi_peridot" remote="git-hub" revision="GuidixX"/>
 	<project path="vendor/xiaomi/peridot" name="GuidixX/vendor_xiaomi_peridot" remote="git-hub" revision="16.2"/>
 
@@ -37,44 +41,5 @@
 
 	<!-- OpenEUICC -->
 	<project path="packages/apps/OpenEUICC" name="PeterCxy/OpenEUICC" remote="angryim" revision="master" sync-s="true"/>
-		<project path="prebuilts/openeuicc-deps" name="PeterCxy/android_prebuilts_openeuicc-deps" remote="angryim" revision="master"/>
+	<project path="prebuilts/openeuicc-deps" name="PeterCxy/android_prebuilts_openeuicc-deps" remote="angryim" revision="master"/>
 </manifest>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

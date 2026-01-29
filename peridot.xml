@@ -5,6 +5,8 @@
 	
     <!-- Xiaomi-specific hardware -->
     <project path="hardware/xiaomi" name="GuidixX/hardware_xiaomi_vos" remote="git-hub" revision="16"/>
+ 	<project name="GuidixX/device_xiaomi_peridot-miuicamera" path="device/xiaomi/peridot-miuicamera" remote="git-hub" revision="16.2" />
+    <project name="GuidixX/vendor_xiaomi_peridot-miuicamera" path="vendor/xiaomi/peridot-miuicamera" remote="git-hub" revision="16.2" />
 
 	<!-- Device Tree -->
 	<project path="device/xiaomi/peridot" name="Regloom/device_xiaomi_peridot" remote="git-hub" revision="GuidixX"/>
