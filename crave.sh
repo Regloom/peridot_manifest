@@ -27,7 +27,7 @@ echo "============================"
 # KernelSU Next setup
 cd kernel/xiaomi/sm8635
 echo "======== Inside kernel/xiaomi/sm8635 ========"
-curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s v3.0.0
+curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s v3.0.1
 echo "======== Added KSU successfully ========"
 cd ../../..
 echo "======== Returned to root directory ========"
@@ -48,6 +48,9 @@ patches=(
     "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0003-SystemUI-Forward-port-HD-wifi-calling-statusbar-icon.patch"
     "packages/apps/Launcher3:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0004-Launcher3-Show-clear-all-button-in-recents-overview.patch"
     "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0005-Settings-Expose-radio-info-4636.patch"
+    # MIUI camera
+    "frameworks/native:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/camera/0001-Native-Camera-Import-Release-Slot-Xiaomi-Changes.patch"
+    "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/camera/0002-Base-Camera-11.patch"
 )
 
 for patch in "${patches[@]}"; do

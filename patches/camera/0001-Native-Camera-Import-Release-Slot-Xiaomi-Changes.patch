@@ -1,0 +1,55 @@
+From fde82438ec3a337d246abded72d55009754b6103 Mon Sep 17 00:00:00 2001
+From: johnmart19 <johnivan19999@gmail.com>
+Date: Sat, 27 May 2023 07:05:50 +0300
+Subject: [PATCH] Native: Camera: Import Release Slot Xiaomi Changes
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Hưng Phan <phandinhhungvp2001@gmail.com>
+Signed-off-by: Dmitrii <bankersenator@gmail.com>
+---
+ libs/gui/Surface.cpp           | 13 +++++++++++++
+ libs/gui/include/gui/Surface.h |  2 ++
+ 2 files changed, 15 insertions(+)
+
+diff --git a/libs/gui/Surface.cpp b/libs/gui/Surface.cpp
+index cabc1773e0..d9921c8ffb 100644
+--- a/libs/gui/Surface.cpp
++++ b/libs/gui/Surface.cpp
+@@ -2262,6 +2262,19 @@ int Surface::disconnect(int api, IGraphicBufferProducer::DisconnectMode mode) {
+     return err;
+ }
+ 
++// MIUI ADD: START
++void Surface::releaseSlot(int slot) {
++    Mutex::Autolock lock(mMutex);
++    if(mDequeuedSlots.count(slot) <= 0) {
++        ALOGV("Surface releaseSlot %d",slot);
++        if (mReportRemovedBuffers && (mSlots[slot].buffer != nullptr)) {
++            mRemovedBuffers.push_back(mSlots[slot].buffer);
++        }
++        mSlots[slot].buffer = nullptr;
++    }
++}
++// MIUI ADD: END
++
+ int Surface::detachNextBuffer(sp<GraphicBuffer>* outBuffer,
+         sp<Fence>* outFence) {
+     ATRACE_CALL();
+diff --git a/libs/gui/include/gui/Surface.h b/libs/gui/include/gui/Surface.h
+index 9a6e75c333..1e9b76f5d6 100644
+--- a/libs/gui/include/gui/Surface.h
++++ b/libs/gui/include/gui/Surface.h
+@@ -411,6 +411,8 @@ public:
+     virtual int connect(int api, const sp<SurfaceListener>& listener,
+                         bool reportBufferRemoval = false);
+     virtual int detachNextBuffer(sp<GraphicBuffer>* outBuffer, sp<Fence>* outFence);
++    // MIUI ADD
++    virtual void releaseSlot(int slot);
+     virtual int attachBuffer(ANativeWindowBuffer*);
+ 
+     virtual void destroy();
+-- 
+2.47.3
+

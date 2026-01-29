@@ -1,0 +1,927 @@
+From 4142bf7c22cebbdb642d3e46accedcbe415078f0 Mon Sep 17 00:00:00 2001
+From: Xayah <zds1249475336@gmail.com>
+Date: Sat, 29 Oct 2022 02:53:08 +0800
+Subject: [PATCH 01/11] CameraDeviceImpl: Don't crash when checking input
+ configuration failed
+
+* For some reason, some devices(like cas) which ported miui camera could not take 48mp photos because of this exception, so we just catch it to make it work.
+
+10-27 00:07:50.879  8331  8432 E CAM_CameraFCHandler: Camera FC, msg=Input config with format 35 and size 8000x6000 not supported by camera id 7
+10-27 00:07:50.879  8331  8432 E CAM_CameraFCHandler: java.lang.IllegalArgumentException: Input config with format 35 and size 8000x6000 not supported by camera id 7
+10-27 00:07:50.879  8331  8432 E CAM_CameraFCHandler: 	at android.hardware.camera2.impl.CameraDeviceImpl.checkInputConfiguration(CameraDeviceImpl.java:1547)
+10-27 00:07:50.879  8331  8432 E CAM_CameraFCHandler: 	at android.hardware.camera2.impl.CameraDeviceImpl.configureStreamsChecked(CameraDeviceImpl.java:445)
+10-27 00:07:50.879  8331  8432 E CAM_CameraFCHandler: 	at android.hardware.camera2.impl.CameraDeviceImpl.createCaptureSessionInternal(CameraDeviceImpl.java:723)
+10-27 00:07:50.879  8331  8432 E CAM_CameraFCHandler: 	at android.hardware.camera2.impl.CameraDeviceImpl.createCaptureSession(CameraDeviceImpl.java:677)
+10-27 00:07:50.879  8331  8432 E CAM_CameraFCHandler: 	at com.xiaomi.camera.imagecodec.impl.VirtualCameraReprocessor.createCaptureSessionWithSessionConfiguration(VirtualCameraReprocessor.java:4)
+10-27 00:07:50.879  8331  8432 E CAM_CameraFCHandler: 	at com.xiaomi.camera.imagecodec.impl.VirtualCameraReprocessor.createReprocessSession(VirtualCameraReprocessor.java:26)
+10-27 00:07:50.879  8331  8432 E CAM_CameraFCHandler: 	at com.xiaomi.camera.imagecodec.impl.VirtualCameraReprocessor.createCaptureSessionIfNeed(VirtualCameraReprocessor.java:44)
+10-27 00:07:50.879  8331  8432 E CAM_CameraFCHandler: 	at com.xiaomi.camera.imagecodec.impl.VirtualCameraReprocessor.checkConditionIsReady(VirtualCameraReprocessor.java:8)
+10-27 00:07:50.879  8331  8432 E CAM_CameraFCHandler: 	at com.xiaomi.camera.imagecodec.impl.VirtualCameraReprocessor.access$1500(VirtualCameraReprocessor.java:1)
+10-27 00:07:50.879  8331  8432 E CAM_CameraFCHandler: 	at com.xiaomi.camera.imagecodec.impl.VirtualCameraReprocessor$ReprocessHandler.handleMessage(VirtualCameraReprocessor.java:13)
+10-27 00:07:50.879  8331  8432 E CAM_CameraFCHandler: 	at android.os.Handler.dispatchMessage(Handler.java:106)
+10-27 00:07:50.879  8331  8432 E CAM_CameraFCHandler: 	at android.os.Looper.loopOnce(Looper.java:201)
+10-27 00:07:50.879  8331  8432 E CAM_CameraFCHandler: 	at android.os.Looper.loop(Looper.java:288)
+10-27 00:07:50.879  8331  8432 E CAM_CameraFCHandler: 	at android.os.HandlerThread.run(HandlerThread.java:67)
+10-27 00:07:50.879  8331  8432 E CAM_CameraFCHandler: mDefaultHandler=com.android.internal.os.RuntimeInit$KillApplicationHandler@18f49b8
+
+Change-Id: Ic80dd6e81ac2269e2879ac1a41a3e4e6e081a682
+Signed-off-by: Dmitrii <bankersenator@gmail.com>
+---
+ .../android/hardware/camera2/impl/CameraDeviceImpl.java     | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/core/java/android/hardware/camera2/impl/CameraDeviceImpl.java b/core/java/android/hardware/camera2/impl/CameraDeviceImpl.java
+index 545be8f104e4..c0e1337402ab 100644
+--- a/core/java/android/hardware/camera2/impl/CameraDeviceImpl.java
++++ b/core/java/android/hardware/camera2/impl/CameraDeviceImpl.java
+@@ -637,7 +637,11 @@ public class CameraDeviceImpl extends CameraDevice
+         if (!checkSurfaceSizesCompatible(outputs)) {
+             return false;
+         }
+-        checkInputConfiguration(inputConfig);
++        try {
++            checkInputConfiguration(inputConfig);
++        } catch (IllegalArgumentException e) {
++            Log.w(TAG, "Check input configuration failed due to: " + e.getMessage());
++        }
+ 
+         boolean success = false;
+ 
+-- 
+2.47.3
+
+
+From 64363f781baf914dfc0f1d88a20c07151f662064 Mon Sep 17 00:00:00 2001
+From: Adithya R <gh0strider.2k18.reborn@gmail.com>
+Date: Sat, 24 Dec 2022 22:03:58 +0530
+Subject: [PATCH 02/11] camera: Add backwards-compatible CaptureResultExtras
+ constructor
+
+Commit e16fed20 added readout timestamp parameters which
+changed the constructor, but is unsupported by few
+stock camera apps, such as MIUI Camera.
+
+12-24 09:58:59.536 23375 23492 W System.err: java.lang.NoSuchMethodException: android.hardware.camera2.impl.CaptureResultExtras.<init> [int, int, int, int, long, int, int, class java.lang.String]
+
+Change-Id: Ifd752bc2fa9a7bbf71586147f3c135425c1a7d63
+Signed-off-by: Pranav Vashi <neobuddy89@gmail.com>
+Signed-off-by: Dmitrii <bankersenator@gmail.com>
+---
+ .../hardware/camera2/impl/CaptureResultExtras.java | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/core/java/android/hardware/camera2/impl/CaptureResultExtras.java b/core/java/android/hardware/camera2/impl/CaptureResultExtras.java
+index 8bf94986a490..0257ab979cb1 100644
+--- a/core/java/android/hardware/camera2/impl/CaptureResultExtras.java
++++ b/core/java/android/hardware/camera2/impl/CaptureResultExtras.java
+@@ -75,6 +75,20 @@ public class CaptureResultExtras implements Parcelable {
+         this.readoutTimestamp = readoutTimestamp;
+     }
+ 
++    // Backwards-compatible constructor
++    public CaptureResultExtras(int requestId, int subsequenceId, int afTriggerId,
++                               int precaptureTriggerId, long frameNumber,
++                               int partialResultCount, int errorStreamId,
++                               String errorPhysicalCameraId, long lastCompletedRegularFrameNumber,
++                               long lastCompletedReprocessFrameNumber,
++                               long lastCompletedZslFrameNumber) {
++        this(requestId, subsequenceId, afTriggerId, precaptureTriggerId, frameNumber,
++                partialResultCount, errorStreamId, errorPhysicalCameraId,
++                lastCompletedRegularFrameNumber, lastCompletedReprocessFrameNumber,
++                lastCompletedZslFrameNumber,
++                false /*hasReadOutTimestamp*/, 0 /*readoutTimestamp*/);
++    }
++
+     @Override
+     public int describeContents() {
+         return 0;
+-- 
+2.47.3
+
+
+From bb5c232c55f5d48bb10eb1e7be07c2aebbc3f036 Mon Sep 17 00:00:00 2001
+From: afterallafk <shivamatiet2001@gmail.com>
+Date: Thu, 27 Jun 2024 17:48:31 +0530
+Subject: [PATCH 03/11] CameraManager: Fix NPE in getting cameraIds
+
+06-27 11:36:20.440  7870  7870 E AndroidRuntime: FATAL EXCEPTION: main
+06-27 11:36:20.440  7870  7870 E AndroidRuntime: Process: org.codeaurora.snapcam, PID: 7870
+06-27 11:36:20.440  7870  7870 E AndroidRuntime: java.lang.NullPointerException: Attempt to get length of null array
+06-27 11:36:20.440  7870  7870 E AndroidRuntime: 	at java.util.Arrays.sort(Arrays.java:1270)
+06-27 11:36:20.440  7870  7870 E AndroidRuntime: 	at android.hardware.camera2.CameraManager$CameraManagerGlobal.sortCameraIds(CameraManager.java:2173)
+06-27 11:36:20.440  7870  7870 E AndroidRuntime: 	at android.hardware.camera2.CameraManager$CameraManagerGlobal.getCameraIdList(CameraManager.java:2304)
+06-27 11:36:20.440  7870  7870 E AndroidRuntime: 	at android.hardware.camera2.CameraManager.getCameraIdList(CameraManager.java:248)
+06-27 11:36:20.440  7870  7870 E AndroidRuntime: 	at mza.e(Unknown Source:15)
+06-27 11:36:20.440  7870  7870 E AndroidRuntime: 	at mza.b(Unknown Source:0)
+06-27 11:36:20.440  7870  7870 E AndroidRuntime: 	at mzi.b(Unknown Source:2)
+06-27 11:36:20.440  7870  7870 E AndroidRuntime: 	at bjf.run(Unknown Source:9)
+06-27 11:36:20.440  7870  7870 E AndroidRuntime: 	at mbk.run(Unknown Source:2)
+06-27 11:36:20.440  7870  7870 E AndroidRuntime: 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:487)
+06-27 11:36:20.440  7870  7870 E AndroidRuntime: 	at java.util.concurrent.FutureTask.run(FutureTask.java:264)
+06-27 11:36:20.440  7870  7870 E AndroidRuntime: 	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:307)
+06-27 11:36:20.440  7870  7870 E AndroidRuntime: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+06-27 11:36:20.440  7870  7870 E AndroidRuntime: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+06-27 11:36:20.440  7870  7870 E AndroidRuntime: 	at java.lang.Thread.run(Thread.java:1012)
+06-27 11:36:20.440  7870  7870 E AndroidRuntime: 	at maj.run(Unknown Source:5)
+
+Signed-off-by: afterallafk <shivamatiet2001@gmail.com>
+Signed-off-by: Pranav Vashi <neobuddy89@gmail.com>
+Signed-off-by: Dmitrii <bankersenator@gmail.com>
+---
+ core/java/android/hardware/camera2/CameraManager.java | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/core/java/android/hardware/camera2/CameraManager.java b/core/java/android/hardware/camera2/CameraManager.java
+index 5cd5ecd7beda..4e971a6a38b4 100644
+--- a/core/java/android/hardware/camera2/CameraManager.java
++++ b/core/java/android/hardware/camera2/CameraManager.java
+@@ -2538,6 +2538,12 @@ public final class CameraManager {
+         }
+ 
+         private static void sortCameraIds(String[] cameraIds) {
++            // Check if the cameraIds array is null to avoid NullPointerException
++            if (cameraIds == null) {
++                Log.e("CameraManagerGlobal", "Camera ID array is null");
++                return;
++            }
++
+             // The sort logic must match the logic in
+             // libcameraservice/common/CameraProviderManager.cpp::getAPI1CompatibleCameraDeviceIds
+             Arrays.sort(cameraIds, new Comparator<String>() {
+-- 
+2.47.3
+
+
+From 2e7092ee6c918dfb6151aae47d14b07121d67e87 Mon Sep 17 00:00:00 2001
+From: Pulkit077 <pulkitagarwal2k1@gmail.com>
+Date: Sat, 21 Oct 2023 19:01:05 +0530
+Subject: [PATCH 04/11] core: camera2: StreamConfigurationMap: add constructor
+ for MIUI camera
+
+Change-Id: Ie903c11161664153cb26858da426b546e655d3d2
+Signed-off-by: Pulkit077 <pulkitagarwal2k1@gmail.com>
+Signed-off-by: Pranav Vashi <neobuddy89@gmail.com>
+Signed-off-by: Dmitrii <bankersenator@gmail.com>
+---
+ .../params/StreamConfigurationMap.java        | 61 +++++++++++++++++++
+ 1 file changed, 61 insertions(+)
+
+diff --git a/core/java/android/hardware/camera2/params/StreamConfigurationMap.java b/core/java/android/hardware/camera2/params/StreamConfigurationMap.java
+index 323459d553ac..d78a5116bc4c 100644
+--- a/core/java/android/hardware/camera2/params/StreamConfigurationMap.java
++++ b/core/java/android/hardware/camera2/params/StreamConfigurationMap.java
+@@ -151,6 +151,67 @@ public final class StreamConfigurationMap {
+                     listHighResolution, /*enforceImplementationDefined*/ true);
+     }
+ 
++    /**
++     * Create a new {@link StreamConfigurationMap}.
++     *
++     * <p>The array parameters ownership is passed to this object after creation; do not
++     * write to them after this constructor is invoked.</p>
++     *
++     * @param configurations a non-{@code null} array of {@link StreamConfiguration}
++     * @param minFrameDurations a non-{@code null} array of {@link StreamConfigurationDuration}
++     * @param stallDurations a non-{@code null} array of {@link StreamConfigurationDuration}
++     * @param depthConfigurations a non-{@code null} array of depth {@link StreamConfiguration}
++     * @param depthMinFrameDurations a non-{@code null} array of depth
++     *        {@link StreamConfigurationDuration}
++     * @param depthStallDurations a non-{@code null} array of depth
++     *        {@link StreamConfigurationDuration}
++     * @param dynamicDepthConfigurations a non-{@code null} array of dynamic depth
++     *        {@link StreamConfiguration}
++     * @param dynamicDepthMinFrameDurations a non-{@code null} array of dynamic depth
++     *        {@link StreamConfigurationDuration}
++     * @param dynamicDepthStallDurations a non-{@code null} array of dynamic depth
++     *        {@link StreamConfigurationDuration}
++     * @param heicConfigurations a non-{@code null} array of heic {@link StreamConfiguration}
++     * @param heicMinFrameDurations a non-{@code null} array of heic
++     *        {@link StreamConfigurationDuration}
++     * @param heicStallDurations a non-{@code null} array of heic
++     *        {@link StreamConfigurationDuration}
++     * @param highSpeedVideoConfigurations an array of {@link HighSpeedVideoConfiguration}, null if
++     *        camera device does not support high speed video recording
++     * @param listHighResolution a flag indicating whether the device supports BURST_CAPTURE
++     *        and thus needs a separate list of slow high-resolution output sizes
++     * @throws NullPointerException if any of the arguments except highSpeedVideoConfigurations
++     *         were {@code null} or any subelements were {@code null}
++     *
++     * @hide
++     */
++    public StreamConfigurationMap(
++            StreamConfiguration[] configurations,
++            StreamConfigurationDuration[] minFrameDurations,
++            StreamConfigurationDuration[] stallDurations,
++            StreamConfiguration[] depthConfigurations,
++            StreamConfigurationDuration[] depthMinFrameDurations,
++            StreamConfigurationDuration[] depthStallDurations,
++            StreamConfiguration[] dynamicDepthConfigurations,
++            StreamConfigurationDuration[] dynamicDepthMinFrameDurations,
++            StreamConfigurationDuration[] dynamicDepthStallDurations,
++            StreamConfiguration[] heicConfigurations,
++            StreamConfigurationDuration[] heicMinFrameDurations,
++            StreamConfigurationDuration[] heicStallDurations,
++            HighSpeedVideoConfiguration[] highSpeedVideoConfigurations,
++            ReprocessFormatsMap inputOutputFormatsMap,
++            boolean listHighResolution) {
++        this(configurations, minFrameDurations, stallDurations,
++                    depthConfigurations, depthMinFrameDurations, depthStallDurations,
++                    dynamicDepthConfigurations, dynamicDepthMinFrameDurations,
++                    dynamicDepthStallDurations,
++                    heicConfigurations, heicMinFrameDurations, heicStallDurations,
++                    null /*jpegRConfigurations*/, null /*jpegRMinFrameDurations*/, null /*jpegRStallDurations*/,
++                    null /*heicUltraHDRConfigurations*/, null /*heicUltraHDRMinFrameDurations*/, null /*heicUltraHDRStallDurations*/,
++                    highSpeedVideoConfigurations, inputOutputFormatsMap, listHighResolution,
++                    /*enforceImplementationDefined*/ true);
++    }
++
+     /**
+      * Create a new {@link StreamConfigurationMap}.
+      *
+-- 
+2.47.3
+
+
+From aef5db3994478e10e39b53667394b66ab819f461 Mon Sep 17 00:00:00 2001
+From: Guruprasad Gaonkar <ggaonk@codeaurora.org>
+Date: Thu, 30 Aug 2018 10:24:31 -0700
+Subject: [PATCH 05/11] Select the proper request list size
+
+Determine the request list size for high speed session based on
+the maxBatch size for that high speed stream configuration.
+
+CRs-Fixed: 2300725
+Bug: 113450772
+Change-Id: I3ae107596c6dd3362d7c375cf771d7d843d65745
+Signed-off-by: Pranav Vashi <neobuddy89@gmail.com>
+Signed-off-by: Dmitrii <bankersenator@gmail.com>
+---
+ ...onstrainedHighSpeedCaptureSessionImpl.java | 32 ++++++++++++++++++-
+ 1 file changed, 31 insertions(+), 1 deletion(-)
+
+diff --git a/core/java/android/hardware/camera2/impl/CameraConstrainedHighSpeedCaptureSessionImpl.java b/core/java/android/hardware/camera2/impl/CameraConstrainedHighSpeedCaptureSessionImpl.java
+index 87553d8c42ab..bbac7e379615 100644
+--- a/core/java/android/hardware/camera2/impl/CameraConstrainedHighSpeedCaptureSessionImpl.java
++++ b/core/java/android/hardware/camera2/impl/CameraConstrainedHighSpeedCaptureSessionImpl.java
+@@ -26,11 +26,13 @@ import android.hardware.camera2.CameraOfflineSession.CameraOfflineSessionCallbac
+ import android.hardware.camera2.CaptureRequest;
+ import android.hardware.camera2.params.OutputConfiguration;
+ import android.hardware.camera2.params.StreamConfigurationMap;
++import android.hardware.camera2.params.HighSpeedVideoConfiguration;
+ import android.hardware.camera2.utils.SurfaceUtils;
+ import android.os.Handler;
+ import android.os.ConditionVariable;
+ import android.util.Range;
+ import android.util.Log;
++import android.util.Size;
+ import android.view.Surface;
+ 
+ import java.util.ArrayList;
+@@ -118,7 +120,7 @@ public class CameraConstrainedHighSpeedCaptureSessionImpl
+         }
+         Log.v(TAG, "previewFps: " + previewFps);
+ 
+-        int requestListSize = fpsRange.getUpper() / previewFps;
++        int requestListSize = getHighSpeedRequestListSize(fpsRange, outputSurfaces);
+         // If it's a preview, keep requestList size fixed = 1.
+         if (fpsRange.getUpper() > fpsRange.getLower()) {
+             requestListSize = 1;
+@@ -203,6 +205,34 @@ public class CameraConstrainedHighSpeedCaptureSessionImpl
+         return true;
+     }
+ 
++    private int getHighSpeedRequestListSize(Range<Integer> fpsRange, Collection<Surface> surfaces) {
++        int requestListSize = 0;
++
++        for (Surface surface : surfaces) {
++
++            if (SurfaceUtils.isSurfaceForHwVideoEncoder(surface)) {
++                Size surfaceSize = SurfaceUtils.getSurfaceSize(surface);
++                HighSpeedVideoConfiguration[] highSpeedVideoConfigurations =
++                    mCharacteristics.get(CameraCharacteristics.CONTROL_AVAILABLE_HIGH_SPEED_VIDEO_CONFIGURATIONS);
++
++                // Get the batchsize for matching FPS & video size
++                for (HighSpeedVideoConfiguration config : highSpeedVideoConfigurations) {
++                    if (config.getSize().equals(surfaceSize) && config.getFpsRange().equals(fpsRange)) {
++                        requestListSize = config.getBatchSizeMax();
++                        break;
++                     }
++                }
++                break;
++            }
++        }
++
++        if (requestListSize == 0) {
++            // If cant' find the matching batch size,  limit the preview to 30fps.
++            requestListSize = fpsRange.getUpper() / 30;
++        }
++        return requestListSize;
++    }
++
+     @Override
+     public CameraDevice getDevice() {
+         return mSessionImpl.getDevice();
+-- 
+2.47.3
+
+
+From 96c3b11ffdf4e570d33452011a906cdc4acbda02 Mon Sep 17 00:00:00 2001
+From: Sauhard Pande <sauhardp@codeaurora.org>
+Date: Thu, 17 May 2018 15:29:06 +0530
+Subject: [PATCH 06/11] Camera2: Notify fps as Session Based Parameter
+
+Provided interface to enable session based parameter
+to select sensor mode.
+
+CRs-Fixed: 2152363
+
+Change-Id: I214e51f1dff40dfa2be240e61fc99661ea0fa58a
+Signed-off-by: Pranav Vashi <neobuddy89@gmail.com>
+Signed-off-by: Dmitrii <bankersenator@gmail.com>
+---
+ core/java/android/hardware/camera2/CameraDevice.java        | 4 ++++
+ .../android/hardware/camera2/impl/CameraDeviceImpl.java     | 6 ++++++
+ 2 files changed, 10 insertions(+)
+
+diff --git a/core/java/android/hardware/camera2/CameraDevice.java b/core/java/android/hardware/camera2/CameraDevice.java
+index affc5004403c..08c39961aa3b 100644
+--- a/core/java/android/hardware/camera2/CameraDevice.java
++++ b/core/java/android/hardware/camera2/CameraDevice.java
+@@ -1404,6 +1404,10 @@ public abstract class CameraDevice implements AutoCloseable {
+     @Override
+     public abstract void close();
+ 
++    /** @hide */
++    public abstract void setVendorStreamConfigMode(int index)
++            throws CameraAccessException;
++
+     /**
+      * Checks whether a particular {@link SessionConfiguration} is supported by the camera device.
+      *
+diff --git a/core/java/android/hardware/camera2/impl/CameraDeviceImpl.java b/core/java/android/hardware/camera2/impl/CameraDeviceImpl.java
+index c0e1337402ab..92c1dfeaba6b 100644
+--- a/core/java/android/hardware/camera2/impl/CameraDeviceImpl.java
++++ b/core/java/android/hardware/camera2/impl/CameraDeviceImpl.java
+@@ -113,6 +113,7 @@ public class CameraDeviceImpl extends CameraDevice
+     };
+ 
+     private static final int REQUEST_ID_NONE = -1;
++    private int customOpMode = 0;
+ 
+     /**
+      * Starting {@link Build.VERSION_CODES#VANILLA_ICE_CREAM},
+@@ -581,6 +582,10 @@ public class CameraDeviceImpl extends CameraDevice
+         }
+     }
+ 
++    public void setVendorStreamConfigMode(int fpsrange) {
++        customOpMode = fpsrange;
++    }
++
+     @Override
+     public String getId() {
+         return mCameraId;
+@@ -710,6 +715,7 @@ public class CameraDeviceImpl extends CameraDevice
+                         mConfiguredOutputs.put(streamId, outConfig);
+                     }
+                 }
++                operatingMode = (operatingMode | (customOpMode << 16));
+ 
+                 int offlineStreamIds[];
+                 if (sessionParams != null) {
+-- 
+2.47.3
+
+
+From f5516f48af9290099a48f62bc094a7724f01a88b Mon Sep 17 00:00:00 2001
+From: afterallafk <shivamatiet2001@gmail.com>
+Date: Thu, 27 Jun 2024 18:09:03 +0530
+Subject: [PATCH 07/11] CameraManager: Fix IllegalArgumentException on getting
+ cameraIds
+
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: Camera startup failed
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: java.lang.IllegalArgumentException: getCameraCharacteristics:1354: Unable to retrieve camera characteristics for unknown device 0: No such file or directory (-2)
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: 	at android.hardware.camera2.utils.ExceptionUtils.throwAsPublicException(ExceptionUtils.java:66)
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: 	at android.hardware.camera2.CameraManager.getCameraCharacteristics(CameraManager.java:679)
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: 	at android.hardware.camera2.CameraManager.getCameraCharacteristics(CameraManager.java:620)
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: 	at android.hardware.camera2.CameraManager.openCameraDeviceUserAsync(CameraManager.java:849)
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: 	at android.hardware.camera2.CameraManager.openCameraForUid(CameraManager.java:1191)
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: 	at android.hardware.camera2.CameraManager.openCameraForUid(CameraManager.java:1213)
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: 	at android.hardware.camera2.CameraManager.openCamera(CameraManager.java:1011)
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: 	at com.google.android.libraries.lens.view.g.c.b.p.a(PG:5)
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: 	at com.google.android.libraries.lens.view.g.c.a.run(PG:1)
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: 	at android.os.Handler.handleCallback(Handler.java:959)
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: 	at android.os.Handler.dispatchMessage(Handler.java:100)
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: 	at android.os.Looper.loopOnce(Looper.java:232)
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: 	at android.os.Looper.loop(Looper.java:317)
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: 	at android.os.HandlerThread.run(HandlerThread.java:85)
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: Caused by: android.os.ServiceSpecificException: getCameraCharacteristics:1354: Unable to retrieve camera characteristics for unknown device 0: No such file or directory (-2) (code 3)
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3197)
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: 	at android.os.Parcel.createException(Parcel.java:3167)
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: 	at android.os.Parcel.readException(Parcel.java:3150)
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: 	at android.os.Parcel.readException(Parcel.java:3092)
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: 	at android.hardware.ICameraService$Stub$Proxy.getCameraCharacteristics(ICameraService.java:998)
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: 	at android.hardware.camera2.CameraManager.getCameraCharacteristics(CameraManager.java:658)
+06-27 15:08:55.770  4073  7354 E CameraReopenHelper: 	... 12 more
+
+Change-Id: 7905f9a73655f0611925c3143310a3b24caf4d3d
+Signed-off-by: afterallafk <shivamatiet2001@gmail.com>
+Signed-off-by: Jis G Jacob <studiokeys@blissroms.org>
+Signed-off-by: TogoFire <togofire@mailfence.com>
+Signed-off-by: Dmitrii <bankersenator@gmail.com>
+---
+ .../android/hardware/camera2/CameraManager.java  | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
+
+diff --git a/core/java/android/hardware/camera2/CameraManager.java b/core/java/android/hardware/camera2/CameraManager.java
+index 4e971a6a38b4..3754161a9203 100644
+--- a/core/java/android/hardware/camera2/CameraManager.java
++++ b/core/java/android/hardware/camera2/CameraManager.java
+@@ -751,10 +751,13 @@ public final class CameraManager {
+         synchronized (mLock) {
+             ICameraService cameraService = CameraManagerGlobal.get().getCameraService();
+             if (cameraService == null) {
+-                throw new CameraAccessException(CameraAccessException.CAMERA_DISCONNECTED,
+-                        "Camera service is currently unavailable");
++                throw new CameraAccessException(CameraAccessException.CAMERA_DISCONNECTED, "Camera service is currently unavailable");
+             }
+             try {
++                // Validate cameraId
++                if (cameraId == null || cameraId.isEmpty()) {
++                    throw new IllegalArgumentException("Invalid cameraId: " + cameraId);
++                }
+                 CameraMetadataNative info =
+                         cameraService.getCameraCharacteristics(
+                                 cameraId,
+@@ -764,11 +767,14 @@ public final class CameraManager {
+                                 getDevicePolicyFromContext(mContext));
+                 characteristics = prepareCameraCharacteristics(cameraId, info, cameraService);
+             } catch (ServiceSpecificException e) {
+-                throw ExceptionUtils.throwAsPublicException(e);
++                if (e.errorCode == -2) { // No such file or directory
++                    throw new IllegalArgumentException("Unable to retrieve camera characteristics for unknown device " + cameraId + ": No such file or directory", e);
++                } else {
++                    throw ExceptionUtils.throwAsPublicException(e);
++                }
+             } catch (RemoteException e) {
+                 // Camera service died - act as if the camera was disconnected
+-                throw new CameraAccessException(CameraAccessException.CAMERA_DISCONNECTED,
+-                        "Camera service is currently unavailable", e);
++                throw new CameraAccessException(CameraAccessException.CAMERA_DISCONNECTED, "Camera service is currently unavailable", e);
+             }
+         }
+         registerDeviceStateListener(characteristics);
+-- 
+2.47.3
+
+
+From 8417aae38a2fe3a514107c206e6061eff4a12d0e Mon Sep 17 00:00:00 2001
+From: Pranav Vashi <neobuddy89@gmail.com>
+Date: Tue, 2 Jul 2024 00:19:27 +0530
+Subject: [PATCH 08/11] Camera: Prevent crash when unable to find tag
+
+* Some prebuilt camera apps try caching tag before setting value.
+  When tag is not found, it crashes the app.
+
+Log:
+
+time: 1719773472448
+msg: java.lang.IllegalArgumentException: Could not find tag for key 'org.codeaurora.qcamera3.saturation.use_saturation')
+stacktrace: io.reactivex.exceptions.OnErrorNotImplementedException: java.lang.IllegalArgumentException: Could not find tag for key 'org.codeaurora.qcamera3.saturation.use_saturation')
+	at io.reactivex.internal.functions.Functions$OnErrorMissingConsumer.accept(Unknown Source:2)
+	at io.reactivex.internal.functions.Functions$OnErrorMissingConsumer.accept(Unknown Source:2)
+	at io.reactivex.internal.observers.LambdaObserver.onError(Unknown Source:13)
+	at io.reactivex.internal.observers.LambdaObserver.onNext(Unknown Source:25)
+	at io.reactivex.internal.operators.observable.ObservableObserveOn$ObserveOnObserver.drainNormal(Unknown Source:47)
+	at io.reactivex.internal.operators.observable.ObservableObserveOn$ObserveOnObserver.run(Unknown Source:8)
+	at io.reactivex.internal.schedulers.ScheduledRunnable.run(Unknown Source:13)
+	at io.reactivex.internal.schedulers.ScheduledRunnable.call(Unknown Source:0)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:307)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+	at com.xiaomi.camera.rx.CameraSchedulers$2.run(Unknown Source:16)
+	at java.lang.Thread.run(Thread.java:1012)
+Caused by: java.lang.IllegalArgumentException: java.lang.IllegalArgumentException: Could not find tag for key 'org.codeaurora.qcamera3.saturation.use_saturation')
+	at com.android.camera2.vendortag.VendorTagHelper.handleException(Unknown Source:35)
+	at com.android.camera2.vendortag.VendorTagHelper.trySetValue(Unknown Source:11)
+	at com.android.camera2.vendortag.VendorTagHelper.setValue(Unknown Source:2)
+	at com.android.camera2.compat.MiCameraCompatQcomImpl.applySaturation(Unknown Source:23)
+	at com.android.camera2.compat.MiCameraCompat.applySaturation(Unknown Source:2)
+	at com.android.camera2.CaptureRequestBuilder.applySaturation(Unknown Source:10)
+	at com.android.camera2.CameraConfigManager.lambda$setSaturation$25(Unknown Source:6)
+	at com.android.camera2.CameraConfigManager.OooOo(Unknown Source:0)
+	at OooO0OO.OooO0O0.OooO0O0.o0000.accept(Unknown Source:4)
+	at java.util.Optional.ifPresent(Optional.java:178)
+	at com.android.camera2.CameraConfigManager.setSaturation(Unknown Source:39)
+	at com.android.camera.module.Camera2Module.updateSaturation(Unknown Source:49)
+	at com.android.camera.module.Camera2Module.consumePreference(Unknown Source:175)
+	at com.android.camera.features.mode.capture.CaptureModule.consumePreference(Unknown Source:0)
+	at com.android.camera.module.BaseModule$ModuleConsumer.accept(Unknown Source:125)
+	at com.android.camera.module.BaseModule$ModuleConsumer.accept(Unknown Source:2)
+	at io.reactivex.internal.observers.LambdaObserver.onNext(Unknown Source:8)
+	... 10 more
+Caused by: java.lang.IllegalArgumentException: Could not find tag for key 'org.codeaurora.qcamera3.saturation.use_saturation')
+	at android.hardware.camera2.impl.CameraMetadataNative.nativeGetTagFromKeyLocal(Native Method)
+	at android.hardware.camera2.impl.CameraMetadataNative.setBase(CameraMetadataNative.java:1919)
+	at android.hardware.camera2.impl.CameraMetadataNative.set(CameraMetadataNative.java:524)
+	at android.hardware.camera2.impl.CameraMetadataNative.set(CameraMetadataNative.java:528)
+	at android.hardware.camera2.CaptureRequest$Builder.set(CaptureRequest.java:882)
+	at com.android.camera2.vendortag.VendorTagHelper.trySetValue(Unknown Source:6)
+	... 25 more
+
+Signed-off-by: Pranav Vashi <neobuddy89@gmail.com>
+Signed-off-by: Dmitrii <bankersenator@gmail.com>
+---
+ .../camera2/impl/CameraMetadataNative.java    | 44 ++++++++++---------
+ 1 file changed, 24 insertions(+), 20 deletions(-)
+
+diff --git a/core/java/android/hardware/camera2/impl/CameraMetadataNative.java b/core/java/android/hardware/camera2/impl/CameraMetadataNative.java
+index d7b6f116e452..2939240f495b 100644
+--- a/core/java/android/hardware/camera2/impl/CameraMetadataNative.java
++++ b/core/java/android/hardware/camera2/impl/CameraMetadataNative.java
+@@ -1993,30 +1993,34 @@ public class CameraMetadataNative implements Parcelable {
+     // we expect the metadata's properties such as vendor id etc to
+     // stay the same and as a result the whole method should be synchronized for safety.
+     private synchronized <T> void setBase(Key<T> key, T value) {
+-        int tag, nativeType;
+-        if (key.hasTag()) {
+-            tag = key.getTag();
+-        } else {
+-            tag = nativeGetTagFromKeyLocal(mMetadataPtr, key.getName());
+-            key.cacheTag(tag);
+-        }
+-        if (value == null) {
+-            // Erase the entry
+-            writeValues(tag, /*src*/null);
+-            return;
+-        } // else update the entry to a new value
++        try {
++            int tag;
++            if (key.hasTag()) {
++                tag = key.getTag();
++            } else {
++                tag = nativeGetTagFromKeyLocal(mMetadataPtr, key.getName());
++                key.cacheTag(tag);
++            }
++            if (value == null) {
++                // Erase the entry
++                writeValues(tag, /*src*/null);
++                return;
++            } // else update the entry to a new value
+ 
+-        nativeType = nativeGetTypeFromTagLocal(mMetadataPtr, tag);
+-        Marshaler<T> marshaler = getMarshalerForKey(key, nativeType);
+-        int size = marshaler.calculateMarshalSize(value);
++            int nativeType = nativeGetTypeFromTagLocal(mMetadataPtr, tag);
++            Marshaler<T> marshaler = getMarshalerForKey(key, nativeType);
++            int size = marshaler.calculateMarshalSize(value);
+ 
+-        // TODO: Optimization. Cache the byte[] and reuse if the size is big enough.
+-        byte[] values = new byte[size];
++            // TODO: Optimization. Cache the byte[] and reuse if the size is big enough.
++            byte[] values = new byte[size];
+ 
+-        ByteBuffer buffer = ByteBuffer.wrap(values).order(ByteOrder.nativeOrder());
+-        marshaler.marshal(value, buffer);
++            ByteBuffer buffer = ByteBuffer.wrap(values).order(ByteOrder.nativeOrder());
++            marshaler.marshal(value, buffer);
+ 
+-        writeValues(tag, values);
++            writeValues(tag, values);
++        } catch (Exception e) {
++                // Do nothing
++        }
+     }
+ 
+     // Use Command pattern here to avoid lots of expensive if/equals checks in get for overridden
+-- 
+2.47.3
+
+
+From cd1fab70519a9e5ad821c083884c1828b648fd0c Mon Sep 17 00:00:00 2001
+From: Pranav Vashi <neobuddy89@gmail.com>
+Date: Thu, 6 Mar 2025 22:48:07 +0530
+Subject: [PATCH 09/11] Camera: Prevent crash with prebuilt camera metadata *
+ Some devices need prebuilt camera metadata along with prebuilt
+ libcameraservice for propreitary interfaces implemented by OEM. * However,
+ Prebuilt camera metadata of 12.0 crashed on 12.1 since exceptions weren't
+ handled properly. Fix it.
+
+Signed-off-by: Pranav Vashi <neobuddy89@gmail.com>
+Signed-off-by: Dmitrii <bankersenator@gmail.com>
+---
+ .../camera2/impl/CameraMetadataNative.java    | 52 ++++++++++---------
+ 1 file changed, 28 insertions(+), 24 deletions(-)
+
+diff --git a/core/java/android/hardware/camera2/impl/CameraMetadataNative.java b/core/java/android/hardware/camera2/impl/CameraMetadataNative.java
+index 2939240f495b..0d9d8e9740ec 100644
+--- a/core/java/android/hardware/camera2/impl/CameraMetadataNative.java
++++ b/core/java/android/hardware/camera2/impl/CameraMetadataNative.java
+@@ -605,36 +605,40 @@ public class CameraMetadataNative implements Parcelable {
+     }
+ 
+     private <T> T getBase(Key<T> key) {
+-        int tag, nativeType;
+-        byte[] values = null;
+-        synchronized (this) {
+-            if (key.hasTag()) {
+-                tag = key.getTag();
+-            } else {
+-                tag = nativeGetTagFromKeyLocal(mMetadataPtr, key.getName());
+-                key.cacheTag(tag);
+-            }
+-            values = readValues(tag);
+-            if (values == null) {
+-                // If the key returns null, use the fallback key if exists.
+-                // This is to support old key names for the newly published keys.
+-                if (key.mFallbackName == null) {
+-                    return null;
++        try {
++            int tag, nativeType;
++            byte[] values = null;
++            synchronized (this) {
++                if (key.hasTag()) {
++                    tag = key.getTag();
++                } else {
++                    tag = nativeGetTagFromKeyLocal(mMetadataPtr, key.getName());
++                    key.cacheTag(tag);
+                 }
+-                tag = nativeGetTagFromKeyLocal(mMetadataPtr, key.mFallbackName);
+                 values = readValues(tag);
+                 if (values == null) {
+-                    return null;
++                    // If the key returns null, use the fallback key if exists.
++                    // This is to support old key names for the newly published keys.
++                    if (key.mFallbackName == null) {
++                        return null;
++                    }
++                    tag = nativeGetTagFromKeyLocal(mMetadataPtr, key.mFallbackName);
++                    values = readValues(tag);
++                    if (values == null) {
++                        return null;
++                    }
+                 }
+-            }
+ 
+-            nativeType = nativeGetTypeFromTagLocal(mMetadataPtr, tag);
++                nativeType = nativeGetTypeFromTagLocal(mMetadataPtr, tag);
++            }
++            // This block of code doesn't need to be synchronized since we aren't writing or reading
++            // from the metadata buffer for this instance of CameraMetadataNative.
++            Marshaler<T> marshaler = getMarshalerForKey(key, nativeType);
++            ByteBuffer buffer = ByteBuffer.wrap(values).order(ByteOrder.nativeOrder());
++            return marshaler.unmarshal(buffer);
++        } catch (Exception e) {
++                return null;
+         }
+-        // This block of code doesn't need to be synchronized since we aren't writing or reading
+-        // from the metadata buffer for this instance of CameraMetadataNative.
+-        Marshaler<T> marshaler = getMarshalerForKey(key, nativeType);
+-        ByteBuffer buffer = ByteBuffer.wrap(values).order(ByteOrder.nativeOrder());
+-        return marshaler.unmarshal(buffer);
+     }
+ 
+     // Use Command pattern here to avoid lots of expensive if/equals checks in get for overridden
+-- 
+2.47.3
+
+
+From f43254043251c84c3fd78e304c73a776f1b2ea51 Mon Sep 17 00:00:00 2001
+From: Pranav Vashi <neobuddy89@gmail.com>
+Date: Fri, 28 Mar 2025 00:12:49 +0530
+Subject: [PATCH 10/11] camera2: StreamConfigurationMap: add another
+ constructor for MIUI camera on A15 QPR2
+
+Log:
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat: Failed to construct config map.
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat: java.lang.NoSuchMethodException: android.hardware.camera2.params.StreamConfigurationMap.<init> [class [Landroid.hardware.camera2.params.StreamConfiguration;, class [Landroid.hardware.camera2.params.StreamConfigurationDuration;, class [Landroid.hardware.camera2.params.StreamConfigurationDuration;, class [Landroid.hardware.camera2.params.StreamConfiguration;, class [Landroid.hardware.camera2.params.StreamConfigurationDuration;, class [Landroid.hardware.camera2.params.StreamConfigurationDuration;, class [Landroid.hardware.camera2.params.StreamConfiguration;, class [Landroid.hardware.camera2.params.StreamConfigurationDuration;, class [Landroid.hardware.camera2.params.StreamConfigurationDuration;, class [Landroid.hardware.camera2.params.StreamConfiguration;, class [Landroid.hardware.camera2.params.StreamConfigurationDuration;, class [Landroid.hardware.camera2.params.StreamConfigurationDuration;, class [Landroid.hardware.camera2.params.StreamConfiguration;, class [Landroid.hardware.camera2.params.StreamConfigurationDuration;, class [Landroid.hardware.camera2.params.StreamConfigurationDuration;, class [Landroid.hardware.camera2.params.HighSpeedVideoConfiguration;, class android.hardware.camera2.params.ReprocessFormatsMap, boolean]
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at java.lang.Class.getConstructor0(Class.java:3395)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at java.lang.Class.getDeclaredConstructor(Class.java:3077)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at d.o.i.b.c.b(SourceFile:5)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at d.d.b.g4.r1(SourceFile:21)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at d.d.b.g4.W1(SourceFile:4)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at d.d.b.g4.V1(SourceFile:1)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at d.d.b.h4.v1(SourceFile:1)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at d.d.a.d7.l8.n1.C(SourceFile:2)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at d.d.a.d7.l8.n1.p(SourceFile:8)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at d.d.a.d7.q7.gp(SourceFile:18)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at d.d.a.d7.q7.Nh(SourceFile:46)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at d.d.a.t6.b.i.c0.Nh(SourceFile:1)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at d.d.a.d7.p7.Ha(SourceFile:1)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at d.d.a.d7.q7.lj(SourceFile:14)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at d.d.a.d7.q7.nj(SourceFile:6)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at d.d.a.t6.b.i.c0.nj(SourceFile:1)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at d.d.a.d7.p7.Ma(SourceFile:2)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at d.d.a.d7.o8.a.g.a(SourceFile:32)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at d.d.a.d7.o8.a.g.apply(SourceFile:1)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at io.reactivex.internal.operators.single.SingleMap$MapSingleObserver.onSuccess(SourceFile:1)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at io.reactivex.internal.operators.single.SingleObserveOn$ObserveOnSingleObserver.run(SourceFile:3)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at io.reactivex.internal.schedulers.ScheduledDirectTask.call(SourceFile:3)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at io.reactivex.internal.schedulers.ScheduledDirectTask.call(SourceFile:1)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:348)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1156)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:651)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at d.o.f.u.k$b.run(SourceFile:4)
+03-26 18:07:26.280  8502  8705 W CameraConstructCompat:   at java.lang.Thread.run(Thread.java:1119)
+03-26 18:07:26.280  8502  8705 D CAM_CameraSizeManager: updateSize: The best sensor raw image size: 0x0
+03-26 18:07:26.280  8502  8705 D CAM_CameraCapabilities: addStreamConfigurationToList: xiaomi.scaler.availableLimitStreamConfigurations: size = 222
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat: Failed to construct config map.
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat: java.lang.NoSuchMethodException: android.hardware.camera2.params.StreamConfigurationMap.<init> [class [Landroid.hardware.camera2.params.StreamConfiguration;, class [Landroid.hardware.camera2.params.StreamConfigurationDuration;, class [Landroid.hardware.camera2.params.StreamConfigurationDuration;, class [Landroid.hardware.camera2.params.StreamConfiguration;, class [Landroid.hardware.camera2.params.StreamConfigurationDuration;, class [Landroid.hardware.camera2.params.StreamConfigurationDuration;, class [Landroid.hardware.camera2.params.StreamConfiguration;, class [Landroid.hardware.camera2.params.StreamConfigurationDuration;, class [Landroid.hardware.camera2.params.StreamConfigurationDuration;, class [Landroid.hardware.camera2.params.StreamConfiguration;, class [Landroid.hardware.camera2.params.StreamConfigurationDuration;, class [Landroid.hardware.camera2.params.StreamConfigurationDuration;, class [Landroid.hardware.camera2.params.StreamConfiguration;, class [Landroid.hardware.camera2.params.StreamConfigurationDuration;, class [Landroid.hardware.camera2.params.StreamConfigurationDuration;, class [Landroid.hardware.camera2.params.HighSpeedVideoConfiguration;, class android.hardware.camera2.params.ReprocessFormatsMap, boolean]
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at java.lang.Class.getConstructor0(Class.java:3395)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at java.lang.Class.getDeclaredConstructor(Class.java:3077)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at d.o.i.b.c.b(SourceFile:5)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at d.d.b.g4.r1(SourceFile:21)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at d.d.b.g4.W1(SourceFile:4)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at d.d.b.g4.V1(SourceFile:1)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at d.d.b.h4.v1(SourceFile:1)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at d.d.a.d7.l8.n1.p(SourceFile:11)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at d.d.a.d7.q7.gp(SourceFile:18)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at d.d.a.d7.q7.Nh(SourceFile:46)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at d.d.a.t6.b.i.c0.Nh(SourceFile:1)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at d.d.a.d7.p7.Ha(SourceFile:1)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at d.d.a.d7.q7.lj(SourceFile:14)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at d.d.a.d7.q7.nj(SourceFile:6)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at d.d.a.t6.b.i.c0.nj(SourceFile:1)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at d.d.a.d7.p7.Ma(SourceFile:2)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at d.d.a.d7.o8.a.g.a(SourceFile:32)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at d.d.a.d7.o8.a.g.apply(SourceFile:1)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at io.reactivex.internal.operators.single.SingleMap$MapSingleObserver.onSuccess(SourceFile:1)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at io.reactivex.internal.operators.single.SingleObserveOn$ObserveOnSingleObserver.run(SourceFile:3)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at io.reactivex.internal.schedulers.ScheduledDirectTask.call(SourceFile:3)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at io.reactivex.internal.schedulers.ScheduledDirectTask.call(SourceFile:1)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:348)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1156)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:651)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at d.o.f.u.k$b.run(SourceFile:4)
+03-26 18:07:26.281  8502  8705 W CameraConstructCompat:   at java.lang.Thread.run(Thread.java:1119)
+
+Signed-off-by: Pranav Vashi <neobuddy89@gmail.com>
+Signed-off-by: Dmitrii <bankersenator@gmail.com>
+---
+ .../params/StreamConfigurationMap.java        | 69 +++++++++++++++++++
+ 1 file changed, 69 insertions(+)
+
+diff --git a/core/java/android/hardware/camera2/params/StreamConfigurationMap.java b/core/java/android/hardware/camera2/params/StreamConfigurationMap.java
+index d78a5116bc4c..940887c5cc16 100644
+--- a/core/java/android/hardware/camera2/params/StreamConfigurationMap.java
++++ b/core/java/android/hardware/camera2/params/StreamConfigurationMap.java
+@@ -212,6 +212,75 @@ public final class StreamConfigurationMap {
+                     /*enforceImplementationDefined*/ true);
+     }
+ 
++    /**
++     * Create a new {@link StreamConfigurationMap}.
++     *
++     * <p>The array parameters ownership is passed to this object after creation; do not
++     * write to them after this constructor is invoked.</p>
++     *
++     * @param configurations a non-{@code null} array of {@link StreamConfiguration}
++     * @param minFrameDurations a non-{@code null} array of {@link StreamConfigurationDuration}
++     * @param stallDurations a non-{@code null} array of {@link StreamConfigurationDuration}
++     * @param depthConfigurations a non-{@code null} array of depth {@link StreamConfiguration}
++     * @param depthMinFrameDurations a non-{@code null} array of depth
++     *        {@link StreamConfigurationDuration}
++     * @param depthStallDurations a non-{@code null} array of depth
++     *        {@link StreamConfigurationDuration}
++     * @param dynamicDepthConfigurations a non-{@code null} array of dynamic depth
++     *        {@link StreamConfiguration}
++     * @param dynamicDepthMinFrameDurations a non-{@code null} array of dynamic depth
++     *        {@link StreamConfigurationDuration}
++     * @param dynamicDepthStallDurations a non-{@code null} array of dynamic depth
++     *        {@link StreamConfigurationDuration}
++     * @param heicConfigurations a non-{@code null} array of heic {@link StreamConfiguration}
++     * @param heicMinFrameDurations a non-{@code null} array of heic
++     *        {@link StreamConfigurationDuration}
++     * @param heicStallDurations a non-{@code null} array of heic
++     *        {@link StreamConfigurationDuration}
++     * @param jpegRConfigurations a non-{@code null} array of Jpeg/R {@link StreamConfiguration}
++     * @param jpegRMinFrameDurations a non-{@code null} array of Jpeg/R
++     *        {@link StreamConfigurationDuration}
++     * @param jpegRStallDurations a non-{@code null} array of Jpeg/R
++     *        {@link StreamConfigurationDuration}
++     * @param highSpeedVideoConfigurations an array of {@link HighSpeedVideoConfiguration}, null if
++     *        camera device does not support high speed video recording
++     * @param listHighResolution a flag indicating whether the device supports BURST_CAPTURE
++     *        and thus needs a separate list of slow high-resolution output sizes
++     * @throws NullPointerException if any of the arguments except highSpeedVideoConfigurations
++     *         were {@code null} or any subelements were {@code null}
++     *
++     * @hide
++     */
++    public StreamConfigurationMap(
++            StreamConfiguration[] configurations,
++            StreamConfigurationDuration[] minFrameDurations,
++            StreamConfigurationDuration[] stallDurations,
++            StreamConfiguration[] depthConfigurations,
++            StreamConfigurationDuration[] depthMinFrameDurations,
++            StreamConfigurationDuration[] depthStallDurations,
++            StreamConfiguration[] dynamicDepthConfigurations,
++            StreamConfigurationDuration[] dynamicDepthMinFrameDurations,
++            StreamConfigurationDuration[] dynamicDepthStallDurations,
++            StreamConfiguration[] heicConfigurations,
++            StreamConfigurationDuration[] heicMinFrameDurations,
++            StreamConfigurationDuration[] heicStallDurations,
++            StreamConfiguration[] jpegRConfigurations,
++            StreamConfigurationDuration[] jpegRMinFrameDurations,
++            StreamConfigurationDuration[] jpegRStallDurations,
++            HighSpeedVideoConfiguration[] highSpeedVideoConfigurations,
++            ReprocessFormatsMap inputOutputFormatsMap,
++            boolean listHighResolution) {
++        this(configurations, minFrameDurations, stallDurations,
++                    depthConfigurations, depthMinFrameDurations, depthStallDurations,
++                    dynamicDepthConfigurations, dynamicDepthMinFrameDurations,
++                    dynamicDepthStallDurations,
++                    heicConfigurations, heicMinFrameDurations, heicStallDurations,
++                    jpegRConfigurations, jpegRMinFrameDurations, jpegRStallDurations,
++                    null /*heicUltraHDRConfigurations*/, null /*heicUltraHDRMinFrameDurations*/,
++                    null /*heicUltraHDRStallDurations*/, highSpeedVideoConfigurations, inputOutputFormatsMap,
++                    listHighResolution, /*enforceImplementationDefined*/ true);
++    }
++
+     /**
+      * Create a new {@link StreamConfigurationMap}.
+      *
+-- 
+2.47.3
+
+
+From cd6235d99d2964642cdf958eb43ae2e3cd4335ac Mon Sep 17 00:00:00 2001
+From: johnmart19 <johnivan19999@gmail.com>
+Date: Tue, 30 May 2023 21:47:32 +0300
+Subject: [PATCH 11/11] frameworks/base: Import Xiaomi Image Tags defenitions
+
+Signed-off-by: Pranav Vashi <neobuddy89@gmail.com>
+Signed-off-by: Dmitrii <bankersenator@gmail.com>
+---
+ .../android_hardware_camera2_DngCreator.cpp   | 45 +++++++++++++++++++
+ 1 file changed, 45 insertions(+)
+
+diff --git a/core/jni/android_hardware_camera2_DngCreator.cpp b/core/jni/android_hardware_camera2_DngCreator.cpp
+index 828f2eb76c60..f7d4e4cc2b8c 100644
+--- a/core/jni/android_hardware_camera2_DngCreator.cpp
++++ b/core/jni/android_hardware_camera2_DngCreator.cpp
+@@ -1514,6 +1514,19 @@ static sp<TiffWriter> DngCreator_setup(JNIEnv* env, jobject thiz, uint32_t image
+                 writer);
+     }
+ 
++    // MIUI ADD START
++    {
++        // market name
++        // Use "" to represent unknown productname as suggested in XiaoMi spec.
++        std::string productname = GetProperty("ro.product.marketname", "");
++        uint32_t count = static_cast<uint32_t>(productname.size()) + 1;
++
++        BAIL_IF_INVALID_RET_NULL_SP(writer->addEntry(TAG_XIAOMI_PRODUCT, count,
++                reinterpret_cast<const uint8_t*>(productname.c_str()), TIFF_IFD_0), env, TAG_XIAOMI_PRODUCT,
++                writer);
++    }
++    // END
++
+     {
+         // x resolution
+         uint32_t xres[] = { 72, 1 }; // default 72 ppi
+@@ -1660,6 +1673,38 @@ static sp<TiffWriter> DngCreator_setup(JNIEnv* env, jobject thiz, uint32_t image
+                 TIFF_IFD_0), env, TAG_FOCALLENGTH, writer);
+     }
+ 
++    {
++        // FocalLengthIn35mmFilm
++        uint16_t focalLengthIn35mmFilm = 0;
++        uint32_t tag = 0;
++        sp<VendorTagDescriptor> vTags;
++        sp<VendorTagDescriptorCache> cache = VendorTagDescriptorCache::getGlobalVendorTagCache();
++        if (cache) {
++            auto vendorId = results.getVendorId();
++            cache->getVendorTagDescriptor(vendorId, &vTags);
++        }
++
++        if (vTags != NULL) {
++            const char *section = "com.xiaomi.sensor.info";
++            const char *TagName = "focalLength35mm";
++            const String8 sectionName(section);
++            const String8 tagName(TagName);
++            status_t ret = vTags->lookupTag(tagName, sectionName, &tag);
++            if (ret == 0) {
++                camera_metadata_entry entry = results.find(tag);
++                if (entry.count != 0) {
++                    focalLengthIn35mmFilm =static_cast<uint16_t> (entry.data.f[0] + 0.5f);
++                    BAIL_IF_INVALID_RET_NULL_SP(writer->addEntry(TAG_FOCALLLENGTHIN35MMFILM, 1, &focalLengthIn35mmFilm,
++                            TIFF_IFD_0), env, TAG_FOCALLLENGTHIN35MMFILM, writer);
++                } else {
++                    ALOGW("%s: get focalLength35mm failed.", __FUNCTION__);
++                }
++            }
++        } else {
++            ALOGW("%s:com.xiaomi.sensor.info.focalLength35mm vTags is null.", __FUNCTION__);
++        }
++    }
++
+     {
+         // f number
+         camera_metadata_entry entry =
+-- 
+2.47.3
+
