@@ -51,6 +51,7 @@ patches=(
     # MIUI camera
     "frameworks/native:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/camera/0001-Native-Camera-Import-Release-Slot-Xiaomi-Changes.patch"
     "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/camera/0002-Base-Camera-11.patch"
+    "frameworks/av:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/camera/0003-frameworks-av-Import-Xiaomi-Image-Tags-defenitions.patch"
 )
 
 for patch in "${patches[@]}"; do
