@@ -1,13 +1,13 @@
 {
   "response": [
     {
-      "datetime": 1763622000,
-      "filename": "lineage-23.0-20251120-UNOFFICIAL-peridot.zip",
-      "id": "e3f3ba5a785079420b2178dc0e63fc12",
+      "datetime": 1769729400,
+      "filename": "lineage-23.2-20260129-UNOFFICIAL-peridot.zip",
+      "id": "e27a75c3d38f830fc078a861af33ddf4",
       "romtype": "UNOFFICIAL",
-      "size": 2314568610,
-      "url": "https://s591vla.storage.yandex.net/rdisk/274026e93cd4a4acfec0c340a47b1522698371fb0c9faed51c066bc4f47b493c/691f09be/iimQquvRp2bJEs5HnIXmVHlTXP6KRl8sAx4JA7CHlGQ1_Gdr3Qc8lwD19WgEIdlOYXG4ekVzAsp4Co_hTS8uIQ==?uid=1306502&filename=lineage-23.0-20251120-UNOFFICIAL-peridot.zip&disposition=attachment&hash=&limit=0&content_type=application%2Fjava-archive&owner_uid=1306502&fsize=2314568610&hid=e3f3ba5a785079420b2178dc0e63fc12&media_type=compressed&tknv=v3&etag=6f14bdaeb67c475f62bc11650d8de325&ts=64405da676b80&s=1e48090cd4ac90643c4051143ad258b3d4d76737dfbde10dab2749e5f8ce4e4a&pb=U2FsdGVkX199WFAkI8bwTdXPIqHLgEFMrX8Sj6Ry-igcOA11R3puERfqycwRIb8isGiWeZ7Q9byJbtsI36NBbcETHfgqisFt0GiaNpuxbJA",
-      "version": "23.0"
+      "size": 2569652791,
+      "url": "https://s413klg.storage.yandex.net/rdisk/46ae8d92d77f001f6fbfcfe68115475345c2caeebf23bedd9fa53768804f54fc/697ceb44/iimQquvRp2bJEs5HnIXmVNFrzfhEXH_8zwK8qrxWga793sFT2kOxmkCXDe1Sa2iZWU7RDRlo1XZATtr2SCB7IA==?uid=1306502&filename=lineage-23.2-20260129-UNOFFICIAL-peridot.zip&disposition=attachment&hash=&limit=0&content_type=application%2Fjava-archive&owner_uid=1306502&fsize=2569652791&hid=e27a75c3d38f830fc078a861af33ddf4&media_type=compressed&tknv=v3&etag=8e413f1c7f126af6b6e5619a72535fe4&ts=6499e5cde5900&s=d5c49e932619fe4bab69f3be967c43f3052fb301e96c899d4d098105c4bd3381&pb=U2FsdGVkX19sg38Ouj7_D_fV1zxbI5c7oRVs_fX5Frv7-Ajb9GC-XxJJvXKOAMsLUf2djHiJijRWIjJMOZNMaxZffkZ-hc9gfflnL4LUw0A",
+      "version": "23.2"
     }
   ]
 }
