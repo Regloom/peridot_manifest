@@ -1,0 +1,145 @@
+From 0b9491fcf4c60ba533ab2690a84d218e7d33134a Mon Sep 17 00:00:00 2001
+From: Dmitry Muhomor <muhomor.dmitry@gmail.com>
+Date: Mon, 18 Dec 2023 16:57:49 +0200
+Subject: [PATCH 1/4] aauto: add definition of restricted BLUETOOTH_PRIVILEGED
+ permission
+
+---
+ core/api/system-current.txt  | 1 +
+ core/res/AndroidManifest.xml | 4 ++++
+ 2 files changed, 5 insertions(+)
+
+diff --git a/core/api/system-current.txt b/core/api/system-current.txt
+index 52034ccde5f1..2645fa5fb4ae 100644
+--- a/core/api/system-current.txt
++++ b/core/api/system-current.txt
+@@ -106,6 +106,7 @@ package android {
+     field public static final String BIND_WALLPAPER_EFFECTS_GENERATION_SERVICE = "android.permission.BIND_WALLPAPER_EFFECTS_GENERATION_SERVICE";
+     field public static final String BIND_WEARABLE_SENSING_SERVICE = "android.permission.BIND_WEARABLE_SENSING_SERVICE";
+     field public static final String BLUETOOTH_MAP = "android.permission.BLUETOOTH_MAP";
++    field public static final String BLUETOOTH_PRIVILEGED_ANDROID_AUTO = "android.permission.BLUETOOTH_PRIVILEGED_ANDROID_AUTO";
+     field public static final String BRICK = "android.permission.BRICK";
+     field public static final String BRIGHTNESS_SLIDER_USAGE = "android.permission.BRIGHTNESS_SLIDER_USAGE";
+     field public static final String BROADCAST_CLOSE_SYSTEM_DIALOGS = "android.permission.BROADCAST_CLOSE_SYSTEM_DIALOGS";
+diff --git a/core/res/AndroidManifest.xml b/core/res/AndroidManifest.xml
+index 769c3d3110df..c948f2d88921 100644
+--- a/core/res/AndroidManifest.xml
++++ b/core/res/AndroidManifest.xml
+@@ -2592,6 +2592,10 @@
+     <permission android:name="android.permission.BLUETOOTH_PRIVILEGED"
+         android:protectionLevel="signature|privileged" />
+ 
++    <!--- @SystemApi @hide -->
++    <permission android:name="android.permission.BLUETOOTH_PRIVILEGED_ANDROID_AUTO"
++        android:protectionLevel="internal" />
++
+     <!-- @SystemApi Control access to email providers exclusively for Bluetooth
+          @hide
+     -->
+-- 
+2.47.3
+
+
+From 4e6338c5786c4708c08b0f5054e7983c5acc296c Mon Sep 17 00:00:00 2001
+From: Dmitry Muhomor <muhomor.dmitry@gmail.com>
+Date: Mon, 25 Dec 2023 21:22:23 +0200
+Subject: [PATCH 2/4] aauto: add definition of restricted
+ READ_PRIVILEGED_PHONE_STATE permission
+
+---
+ core/res/AndroidManifest.xml | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/core/res/AndroidManifest.xml b/core/res/AndroidManifest.xml
+index c948f2d88921..fb0b54ba348e 100644
+--- a/core/res/AndroidManifest.xml
++++ b/core/res/AndroidManifest.xml
+@@ -3107,6 +3107,10 @@
+     <permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
+         android:protectionLevel="signature|privileged|role" />
+ 
++    <!-- @hide -->
++    <permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE_ANDROID_AUTO"
++        android:protectionLevel="internal" />
++
+     <!-- Allows to read device identifiers and use ICC based authentication like EAP-AKA.
+          Often required in authentication to access the carrier's server and manage services
+          of the subscriber.
+-- 
+2.47.3
+
+
+From ed95d134fd82941a2c276ef1b8baa0bd93665a6a Mon Sep 17 00:00:00 2001
+From: Dmitry Muhomor <muhomor.dmitry@gmail.com>
+Date: Mon, 25 Dec 2023 21:19:38 +0200
+Subject: [PATCH 3/4] adjust definition of
+ TelecomManager.getUserSelectedOutgoingPhoneAccount()
+
+---
+ core/api/current.txt                                        | 2 +-
+ telecomm/framework/java/android/telecom/TelecomManager.java | 6 +++++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/core/api/current.txt b/core/api/current.txt
+index a1d5522e6ace..df200cb54074 100644
+--- a/core/api/current.txt
++++ b/core/api/current.txt
+@@ -45100,7 +45100,7 @@ package android.telecom {
+     method public android.telecom.PhoneAccountHandle getSimCallManager();
+     method @Nullable public android.telecom.PhoneAccountHandle getSimCallManagerForSubscription(int);
+     method @Nullable public String getSystemDialerPackage();
+-    method @Nullable @RequiresPermission(android.Manifest.permission.READ_PHONE_STATE) public android.telecom.PhoneAccountHandle getUserSelectedOutgoingPhoneAccount();
++    method @Nullable @RequiresPermission(anyOf={"android.permission.READ_PRIVILEGED_PHONE_STATE", "android.permission.READ_PRIVILEGED_PHONE_STATE_ANDROID_AUTO"}) public android.telecom.PhoneAccountHandle getUserSelectedOutgoingPhoneAccount();
+     method @RequiresPermission(android.Manifest.permission.READ_PHONE_STATE) public String getVoiceMailNumber(android.telecom.PhoneAccountHandle);
+     method @RequiresPermission(android.Manifest.permission.MODIFY_PHONE_STATE) public boolean handleMmi(String);
+     method @RequiresPermission(android.Manifest.permission.MODIFY_PHONE_STATE) public boolean handleMmi(String, android.telecom.PhoneAccountHandle);
+diff --git a/telecomm/framework/java/android/telecom/TelecomManager.java b/telecomm/framework/java/android/telecom/TelecomManager.java
+index febc5788e3f5..e66e2a51f521 100644
+--- a/telecomm/framework/java/android/telecom/TelecomManager.java
++++ b/telecomm/framework/java/android/telecom/TelecomManager.java
+@@ -1286,7 +1286,11 @@ public class TelecomManager {
+      * @return The user outgoing phone account selected by the user, or {@code null} if there is no
+      * user selected outgoing {@link PhoneAccountHandle}.
+      */
+-    @RequiresPermission(android.Manifest.permission.READ_PHONE_STATE)
++    @RequiresPermission(anyOf = {
++            // upstream incorrectly specifies unprivileged READ_PHONE_STATE permission instead
++            Manifest.permission.READ_PRIVILEGED_PHONE_STATE,
++            Manifest.permission.READ_PRIVILEGED_PHONE_STATE_ANDROID_AUTO
++    })
+     public @Nullable PhoneAccountHandle getUserSelectedOutgoingPhoneAccount() {
+         ITelecomService service = getTelecomService();
+         if (service != null) {
+-- 
+2.47.3
+
+
+From d63b07cd02e79e0253ae94cbd6bb7a65f77d795b Mon Sep 17 00:00:00 2001
+From: regloom <egor.tokarev@outlook.com>
+Date: Fri, 27 Feb 2026 17:16:31 +0400
+Subject: [PATCH 4/4] UnflaggedApi:
+ android.Manifest.permission#BLUETOOTH_PRIVILEGED_ANDROID_AUTO:     New API
+ must be flagged with @FlaggedApi: field
+ android.Manifest.permission.BLUETOOTH_PRIVILEGED_ANDROID_AUTO
+
+Change-Id: I5ef134253db9389862940adde1ccb7110469218c
+---
+ core/api/system-lint-baseline.txt | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/core/api/system-lint-baseline.txt b/core/api/system-lint-baseline.txt
+index 61d396d54f83..52c2950913ea 100644
+--- a/core/api/system-lint-baseline.txt
++++ b/core/api/system-lint-baseline.txt
+@@ -1967,6 +1967,8 @@ UnflaggedApi: android.Manifest.permission#ACCESS_SMARTSPACE:
+     New API must be flagged with @FlaggedApi: field android.Manifest.permission.ACCESS_SMARTSPACE
+ UnflaggedApi: android.Manifest.permission#ALWAYS_UPDATE_WALLPAPER:
+     New API must be flagged with @FlaggedApi: field android.Manifest.permission.ALWAYS_UPDATE_WALLPAPER
++UnflaggedApi: android.Manifest.permission#BLUETOOTH_PRIVILEGED_ANDROID_AUTO:
++    New API must be flagged with @FlaggedApi: field android.Manifest.permission.BLUETOOTH_PRIVILEGED_ANDROID_AUTO
+ UnflaggedApi: android.Manifest.permission#CAMERA_HEADLESS_SYSTEM_USER:
+     New API must be flagged with @FlaggedApi: field android.Manifest.permission.CAMERA_HEADLESS_SYSTEM_USER
+ UnflaggedApi: android.Manifest.permission#KEYPHRASE_ENROLLMENT_APPLICATION:
+-- 
+2.47.3
+

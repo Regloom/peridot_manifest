@@ -27,14 +27,14 @@ echo "============================"
 # KernelSU Next setup
 cd kernel/xiaomi/sm8635
 echo "======== Inside kernel/xiaomi/sm8635 ========"
-curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s v3.0.1
+curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s v3.1.0
 echo "======== Added KSU successfully ========"
 cd ../../..
 echo "======== Returned to root directory ========"
 
 # TEMP FIX:
 # vendor/xiaomi/peridot
-sed -i 's#hardware/voltage/interfaces/power-libperfmgr#hardware/lineage/interfaces/power-libperfmgr#g' vendor/xiaomi/peridot/Android.bp
+# sed -i 's#hardware/voltage/interfaces/power-libperfmgr#hardware/lineage/interfaces/power-libperfmgr#g' vendor/xiaomi/peridot/Android.bp
 # device/xiaomi/peridot-miuicamera/
 
 # Cleanup unused HAL display, media, audio
@@ -48,10 +48,17 @@ patches=(
     "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0003-SystemUI-Forward-port-HD-wifi-calling-statusbar-icon.patch"
     "packages/apps/Launcher3:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0004-Launcher3-Show-clear-all-button-in-recents-overview.patch"
     "packages/apps/Settings:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0005-Settings-Expose-radio-info-4636.patch"
+    # Vendor (Voltage => Lineage)
+    "vendor/xiaomi/peridot:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0000-voltage-lineage.patch"
     # MIUI camera
     "frameworks/native:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/camera/0001-Native-Camera-Import-Release-Slot-Xiaomi-Changes.patch"
     "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/camera/0002-Base-Camera-11.patch"
     "frameworks/av:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/camera/0003-frameworks-av-Import-Xiaomi-Image-Tags-defenitions.patch"
+    # BLUETOOTH
+    "packages/modules/Bluetooth:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/bluetooth_aa/0000-modules_bt_ten.patch"
+    "packages/modules/Bluetooth:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/bluetooth_aa/0000-modules_bt_aapriv.patch"
+    # AA
+    "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/bluetooth_aa/0000-frameworks_base_aa.patch"
 )
 
 for patch in "${patches[@]}"; do
@@ -86,7 +93,6 @@ brunch peridot userdebug
 echo "============="
 
 # Build manual
-
-# lunch lineage_peridot-bp1a-userdebug
+# lunch lineage_peridot-bp4a-userdebug
 # m installclean
-# m bacon
+# m bacon | tee build-$(date +%Y%m%d-%H%M%S).log

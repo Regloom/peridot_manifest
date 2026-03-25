@@ -1,0 +1,802 @@
+From 58e693c82c3b7d903a98fcbc568331b278c31af8 Mon Sep 17 00:00:00 2001
+From: Weifan <weifan.zhang@mediatek.com>
+Date: Fri, 1 Mar 2024 14:18:48 +0800
+Subject: [PATCH 01/10] Fix BT noise issue during startup
+
+[Description]
+Bluetooth audio noise
+
+[Root Cause]
+For SBC codec, when PCM data isn't enough to encode,
+it will be saved as residual data and fill it up next time.
+
+However, there is a bug in the existing code that clears the buffer every time, result the residual data being cleared.
+
+[Solution]
+Only when there is no residual data can the buffer be cleared.
+
+Bug: 335785333
+
+Test Result: ok
+
+CR-Id: DTV04109112
+Change-Id: I67951187792eb12abf6cc8e975011cfaa2524658
+Signed-off-by: Pranav Vashi <neobuddy89@gmail.com>
+Signed-off-by: Pranav Temkar <pranavtemkar@gmail.com>
+---
+ system/stack/a2dp/a2dp_sbc_encoder.cc | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/system/stack/a2dp/a2dp_sbc_encoder.cc b/system/stack/a2dp/a2dp_sbc_encoder.cc
+index f4b5817e88..0e5d1251c8 100644
+--- a/system/stack/a2dp/a2dp_sbc_encoder.cc
++++ b/system/stack/a2dp/a2dp_sbc_encoder.cc
+@@ -471,9 +471,12 @@ static void a2dp_sbc_encode_frames(uint8_t nb_frame) {
+     a2dp_sbc_encoder_cb.stats.media_read_total_expected_packets++;
+ 
+     do {
+-      /* Fill allocated buffer with 0 */
+-      memset(a2dp_sbc_encoder_cb.pcmBuffer, 0,
++      /* Fill allocated buffer with 0 when residue data is not existing*/
++      if (a2dp_sbc_encoder_cb.feeding_state.aa_feed_residue == 0) {
++        memset(a2dp_sbc_encoder_cb.pcmBuffer, 0,
+              blocm_x_subband * p_encoder_params->s16NumOfChannels);
++      }
++
+       //
+       // Read the PCM data and encode it. If necessary, upsample the data.
+       //
+-- 
+2.47.3
+
+
+From 53f57c638475dd00a471eb13717399a0969980ac Mon Sep 17 00:00:00 2001
+From: Alvin Francis <nivlafx@gmail.com>
+Date: Sun, 8 Dec 2024 22:23:50 -0400
+Subject: [PATCH 02/10] Bluetooth: Add missing connect permission
+
+Crash log
+
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: FATAL EXCEPTION: main
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: Process: com.android.bluetooth, PID: 2739
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: java.lang.SecurityException: Need android.permission.BLUETOOTH_CONNECT permission for android.content.AttributionSource@df0d7f37: GattService registerServer
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at com.android.bluetooth.Utils.checkPermissionForDataDelivery(Utils.java:637)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at com.android.bluetooth.Utils.checkConnectPermissionForDataDelivery(Utils.java:669)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at com.android.bluetooth.gatt.GattService.registerServer(GattService.java:3128)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at com.android.bluetooth.gatt.GattService$BluetoothGattBinder.registerServer(GattService.java:864)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at android.bluetooth.BluetoothGattServer.registerCallback(BluetoothGattServer.java:638)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at android.bluetooth.BluetoothManager.openGattServer(BluetoothManager.java:253)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at android.bluetooth.BluetoothManager.openGattServer(BluetoothManager.java:215)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at android.bluetooth.BluetoothManager.openGattServer(BluetoothManager.java:175)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at com.android.bluetooth.le_audio.LeAudioTmapGattServer$BluetoothGattServerProxy.open(LeAudioTmapGattServer.java:159)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at com.android.bluetooth.le_audio.LeAudioTmapGattServer.start(LeAudioTmapGattServer.java:75)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at com.android.bluetooth.le_audio.LeAudioService.registerTmap(LeAudioService.java:402)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at com.android.bluetooth.le_audio.LeAudioService.start(LeAudioService.java:469)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at com.android.bluetooth.btservice.AdapterService.setProfileServiceState(AdapterService.java:1547)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at com.android.bluetooth.btservice.AdapterService.setAllProfileServiceStates(AdapterService.java:1585)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at com.android.bluetooth.btservice.AdapterService.startProfileServices(AdapterService.java:1076)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at com.android.bluetooth.btservice.AdapterState$TurningOnState.enter(AdapterState.java:304)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at com.android.bluetooth.jarjar.com.android.internal.util.StateMachine$SmHandler.invokeEnterMethods(StateMachine.java:1042)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at com.android.bluetooth.jarjar.com.android.internal.util.StateMachine$SmHandler.performTransitions(StateMachine.java:888)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at com.android.bluetooth.jarjar.com.android.internal.util.StateMachine$SmHandler.handleMessage(StateMachine.java:828)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at android.os.Looper.loopOnce(Looper.java:232)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:317)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:8705)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:580)
+12-08 21:12:32.420  2739  2739 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:886)
+
+Signed-off-by: Alvin Francis <nivlafx@gmail.com>
+Signed-off-by: Pranav Temkar <pranavtemkar@gmail.com>
+---
+ apex/permissions/com.android.bluetooth.xml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/apex/permissions/com.android.bluetooth.xml b/apex/permissions/com.android.bluetooth.xml
+index ab34383267..024238886f 100644
+--- a/apex/permissions/com.android.bluetooth.xml
++++ b/apex/permissions/com.android.bluetooth.xml
+@@ -17,6 +17,7 @@
+ 
+ <permissions>
+     <privapp-permissions package="com.android.bluetooth">
++        <permission name="android.permission.BLUETOOTH_CONNECT" />
+         <permission name="android.permission.BLUETOOTH_PRIVILEGED" />
+         <permission name="android.permission.CALL_PRIVILEGED" />
+         <permission name="android.permission.CONNECTIVITY_INTERNAL" />
+-- 
+2.47.3
+
+
+From 47261790265a36ac6b3935d551bb5645f3b584ca Mon Sep 17 00:00:00 2001
+From: wentjin <quic_wentjin@quicinc.com>
+Date: Thu, 12 Dec 2024 10:09:57 +0800
+Subject: [PATCH 03/10] link commands triggered after classic link
+ disconnection
+
+Steps to reproduce: |-
+1. Pair and connect remote device
+2. disconnect and reconnect
+3. repeat step 2 in stability test
+-
+Expected result: bluetooth should not reset
+-
+Observed result: bluetooth reset as link commands triggered on disconnected link
+
+Repro rate : 2/10 times
+
+Root cause: connection_ param used after free
+
+Fix: Trigger acl commands if connection_ is valid only.
+
+Bug: 406452636
+
+Test: m Bluetooth
+Flag: EXEMPT, trivial
+
+Change-Id: I0b0daa6d92a49facec7833980ee8080afce69b38
+Signed-off-by: Pranav Temkar <pranavtemkar@gmail.com>
+---
+ system/main/shim/acl.cc | 110 ++++++++++++++++++++++++++++------------
+ 1 file changed, 78 insertions(+), 32 deletions(-)
+
+diff --git a/system/main/shim/acl.cc b/system/main/shim/acl.cc
+index 648f994069..960fd658e1 100644
+--- a/system/main/shim/acl.cc
++++ b/system/main/shim/acl.cc
+@@ -455,11 +455,17 @@ public:
+         interface_(interface),
+         connection_(std::move(connection)) {}
+ 
+-  void RegisterCallbacks() override { connection_->RegisterCallbacks(this, handler_); }
++  void RegisterCallbacks() override {
++    if (connection_) {
++      connection_->RegisterCallbacks(this, handler_);
++    }
++  }
+ 
+   void ReadRemoteControllerInformation() override {
+-    connection_->ReadRemoteVersionInformation();
+-    connection_->ReadRemoteSupportedFeatures();
++    if (connection_) {
++      connection_->ReadRemoteVersionInformation();
++      connection_->ReadRemoteSupportedFeatures();
++    }
+   }
+ 
+   void OnConnectionPacketTypeChanged(uint16_t packet_type) override {
+@@ -557,6 +563,7 @@ public:
+   }
+ 
+   void OnRoleChange(hci::ErrorCode hci_status, hci::Role new_role) override {
++    if (connection_ == nullptr) return;
+     TRY_POSTING_ON_MAIN(interface_.on_role_change, ToLegacyHciErrorCode(hci_status),
+                         ToRawAddress(connection_->GetAddress()), ToLegacyRole(new_role));
+     BTM_LogHistory(kBtmLogTag, ToRawAddress(connection_->GetAddress()), "Role change",
+@@ -578,7 +585,8 @@ public:
+   }
+ 
+   void OnReadRemoteSupportedFeaturesComplete(uint64_t features) override {
+-    TRY_POSTING_ON_MAIN(interface_.on_read_remote_supported_features_complete, handle_, features);
++    if (connection_ == nullptr) return;
++      TRY_POSTING_ON_MAIN(interface_.on_read_remote_supported_features_complete, handle_, features);
+ 
+     if (features & (uint64_t(1) << 63)) {
+       connection_->ReadRemoteExtendedFeatures(1);
+@@ -598,6 +606,7 @@ public:
+       return;
+     }
+ 
++    if (connection_ == nullptr) return;
+     if (max_page_number != 0 && page_number != max_page_number) {
+       connection_->ReadRemoteExtendedFeatures(page_number + 1);
+     }
+@@ -606,41 +615,62 @@ public:
+   hci::Address GetRemoteAddress() const { return connection_->GetAddress(); }
+ 
+   void InitiateDisconnect(hci::DisconnectReason reason) override {
+-    connection_->Disconnect(reason);
++    if (connection_) {
++      connection_->Disconnect(reason);
++    }
+   }
+ 
+   void HoldMode(uint16_t max_interval, uint16_t min_interval) {
+-    log::assert_that(connection_->HoldMode(max_interval, min_interval),
+-                     "assert failed: connection_->HoldMode(max_interval, min_interval)");
++    if (connection_ == nullptr) return;
++    log::assert_that(
++        connection_->HoldMode(max_interval, min_interval),
++        "assert failed: connection_->HoldMode(max_interval, min_interval)");
+   }
+ 
+-  void SniffMode(uint16_t max_interval, uint16_t min_interval, uint16_t attempt, uint16_t timeout) {
+-    log::assert_that(connection_->SniffMode(max_interval, min_interval, attempt, timeout),
+-                     "assert failed:  connection_->SniffMode(max_interval, min_interval, "
+-                     "attempt, timeout)");
++  void SniffMode(uint16_t max_interval, uint16_t min_interval, uint16_t attempt,
++                 uint16_t timeout) {
++    if (connection_ == nullptr) return;
++    log::assert_that(
++        connection_->SniffMode(max_interval, min_interval, attempt, timeout),
++        "assert failed:  connection_->SniffMode(max_interval, min_interval, "
++        "attempt, timeout)");
+   }
+ 
+   void ExitSniffMode() {
+-    log::assert_that(connection_->ExitSniffMode(), "assert failed: connection_->ExitSniffMode()");
++    if (connection_ == nullptr) return;
++    log::assert_that(connection_->ExitSniffMode(),
++                     "assert failed: connection_->ExitSniffMode()");
+   }
+ 
+   void SniffSubrating(uint16_t maximum_latency, uint16_t minimum_remote_timeout,
+                       uint16_t minimum_local_timeout) {
+-    log::assert_that(connection_->SniffSubrating(maximum_latency, minimum_remote_timeout,
+-                                                 minimum_local_timeout),
+-                     "assert failed: connection_->SniffSubrating(maximum_latency, "
+-                     "minimum_remote_timeout, minimum_local_timeout)");
++
++    if (connection_ == nullptr) return;
++    log::assert_that(
++        connection_->SniffSubrating(maximum_latency, minimum_remote_timeout,
++                                    minimum_local_timeout),
++        "assert failed: connection_->SniffSubrating(maximum_latency, "
++        "minimum_remote_timeout, minimum_local_timeout)");
+   }
+ 
+   void SetConnectionEncryption(hci::Enable is_encryption_enabled) {
+-    log::assert_that(connection_->SetConnectionEncryption(is_encryption_enabled),
+-                     "assert failed: "
+-                     "connection_->SetConnectionEncryption(is_encryption_enabled)");
++    if (connection_ == nullptr) return;
++    log::assert_that(
++        connection_->SetConnectionEncryption(is_encryption_enabled),
++        "assert failed: "
++        "connection_->SetConnectionEncryption(is_encryption_enabled)");
+   }
+ 
+-  bool IsLocallyInitiated() const override { return connection_->locally_initiated_; }
++  bool IsLocallyInitiated() const override {
++    if (connection_ == nullptr) return false;
++    return connection_->locally_initiated_;
++  }
+ 
+-  void Flush() { connection_->Flush(); }
++  void Flush() {
++    if (connection_) {
++      connection_->Flush();
++    }
++  }
+ 
+ private:
+   OnDisconnect on_disconnect_;
+@@ -661,11 +691,19 @@ public:
+         interface_(interface),
+         connection_(std::move(connection)) {}
+ 
+-  void RegisterCallbacks() override { connection_->RegisterCallbacks(this, handler_); }
++  void RegisterCallbacks() override {
++    if (connection_) {
++      connection_->RegisterCallbacks(this, handler_);
++    }
++  }
+ 
+-  void LeSubrateRequest(uint16_t subrate_min, uint16_t subrate_max, uint16_t max_latency,
+-                        uint16_t cont_num, uint16_t sup_tout) {
+-    connection_->LeSubrateRequest(subrate_min, subrate_max, max_latency, cont_num, sup_tout);
++  void LeSubrateRequest(uint16_t subrate_min, uint16_t subrate_max,
++                        uint16_t max_latency, uint16_t cont_num,
++                        uint16_t sup_tout) {
++    if (connection_) {
++      connection_->LeSubrateRequest(subrate_min, subrate_max, max_latency,
++                                    cont_num, sup_tout);
++    }
+   }
+ 
+   void ReadRemoteControllerInformation() override {
+@@ -747,18 +785,26 @@ public:
+   hci::AddressWithType GetRemoteAddressWithType() const { return connection_->GetRemoteAddress(); }
+ 
+   void InitiateDisconnect(hci::DisconnectReason reason) override {
+-    connection_->Disconnect(reason);
++    if (connection_ == nullptr) return;
++      connection_->Disconnect(reason);
+   }
+ 
+-  bool IsLocallyInitiated() const override { return connection_->locally_initiated_; }
++  bool IsLocallyInitiated() const override {
++    if (connection_ == nullptr) return false;
++      return connection_->locally_initiated_;
++  }
+ 
+-  bool IsInFilterAcceptList() const { return connection_->IsInFilterAcceptList(); }
++  bool IsInFilterAcceptList() const {
++    if (connection_ == nullptr) return false;
++      return connection_->IsInFilterAcceptList();
++  }
+ 
+   void UpdateConnectionParameters(uint16_t conn_int_min, uint16_t conn_int_max,
+-                                  uint16_t conn_latency, uint16_t conn_timeout, uint16_t min_ce_len,
+-                                  uint16_t max_ce_len) {
+-    connection_->LeConnectionUpdate(conn_int_min, conn_int_max, conn_latency, conn_timeout,
+-                                    min_ce_len, max_ce_len);
++                                  uint16_t conn_latency, uint16_t conn_timeout,
++                                  uint16_t min_ce_len, uint16_t max_ce_len) {
++    if (connection_ == nullptr) return;
++      connection_->LeConnectionUpdate(conn_int_min, conn_int_max, conn_latency,
++                                      conn_timeout, min_ce_len, max_ce_len);
+   }
+ 
+ private:
+-- 
+2.47.3
+
+
+From 974ae92cd27230ba998c9071fbc8e5051b0cf4d6 Mon Sep 17 00:00:00 2001
+From: sarvsaur <quic_sarvsaur@quicinc.com>
+Date: Fri, 14 Feb 2025 14:58:33 +0530
+Subject: [PATCH 04/10] Initiate codec negotiation when AT+BCC is received
+
+As per HFP specification, codec negotiation
+is needed once after SLC if both sides support
+it. For suesequent SCO connections, codec negotiation
+is not needed. However, some remotes sending
+AT+BCC and expecting codec negotiation though
+codec on headset has not changed from previous
+SCO connection.
+
+With this CL, AG initiates codec negotiation
+when AT+BCC is received from remote.
+
+Bug: 397138373
+Change-Id: I2ef85cfed601600b50612c18d546fb6f17abfbce
+Signed-off-by: Pranav Temkar <pranavtemkar@gmail.com>
+---
+ system/bta/ag/bta_ag_cmd.cc | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/system/bta/ag/bta_ag_cmd.cc b/system/bta/ag/bta_ag_cmd.cc
+index d939006c36..5a812d1904 100644
+--- a/system/bta/ag/bta_ag_cmd.cc
++++ b/system/bta/ag/bta_ag_cmd.cc
+@@ -1379,6 +1379,8 @@ void bta_ag_at_hfp_cback(tBTA_AG_SCB* p_scb, uint16_t cmd, uint8_t arg_type, cha
+       }
+ 
+       bta_ag_send_ok(p_scb);
++      log::info("Initiating codec negotiation");
++      p_scb->codec_updated = true;
+       bta_ag_sco_open(p_scb, tBTA_AG_DATA::kEmpty);
+       break;
+     }
+-- 
+2.47.3
+
+
+From e3252569d7b1fffc4d6642be9031ae1421a9a3e2 Mon Sep 17 00:00:00 2001
+From: sarvsaur <quic_sarvsaur@quicinc.com>
+Date: Tue, 25 Mar 2025 17:26:54 +0530
+Subject: [PATCH 05/10] Update valid phone number for VoIP call
+
+Update valid phone number to remote device instead of empty phone number
+for VoIP call
+
+Bug: 406175098
+Change-Id: I23e1672086b85e60ed25954bc6d87dd33af573d2
+Signed-off-by: Pranav Temkar <pranavtemkar@gmail.com>
+---
+ .../src/com/android/bluetooth/hfp/HeadsetStateMachine.java   | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/android/app/src/com/android/bluetooth/hfp/HeadsetStateMachine.java b/android/app/src/com/android/bluetooth/hfp/HeadsetStateMachine.java
+index 8978797a3d..0f62d834dc 100644
+--- a/android/app/src/com/android/bluetooth/hfp/HeadsetStateMachine.java
++++ b/android/app/src/com/android/bluetooth/hfp/HeadsetStateMachine.java
+@@ -2137,10 +2137,11 @@ class HeadsetStateMachine extends StateMachine {
+         if (mHeadsetService.isVirtualCallStarted()) {
+             // In virtual call, send our phone number instead of remote phone number
+             String phoneNumber = mSystemInterface.getSubscriberNumber();
+-            if (phoneNumber == null) {
+-                phoneNumber = "";
++            if (phoneNumber == null || phoneNumber == "") {
++                phoneNumber = "10000000";
+             }
+             int type = PhoneNumberUtils.toaFromString(phoneNumber);
++            Log.i(TAG, "processAtClcc: voip phoneNumber " + phoneNumber +" voip type " + type);
+             mNativeInterface.clccResponse(device, 1, 0, 0, 0, false, phoneNumber, type);
+             mNativeInterface.clccResponse(device, 0, 0, 0, 0, false, "", 0);
+         } else if (hasMessages(CLCC_RSP_AFTER_VOIP_CALL_END)) {
+-- 
+2.47.3
+
+
+From cea34e99adbc070e5231fbe21f3cc29286e05310 Mon Sep 17 00:00:00 2001
+From: rmp22 <195054967+rmp22@users.noreply.github.com>
+Date: Thu, 28 Aug 2025 10:54:14 +0800
+Subject: [PATCH 06/10] ignore invalid mask
+
+Change-Id: Ief583563c9aa5b39cf12426660d7f4c6f05f68d5
+Signed-off-by: Pranav Temkar <pranavtemkar@gmail.com>
+---
+ framework/java/android/bluetooth/le/ScanFilter.java | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/framework/java/android/bluetooth/le/ScanFilter.java b/framework/java/android/bluetooth/le/ScanFilter.java
+index b1ee195ee5..8160b31244 100644
+--- a/framework/java/android/bluetooth/le/ScanFilter.java
++++ b/framework/java/android/bluetooth/le/ScanFilter.java
+@@ -917,11 +917,13 @@ public final class ScanFilter implements Parcelable {
+          */
+         @RequiresNoPermission
+         public Builder setServiceUuid(ParcelUuid serviceUuid, ParcelUuid uuidMask) {
+-            if (uuidMask != null && serviceUuid == null) {
+-                throw new IllegalArgumentException("uuid is null while uuidMask is not null!");
++            if (serviceUuid == null) {
++                mServiceUuid = null;
++                mUuidMask = null;
++            } else {
++                mServiceUuid = serviceUuid;
++                mUuidMask = uuidMask;
+             }
+-            mServiceUuid = serviceUuid;
+-            mUuidMask = uuidMask;
+             return this;
+         }
+ 
+-- 
+2.47.3
+
+
+From c7ca102e041f141fec509628f8f29207febef621 Mon Sep 17 00:00:00 2001
+From: Luca Stefani <luca.stefani.ge1@gmail.com>
+Date: Sun, 30 Nov 2025 18:22:37 +0100
+Subject: [PATCH 07/10] SBC Dual Channel (SBC HD) support - redux
+
+Instead of adding a new channel mode type we use the
+pre-existing architecture to introduce a custom SBC codec.
+The only difference is that it has a "codec specific" value
+that will be checked when picking the bitrate to be used.
+
+Change-Id: If52e6be19f928360876fb251ae4681158281eb4c
+Signed-off-by: Pranav Temkar <pranavtemkar@gmail.com>
+---
+ .../bluetooth/a2dp/A2dpCodecConfig.java       |  9 ++++++-
+ .../bluetooth/BluetoothCodecConfig.java       |  2 +-
+ system/stack/a2dp/a2dp_sbc.cc                 |  2 +-
+ system/stack/a2dp/a2dp_sbc_encoder.cc         | 27 +++++++++++++++++--
+ system/stack/include/avdt_api.h               |  1 +
+ 5 files changed, 36 insertions(+), 5 deletions(-)
+
+diff --git a/android/app/src/com/android/bluetooth/a2dp/A2dpCodecConfig.java b/android/app/src/com/android/bluetooth/a2dp/A2dpCodecConfig.java
+index e06fd19d61..0e5ba8a76b 100644
+--- a/android/app/src/com/android/bluetooth/a2dp/A2dpCodecConfig.java
++++ b/android/app/src/com/android/bluetooth/a2dp/A2dpCodecConfig.java
+@@ -299,7 +299,7 @@ class A2dpCodecConfig {
+         }
+ 
+         BluetoothCodecConfig codecConfig;
+-        BluetoothCodecConfig[] codecConfigArray = new BluetoothCodecConfig[6];
++        BluetoothCodecConfig[] codecConfigArray = new BluetoothCodecConfig[7];
+         codecConfig =
+                 new BluetoothCodecConfig.Builder()
+                         .setCodecType(BluetoothCodecConfig.SOURCE_CODEC_TYPE_SBC)
+@@ -336,6 +336,13 @@ class A2dpCodecConfig {
+                         .setCodecPriority(mA2dpSourceCodecPriorityOpus)
+                         .build();
+         codecConfigArray[5] = codecConfig;
++        codecConfig =
++                new BluetoothCodecConfig.Builder()
++                        .setCodecType(BluetoothCodecConfig.SOURCE_CODEC_TYPE_SBC)
++                        .setCodecPriority(mA2dpSourceCodecPrioritySbc)
++                        .setCodecSpecific1(0x1337)
++                        .build();
++        codecConfigArray[6] = codecConfig;
+ 
+         return codecConfigArray;
+     }
+diff --git a/framework/java/android/bluetooth/BluetoothCodecConfig.java b/framework/java/android/bluetooth/BluetoothCodecConfig.java
+index 0680701ee4..795aec9b5f 100644
+--- a/framework/java/android/bluetooth/BluetoothCodecConfig.java
++++ b/framework/java/android/bluetooth/BluetoothCodecConfig.java
+@@ -561,7 +561,7 @@ public final class BluetoothCodecConfig implements Parcelable {
+      */
+     @RequiresNoPermission
+     public boolean isMandatoryCodec() {
+-        return mCodecType == null ? false : mCodecType.isMandatoryCodec();
++        return mCodecType == null ? false : (mCodecType.isMandatoryCodec() && getCodecSpecific1() != 0x1337);
+     }
+ 
+     /**
+diff --git a/system/stack/a2dp/a2dp_sbc.cc b/system/stack/a2dp/a2dp_sbc.cc
+index e7d65838f4..8092cf7b63 100644
+--- a/system/stack/a2dp/a2dp_sbc.cc
++++ b/system/stack/a2dp/a2dp_sbc.cc
+@@ -68,7 +68,7 @@ typedef struct {
+ /* SBC Source codec capabilities */
+ static const tA2DP_SBC_CIE a2dp_sbc_source_caps = {
+         (A2DP_SBC_IE_SAMP_FREQ_44),                         /* samp_freq */
+-        (A2DP_SBC_IE_CH_MD_MONO | A2DP_SBC_IE_CH_MD_JOINT), /* ch_mode */
++        (A2DP_SBC_IE_CH_MD_MONO | A2DP_SBC_IE_CH_MD_JOINT | A2DP_SBC_IE_CH_MD_DUAL), /* ch_mode */
+         (A2DP_SBC_IE_BLOCKS_16 | A2DP_SBC_IE_BLOCKS_12 | A2DP_SBC_IE_BLOCKS_8 |
+          A2DP_SBC_IE_BLOCKS_4),            /* block_len */
+         A2DP_SBC_IE_SUBBAND_8,             /* num_subbands */
+diff --git a/system/stack/a2dp/a2dp_sbc_encoder.cc b/system/stack/a2dp/a2dp_sbc_encoder.cc
+index 0e5d1251c8..fb7feabe84 100644
+--- a/system/stack/a2dp/a2dp_sbc_encoder.cc
++++ b/system/stack/a2dp/a2dp_sbc_encoder.cc
+@@ -51,12 +51,20 @@
+ /* High quality quality setting @ 44.1 khz */
+ #define A2DP_SBC_DEFAULT_BITRATE 328
+ 
++/*
++ * SBC Dual Channel (SBC HD) 3DH5 bitrates.
++ * 600 kbps @ 48 khz, 551.3 kbps @ 44.1 khz.
++ * Up to 5 frames for 3DH5.
++ */
++#define A2DP_SBC_3DH5_DEFAULT_BITRATE 552
++#define A2DP_SBC_3DH5_48KHZ_BITRATE 601
++
+ #define A2DP_SBC_NON_EDR_MAX_RATE 229
+ 
+ #define A2DP_SBC_MAX_PCM_ITER_NUM_PER_TICK 3
+ 
+-#define A2DP_SBC_MAX_HQ_FRAME_SIZE_44_1 119
+-#define A2DP_SBC_MAX_HQ_FRAME_SIZE_48 115
++#define A2DP_SBC_MAX_HQ_FRAME_SIZE_44_1 165
++#define A2DP_SBC_MAX_HQ_FRAME_SIZE_48 165
+ 
+ /* Define the bitrate step when trying to match bitpool value */
+ #define A2DP_SBC_BITRATE_STEP 5
+@@ -108,6 +116,7 @@ typedef struct {
+   int16_t pcmBuffer[SBC_MAX_PCM_BUFFER_SIZE];
+ 
+   a2dp_sbc_encoder_stats_t stats;
++  bool hd;
+ } tA2DP_SBC_ENCODER_CB;
+ 
+ static tA2DP_SBC_ENCODER_CB a2dp_sbc_encoder_cb;
+@@ -167,6 +176,10 @@ static void a2dp_sbc_encoder_update(A2dpCodecConfig* a2dp_codec_config, bool* p_
+     return;
+   }
+   const uint8_t* p_codec_info = codec_info;
++
++  btav_a2dp_codec_config_t codec_config = a2dp_codec_config->getCodecConfig();
++  a2dp_sbc_encoder_cb.hd = codec_config.codec_specific_1 == 0x1337;
++
+   min_bitpool = A2DP_GetMinBitpoolSbc(p_codec_info);
+   max_bitpool = A2DP_GetMaxBitpoolSbc(p_codec_info);
+ 
+@@ -758,6 +771,16 @@ static uint8_t calculate_max_frames_per_packet(void) {
+ static uint16_t a2dp_sbc_source_rate(bool is_peer_edr) {
+   uint16_t rate = A2DP_SBC_DEFAULT_BITRATE;
+ 
++  /* check if we're SBC HD */
++  if (a2dp_sbc_encoder_cb.hd &&
++      a2dp_sbc_encoder_cb.peer_params.peer_supports_3mbps &&
++      a2dp_sbc_encoder_cb.TxAaMtuSize >= MIN_3MBPS_AVDTP_SAFE_MTU) {
++    rate = A2DP_SBC_3DH5_DEFAULT_BITRATE;
++    if (a2dp_sbc_encoder_cb.sbc_encoder_params.s16SamplingFreq == SBC_sf48000) {
++      rate = A2DP_SBC_3DH5_48KHZ_BITRATE;
++    }
++  }
++
+   /* restrict bitrate if a2dp link is non-edr */
+   if (!is_peer_edr) {
+     rate = A2DP_SBC_NON_EDR_MAX_RATE;
+diff --git a/system/stack/include/avdt_api.h b/system/stack/include/avdt_api.h
+index aab79b4158..bd0d623284 100644
+--- a/system/stack/include/avdt_api.h
++++ b/system/stack/include/avdt_api.h
+@@ -99,6 +99,7 @@ inline std::string avdt_result_text(const tAVDT_RESULT& result) {
+ 
+ #define MAX_2MBPS_AVDTP_MTU 663   // 2DH5 MTU=679, -12 for AVDTP, -4 for L2CAP
+ #define MAX_3MBPS_AVDTP_MTU 1005  // 3DH5 MTU=1021, -12 for AVDTP, -4 for L2CAP
++#define MIN_3MBPS_AVDTP_SAFE_MTU 801 // 3DH5 minimum safe payload size for 4 audio frames
+ 
+ /* SEP Type.  This indicates the stream endpoint type. */
+ #define AVDT_TSEP_SRC 0     /* Source SEP */
+-- 
+2.47.3
+
+
+From ff896b62149d9d99f9c1db74b2ab5cbc5bde6ee2 Mon Sep 17 00:00:00 2001
+From: rmp22 <195054967+rmp22@users.noreply.github.com>
+Date: Sun, 26 Oct 2025 14:57:07 +0800
+Subject: [PATCH 08/10] ignore EnableRealTimeScheduling failures
+
+Change-Id: I1ac8a8341f6e9a93c8c11b0df4218f89b6674850
+Signed-off-by: Pranav Vashi <neobuddy89@gmail.com>
+Signed-off-by: Pranav Temkar <pranavtemkar@gmail.com>
+---
+ system/common/message_loop_thread.cc | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/system/common/message_loop_thread.cc b/system/common/message_loop_thread.cc
+index fd61746215..54b0b3073e 100644
+--- a/system/common/message_loop_thread.cc
++++ b/system/common/message_loop_thread.cc
+@@ -288,10 +288,19 @@ bool MessageLoopThread::EnableRealTimeScheduling() {
+   struct sched_param rt_params = {.sched_priority = kRealTimeFifoSchedulingPriority};
+   int rc = sched_setscheduler(linux_tid_, SCHED_FIFO, &rt_params);
+   if (rc != 0) {
+-    log::error("unable to set SCHED_FIFO priority {} for linux_tid {}, thread {}, error: {}",
+-               kRealTimeFifoSchedulingPriority, linux_tid_, *this, strerror(errno));
++    int err = errno;
++    if (err == EPERM || err == EINVAL) {
++      log::warn("SCHED_FIFO unsupported or not permitted on this device for thread {} (tid {}), "
++                "continuing with normal scheduling: {}",
++                *this, linux_tid_, strerror(err));
++      return true;
++    }
++
++    log::error("unexpected sched_setscheduler() failure: {}", strerror(err));
+     return false;
+   }
++
++  log::info("enabled SCHED_FIFO priority {} for thread {}", kRealTimeFifoSchedulingPriority, *this);
+   return true;
+ }
+ 
+-- 
+2.47.3
+
+
+From c65eec5f449042ef95f9e01e19b699e318d35f0b Mon Sep 17 00:00:00 2001
+From: rmp22 <195054967+rmp22@users.noreply.github.com>
+Date: Wed, 12 Nov 2025 23:01:26 +0800
+Subject: [PATCH 09/10] skip abort crash on failed init
+
+11-03 16:30:05.495  4515  4875 F libc    : Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 4875 (bt_stack_manage), pid 4515 (droid.bluetooth)
+11-03 16:30:07.945  4907  4907 F DEBUG   : *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+11-03 16:30:07.945  4907  4907 F DEBUG   : LineageOS Version: '2.1-NIGHTLY-20251103-OFFICIAL-GMS-beryllium'
+11-03 16:30:07.945  4907  4907 F DEBUG   : Build fingerprint: 'Xiaomi/beryllium/beryllium:10/QKQ1.190828.002/V12.0.3.0.QEJMIXM:user/release-keys'
+11-03 16:30:07.945  4907  4907 F DEBUG   : Revision: '0'
+11-03 16:30:07.945  4907  4907 F DEBUG   : ABI: 'arm64'
+11-03 16:30:07.945  4907  4907 F DEBUG   : Timestamp: 2025-11-03 16:30:06.228075291+0530
+11-03 16:30:07.945  4907  4907 F DEBUG   : Process uptime: 0s
+11-03 16:30:07.945  4907  4907 F DEBUG   : Cmdline: com.android.bluetooth
+11-03 16:30:07.945  4907  4907 F DEBUG   : pid: 4515, tid: 4875, name: bt_stack_manage  >>> com.android.bluetooth <<<
+11-03 16:30:07.945  4907  4907 F DEBUG   : uid: 1002
+11-03 16:30:07.945  4907  4907 F DEBUG   : signal 6 (SIGABRT), code -1 (SI_QUEUE), fault addr --------
+11-03 16:30:07.945  4907  4907 F DEBUG   : Abort message: 'system/osi/src/alarm.cc:162 alarm_new_internal: initialization failed'
+11-03 16:30:07.945  4907  4907 F DEBUG   :     x0  0000000000000000  x1  000000000000130b  x2  0000000000000006  x3  0000007a20eae4f0
+11-03 16:30:07.945  4907  4907 F DEBUG   :     x4  71606b601f313530  x5  71606b601f313530  x6  71606b601f313530  x7  7f7f7f7f7f7f7f7f
+11-03 16:30:07.945  4907  4907 F DEBUG   :     x8  00000000000000f0  x9  fc06a5a4c90eae26  x10 000000ff00000020  x11 000000009230cb0f
+11-03 16:30:07.945  4907  4907 F DEBUG   :     x12 0000000000048005  x13 000000007798595c  x14 001c9c37eb37b000  x15 0000000000004efe
+11-03 16:30:07.945  4907  4907 F DEBUG   :     x16 0000007d431cc0d8  x17 0000007d431b4940  x18 0000007a201e4078  x19 00000000000011a3
+11-03 16:30:07.945  4907  4907 F DEBUG   :     x20 000000000000130b  x21 00000000ffffffff  x22 0000007aa2fe4000  x23 0000007aa2fe5eb0
+11-03 16:30:07.945  4907  4907 F DEBUG   :     x24 0000007a20eaec00  x25 0000007a20eae6b8  x26 0000007a20eaf880  x27 0000007a20eaeb00
+11-03 16:30:07.945  4907  4907 F DEBUG   :     x28 0000007a20eaec08  x29 0000007a20eae570
+11-03 16:30:07.945  4907  4907 F DEBUG   :     lr  0000007d43153b0c  sp  0000007a20eae4f0  pc  0000007d43153b30  pst 0000000000000000
+11-03 16:30:07.945  4907  4907 F DEBUG   : 20 total frames
+11-03 16:30:07.945  4907  4907 F DEBUG   : backtrace:
+
+Change-Id: I5a4fd2a24faa69efa829ff707bcb8fc74398ad2f
+Signed-off-by: Pranav Vashi <neobuddy89@gmail.com>
+Signed-off-by: Pranav Temkar <pranavtemkar@gmail.com>
+---
+ system/osi/src/alarm.cc | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/system/osi/src/alarm.cc b/system/osi/src/alarm.cc
+index ee62645221..da46defd21 100644
+--- a/system/osi/src/alarm.cc
++++ b/system/osi/src/alarm.cc
+@@ -160,8 +160,6 @@ alarm_t* alarm_new_periodic(const char* name) { return alarm_new_internal(name,
+ static alarm_t* alarm_new_internal(const char* name, bool is_periodic) {
+   // Make sure we have a list we can insert alarms into.
+   if (!alarms && !lazy_initialize()) {
+-    log::fatal("initialization failed");  // if initialization failed, we
+-                                          // should not continue
+     return NULL;
+   }
+ 
+-- 
+2.47.3
+
+
+From 4bff13e43bc6ffed2ca0c861a3111f99d43ceea6 Mon Sep 17 00:00:00 2001
+From: someone5678 <59456192+someone5678@users.noreply.github.com>
+Date: Mon, 15 Sep 2025 21:09:15 +0900
+Subject: [PATCH 10/10] l2cap: Use basic mode for edge case devices
+
+...that doesn't support Android's desired channel types
+
+- Some devices like AirPods does not have compatible channel
+  Currently, in those cases, btstack enforces basic mode and releases a Channel Control Block.
+- But if we don't releases it, we can send/recieve required packets
+  for those devices using BluetoothSocket.
+- So, kept current logics while remove forced releases to gave chances to those devices.
+
+Bug: 371713238
+Test: Build, boot, pair AirPods using bluetooth,
+      send/receive AACP packet through bluetooth socket.
+Change-Id: I97f43fa6d867ae6fbe8a7a140b1375daf53067d9
+Signed-off-by: someone5678 <59456192+someone5678@users.noreply.github.com>
+Signed-off-by: Pranav Temkar <pranavtemkar@gmail.com>
+---
+ system/stack/l2cap/l2c_csm.cc | 53 +++++++++++------------------------
+ 1 file changed, 16 insertions(+), 37 deletions(-)
+
+diff --git a/system/stack/l2cap/l2c_csm.cc b/system/stack/l2cap/l2c_csm.cc
+index 5875b713a1..c0cc4585f8 100644
+--- a/system/stack/l2cap/l2c_csm.cc
++++ b/system/stack/l2cap/l2c_csm.cc
+@@ -376,18 +376,11 @@ static void l2c_csm_closed(tL2C_CCB* p_ccb, tL2CEVT event, void* p_data) {
+       /* Wait for the info resp in this state before sending connect req (if
+        * needed) */
+       if (!p_ccb->p_lcb->w4_info_rsp) {
+-        /* Need to have at least one compatible channel to continue */
+-        if (!l2c_fcr_chk_chan_modes(p_ccb)) {
+-          l2cu_release_ccb(p_ccb);
+-          (*p_ccb->p_rcb->api.pL2CA_Error_Cb)(
+-                  local_cid, static_cast<uint16_t>(tL2CAP_CONN::L2CAP_CONN_OTHER_ERROR));
+-          bluetooth::metrics::Counter(
+-                  bluetooth::metrics::CounterKey::L2CAP_NO_COMPATIBLE_CHANNEL_AT_CSM_CLOSED);
+-        } else {
+-          l2cu_send_peer_connect_req(p_ccb);
+-          alarm_set_on_mloop(p_ccb->l2c_ccb_timer, L2CAP_CHNL_CONNECT_TIMEOUT_MS,
+-                             l2c_ccb_timer_timeout, p_ccb);
+-        }
++        /* Use basic mode if no compatible channel found */
++        l2c_fcr_chk_chan_modes(p_ccb);
++        l2cu_send_peer_connect_req(p_ccb);
++        alarm_set_on_mloop(p_ccb->l2c_ccb_timer, L2CAP_CHNL_CONNECT_TIMEOUT_MS,
++                            l2c_ccb_timer_timeout, p_ccb);
+       }
+       break;
+ 
+@@ -518,18 +511,11 @@ static void l2c_csm_orig_w4_sec_comp(tL2C_CCB* p_ccb, tL2CEVT event, void* p_dat
+         l2cble_credit_based_conn_req(p_ccb); /* Start Connection     */
+       } else {
+         if (!p_ccb->p_lcb->w4_info_rsp) {
+-          /* Need to have at least one compatible channel to continue */
+-          if (!l2c_fcr_chk_chan_modes(p_ccb)) {
+-            l2cu_release_ccb(p_ccb);
+-            (*p_ccb->p_rcb->api.pL2CA_Error_Cb)(
+-                    local_cid, static_cast<uint16_t>(tL2CAP_CONN::L2CAP_CONN_OTHER_ERROR));
+-            bluetooth::metrics::Counter(
+-                    bluetooth::metrics::CounterKey::L2CAP_NO_COMPATIBLE_CHANNEL_AT_W4_SEC);
+-          } else {
+-            alarm_set_on_mloop(p_ccb->l2c_ccb_timer, L2CAP_CHNL_CONNECT_TIMEOUT_MS,
+-                               l2c_ccb_timer_timeout, p_ccb);
+-            l2cu_send_peer_connect_req(p_ccb); /* Start Connection     */
+-          }
++          /* Use basic mode if no compatible channel found */
++          l2c_fcr_chk_chan_modes(p_ccb);
++          alarm_set_on_mloop(p_ccb->l2c_ccb_timer, L2CAP_CHNL_CONNECT_TIMEOUT_MS,
++                              l2c_ccb_timer_timeout, p_ccb);
++          l2cu_send_peer_connect_req(p_ccb); /* Start Connection     */
+         }
+       }
+       break;
+@@ -868,19 +854,12 @@ static void l2c_csm_w4_l2cap_connect_rsp(tL2C_CCB* p_ccb, tL2CEVT event, void* p
+       break;
+ 
+     case L2CEVT_L2CAP_INFO_RSP:
+-      /* Need to have at least one compatible channel to continue */
+-      if (!l2c_fcr_chk_chan_modes(p_ccb)) {
+-        l2cu_release_ccb(p_ccb);
+-        (*p_ccb->p_rcb->api.pL2CA_Error_Cb)(
+-                local_cid, static_cast<uint16_t>(tL2CAP_CONN::L2CAP_CONN_OTHER_ERROR));
+-        bluetooth::metrics::Counter(
+-                bluetooth::metrics::CounterKey::L2CAP_INFO_NO_COMPATIBLE_CHANNEL_AT_RSP);
+-      } else {
+-        /* We have feature info, so now send peer connect request */
+-        alarm_set_on_mloop(p_ccb->l2c_ccb_timer, L2CAP_CHNL_CONNECT_TIMEOUT_MS,
+-                           l2c_ccb_timer_timeout, p_ccb);
+-        l2cu_send_peer_connect_req(p_ccb); /* Start Connection     */
+-      }
++      /* Use basic mode if no compatible channel found */
++      l2c_fcr_chk_chan_modes(p_ccb);
++      /* We have feature info, so now send peer connect request */
++      alarm_set_on_mloop(p_ccb->l2c_ccb_timer, L2CAP_CHNL_CONNECT_TIMEOUT_MS,
++                          l2c_ccb_timer_timeout, p_ccb);
++      l2cu_send_peer_connect_req(p_ccb); /* Start Connection     */
+       break;
+ 
+     default:
+-- 
+2.47.3
+

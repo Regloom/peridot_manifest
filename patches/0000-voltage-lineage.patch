@@ -1,0 +1,25 @@
+From e94ee630405a7a65610770d827074391cc29c3f1 Mon Sep 17 00:00:00 2001
+From: regloom <egor.tokarev@outlook.com>
+Date: Sat, 14 Feb 2026 12:30:53 +0400
+Subject: [PATCH 1/2] voltage -> lineage
+
+---
+ Android.bp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Android.bp b/Android.bp
+index 5ffe4a2..1eec562 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -8,7 +8,7 @@ soong_namespace {
+         "hardware/qcom-caf/sm8650",
+         "hardware/qcom-caf/wlan",
+         "hardware/xiaomi",
+-        "hardware/voltage/interfaces/power-libperfmgr",
++        "hardware/lineage/interfaces/power-libperfmgr",
+         "hardware/qcom-caf/common/libqti-perfd-client",
+         "hardware/google/interfaces",
+         "hardware/google/pixel",
+-- 
+2.47.3
+

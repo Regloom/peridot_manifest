@@ -1,4 +1,15 @@
 LineageOS 23.2
+NOTES: Updater might not work due to FW included, sideload via fastboot  
+Build Date: 25/03/2026
+- Same changes as VoltageOS 5.7 release by @Guidix
+- Android 16 Quarterly Platform Release 2
+- Update Vendor Blobs And Firmware From OS3.0.305.0.WNPMIXM
+- Bluetooth & Android Auto patches from VoltageOS
+Kernel
+- Chidori 1.4 (6.1.163)
+- KernelSu-Next v3.1.0
+
+LineageOS 23.2
 NOTES: Remove PIN/Fingerprint/etc locks before flashing or flash clean  
 Build Date: 29/01/2026
 - Same changes as VoltageOS 5.5 release by @Guidix

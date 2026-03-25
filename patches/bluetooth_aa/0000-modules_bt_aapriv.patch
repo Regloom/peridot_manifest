@@ -1,0 +1,224 @@
+From 88a04663590761c65bd22177761ae41dc132c9b7 Mon Sep 17 00:00:00 2001
+From: Dmitry Muhomor <muhomor.dmitry@gmail.com>
+Date: Fri, 29 Dec 2023 13:16:31 +0200
+Subject: [PATCH 1/2] add checks for BLUETOOTH_PRIVILEGED_ANDROID_AUTO
+ permission
+
+Signed-off-by: Pranav Temkar <pranavtemkar@gmail.com>
+---
+ .../app/src/com/android/bluetooth/Utils.java  |  9 ++++++
+ .../btservice/AdapterServiceBinder.java       | 31 ++++++++++++++++---
+ .../bluetooth/hfp/HeadsetServiceBinder.java   | 18 +++++++++--
+ .../bluetooth/BluetoothServiceBinder.java     | 18 +++++++++--
+ 4 files changed, 66 insertions(+), 10 deletions(-)
+
+diff --git a/android/app/src/com/android/bluetooth/Utils.java b/android/app/src/com/android/bluetooth/Utils.java
+index 00d9295bb3..14220cd40f 100644
+--- a/android/app/src/com/android/bluetooth/Utils.java
++++ b/android/app/src/com/android/bluetooth/Utils.java
+@@ -478,6 +478,15 @@ public final class Utils {
+         return true;
+     }
+ 
++    @SuppressLint("AndroidFrameworkRequiresPermission")
++    public static void enforceBluetoothPrivilegedAndroidAutoOrThrow(Context context, SecurityException e) {
++        String perm = android.Manifest.permission.BLUETOOTH_PRIVILEGED_ANDROID_AUTO;
++        if (context.checkCallingPermission(perm) == PackageManager.PERMISSION_GRANTED) {
++            return;
++        }
++        throw e;
++    }
++
+     public static AttributionSource getCallingAttributionSource(Context context) {
+         int callingUid = Binder.getCallingUid();
+         if (callingUid == android.os.Process.ROOT_UID) {
+diff --git a/android/app/src/com/android/bluetooth/btservice/AdapterServiceBinder.java b/android/app/src/com/android/bluetooth/btservice/AdapterServiceBinder.java
+index d46599f81d..27ac09f54d 100644
+--- a/android/app/src/com/android/bluetooth/btservice/AdapterServiceBinder.java
++++ b/android/app/src/com/android/bluetooth/btservice/AdapterServiceBinder.java
+@@ -647,7 +647,13 @@ class AdapterServiceBinder extends IBluetooth.Stub {
+             return Collections.emptyList();
+         }
+ 
+-        service.enforceCallingOrSelfPermission(BLUETOOTH_PRIVILEGED, null);
++        try {
++            service.enforceCallingOrSelfPermission(BLUETOOTH_PRIVILEGED, null);
++        } catch (SecurityException e) {
++            /* see android.bluetooth.BluetoothAdapter#getActiveDevices */
++            Utils.enforceBluetoothPrivilegedAndroidAutoOrThrow(service, e);
++        }
++
+         return service.getActiveDevices(profile);
+     }
+ 
+@@ -951,7 +957,12 @@ class AdapterServiceBinder extends IBluetooth.Stub {
+             return false;
+         }
+ 
+-        service.enforceCallingOrSelfPermission(BLUETOOTH_PRIVILEGED, null);
++        try {
++            service.enforceCallingOrSelfPermission(BLUETOOTH_PRIVILEGED, null);
++        } catch (SecurityException e) {
++            /* see android.bluetooth.BluetoothDevice#setPairingConfirmation */
++            Utils.enforceBluetoothPrivilegedAndroidAutoOrThrow(service, e);
++        }
+ 
+         DeviceProperties deviceProp = service.getRemoteDevices().getDeviceProperties(device);
+         if (deviceProp == null || !deviceProp.isBonding()) {
+@@ -1420,7 +1431,13 @@ class AdapterServiceBinder extends IBluetooth.Stub {
+             return false;
+         }
+ 
+-        service.enforceCallingOrSelfPermission(BLUETOOTH_PRIVILEGED, null);
++        try {
++            service.enforceCallingOrSelfPermission(BLUETOOTH_PRIVILEGED, null);
++        } catch (SecurityException e) {
++            /* see android.bluetooth.BluetoothDevice#setMetadata */
++            Utils.enforceBluetoothPrivilegedAndroidAutoOrThrow(service, e);
++        }
++
+         return service.setMetadata(device, key, value);
+     }
+ 
+@@ -1433,7 +1450,13 @@ class AdapterServiceBinder extends IBluetooth.Stub {
+             return null;
+         }
+ 
+-        service.enforceCallingOrSelfPermission(BLUETOOTH_PRIVILEGED, null);
++        try {
++            service.enforceCallingOrSelfPermission(BLUETOOTH_PRIVILEGED, null);
++        } catch (SecurityException e) {
++            /* see android.bluetooth.BluetoothDevice#getMetadata */
++            Utils.enforceBluetoothPrivilegedAndroidAutoOrThrow(service, e);
++        }
++
+         return service.getMetadata(device, key);
+     }
+ 
+diff --git a/android/app/src/com/android/bluetooth/hfp/HeadsetServiceBinder.java b/android/app/src/com/android/bluetooth/hfp/HeadsetServiceBinder.java
+index d93ad5dc5f..67959ce0e5 100644
+--- a/android/app/src/com/android/bluetooth/hfp/HeadsetServiceBinder.java
++++ b/android/app/src/com/android/bluetooth/hfp/HeadsetServiceBinder.java
+@@ -74,7 +74,13 @@ class HeadsetServiceBinder extends IBluetoothHeadset.Stub implements IProfileSer
+             return false;
+         }
+ 
+-        service.enforceCallingOrSelfPermission(MODIFY_PHONE_STATE, null);
++        try {
++            service.enforceCallingOrSelfPermission(MODIFY_PHONE_STATE, null);
++        } catch (SecurityException e) {
++            /* see android.bluetooth.BluetoothHeadset#connect */
++            Utils.enforceBluetoothPrivilegedAndroidAutoOrThrow(service, e);
++        }
++
+         return service.connect(device);
+     }
+ 
+@@ -123,8 +129,14 @@ class HeadsetServiceBinder extends IBluetoothHeadset.Stub implements IProfileSer
+             return false;
+         }
+ 
+-        service.enforceCallingOrSelfPermission(MODIFY_PHONE_STATE, null);
+-        service.enforceCallingOrSelfPermission(BLUETOOTH_PRIVILEGED, null);
++        try {
++            service.enforceCallingOrSelfPermission(MODIFY_PHONE_STATE, null);
++            service.enforceCallingOrSelfPermission(BLUETOOTH_PRIVILEGED, null);
++        } catch (SecurityException e) {
++            /* see android.bluetooth.BluetoothHeadset#setConnectionPolicy */
++            Utils.enforceBluetoothPrivilegedAndroidAutoOrThrow(service, e);
++        }
++
+         return service.setConnectionPolicy(device, connectionPolicy);
+     }
+ 
+diff --git a/service/src/com/android/server/bluetooth/BluetoothServiceBinder.java b/service/src/com/android/server/bluetooth/BluetoothServiceBinder.java
+index 160db122a3..ec028530d4 100644
+--- a/service/src/com/android/server/bluetooth/BluetoothServiceBinder.java
++++ b/service/src/com/android/server/bluetooth/BluetoothServiceBinder.java
+@@ -32,6 +32,7 @@ import android.bluetooth.IBluetoothManager;
+ import android.bluetooth.IBluetoothManagerCallback;
+ import android.content.AttributionSource;
+ import android.content.Context;
++import android.os.Binder;
+ import android.os.Handler;
+ import android.os.IBinder;
+ import android.os.Looper;
+@@ -160,7 +161,10 @@ public class BluetoothServiceBinder extends IBluetoothManager.Stub {
+             return null;
+         }
+ 
+-        if (mContext.checkCallingOrSelfPermission(LOCAL_MAC_ADDRESS) != PERMISSION_GRANTED) {
++        if (mContext.checkCallingOrSelfPermission(LOCAL_MAC_ADDRESS) != PERMISSION_GRANTED
++                // wired Android Auto doesn't ask for full LOCAL_MAC_ADDRESS permission but needs
++                // the Bluetooth adapter hardware address for pairing to hands-free audio car system
++                && !isPrivilegedAndroidAuto(Binder.getCallingPid(), Binder.getCallingUid())) {
+             // TODO(b/280890575): Throws a SecurityException instead
+             Log.w(TAG, "getAddress(): Client does not have LOCAL_MAC_ADDRESS permission");
+             return IBluetoothManager.DEFAULT_MAC_ADDRESS;
+@@ -222,7 +226,8 @@ public class BluetoothServiceBinder extends IBluetoothManager.Stub {
+                         mPermissionManager,
+                         "enable",
+                         true);
+-        if (!errorMsg.isEmpty()) {
++        /* see android.bluetooth.BluetoothAdapter#enable */
++        if (!errorMsg.isEmpty() && !isPrivilegedAndroidAuto(Binder.getCallingPid(), Binder.getCallingUid())) {
+             Log.d(TAG, "enable(): FAILED: " + errorMsg);
+             return false;
+         }
+@@ -313,7 +318,8 @@ public class BluetoothServiceBinder extends IBluetoothManager.Stub {
+                         mPermissionManager,
+                         "disable",
+                         true);
+-        if (!errorMsg.isEmpty()) {
++        /* see android.bluetooth.BluetoothAdapter#disable */
++        if (!errorMsg.isEmpty() && !isPrivilegedAndroidAuto(Binder.getCallingPid(), Binder.getCallingUid())) {
+             Log.d(TAG, "disable(): FAILED: " + errorMsg);
+             return false;
+         }
+@@ -445,4 +451,10 @@ public class BluetoothServiceBinder extends IBluetoothManager.Stub {
+ 
+         postFromBinder(() -> mApi.dump(fd, writer, args));
+     }
++
++    @android.annotation.SuppressLint("AndroidFrameworkRequiresPermission")
++    private boolean isPrivilegedAndroidAuto(int pid, int uid) {
++        String perm = android.Manifest.permission.BLUETOOTH_PRIVILEGED_ANDROID_AUTO;
++        return mContext.checkPermission(perm, pid, uid) == PERMISSION_GRANTED;
++    }
+ }
+-- 
+2.47.3
+
+
+From 22b0e6234c74d46dc4e2eef7a87c9a41459ca601 Mon Sep 17 00:00:00 2001
+From: Dmitry Muhomor <muhomor.dmitry@gmail.com>
+Date: Thu, 8 Jan 2026 12:37:12 +0000
+Subject: [PATCH 2/2] extend privileged Android Auto perm to
+ A2dpService.setConnectionPolicy()
+
+Signed-off-by: Pranav Temkar <pranavtemkar@gmail.com>
+---
+ .../src/com/android/bluetooth/a2dp/A2dpServiceBinder.java  | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/android/app/src/com/android/bluetooth/a2dp/A2dpServiceBinder.java b/android/app/src/com/android/bluetooth/a2dp/A2dpServiceBinder.java
+index 24a7c1ca36..cfaaa7b820 100644
+--- a/android/app/src/com/android/bluetooth/a2dp/A2dpServiceBinder.java
++++ b/android/app/src/com/android/bluetooth/a2dp/A2dpServiceBinder.java
+@@ -163,7 +163,12 @@ class A2dpServiceBinder extends IBluetoothA2dp.Stub implements IProfileServiceBi
+             return false;
+         }
+ 
+-        service.enforceCallingOrSelfPermission(BLUETOOTH_PRIVILEGED, null);
++        try {
++            service.enforceCallingOrSelfPermission(BLUETOOTH_PRIVILEGED, null);
++        } catch (SecurityException e) {
++            Utils.enforceBluetoothPrivilegedAndroidAutoOrThrow(service, e);
++        }
++
+         return service.setConnectionPolicy(device, connectionPolicy);
+     }
+ 
+-- 
+2.47.3
+
