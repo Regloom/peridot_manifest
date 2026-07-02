@@ -1,0 +1,55 @@
+From f43adf7f9b0173a9f490a745027cf4efa29b09dc Mon Sep 17 00:00:00 2001
+From: regloom <egor.tokarev@outlook.com>
+Date: Sun, 19 Apr 2026 10:36:11 +0400
+Subject: [PATCH] gnss: Switch PSDS to framework-level download via
+ config_gnssParameters
+
+- Configure LONGTERM_PSDS_SERVER to use GrapheneOS PSDS proxy
+- Enable PSDS periodic download
+- Configure SUPL, LPP and A-GLONASS parameters
+
+Change-Id: I543dbf805756bbc105266eb7974c4f6fe1105d58
+---
+ core/res/res/values/config.xml | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+
+diff --git a/core/res/res/values/config.xml b/core/res/res/values/config.xml
+index fbe4c3280e49..df8544672343 100644
+--- a/core/res/res/values/config.xml
++++ b/core/res/res/values/config.xml
+@@ -7132,6 +7132,32 @@
+     <string-array name="config_gnssParameters" translatable="false">
+         <!-- Add configurations here, example: -->
+         <!-- <item>SUPL_HOST=supl.google.com</item> -->
++        <!-- SUPL -->
++        <item>SUPL_HOST=supl.grapheneos.org</item>
++        <item>SUPL_PORT=7275</item>
++        <item>SUPL_VER=0x20000</item>
++        <item>SUPL_MODE=0x3</item>
++
++        <!-- LPP Control Plane + NR5G Control Plane -->
++        <item>LPP_PROFILE=0xA</item>
++
++        <!-- PSDS — GrapheneOS прокси + Qualcomm fallback -->
++        <item>LONGTERM_PSDS_SERVER_1=https://qualcomm.psds.grapheneos.org/xtra3Mgrbeji.bin</item>
++        <item>LONGTERM_PSDS_SERVER_2=https://qualcomm.psds.grapheneos.org/xtra3Mgrbeji.bin</item>
++        <item>LONGTERM_PSDS_SERVER_3=https://qualcomm.psds.grapheneos.org/xtra3Mgrbeji.bin</item>
++        <!--<item>LONGTERM_PSDS_SERVER_1=https://path1.xtracloud.net/xtra3grcej.bin</item>-->
++        <!--<item>LONGTERM_PSDS_SERVER_2=https://path2.xtracloud.net/xtra3grcej.bin</item>-->
++        <!--<item>LONGTERM_PSDS_SERVER_3=https://path3.xtracloud.net/xtra3grcej.bin</item>-->
++        <item>NORMAL_PSDS_SERVER=https://qualcomm.psds.grapheneos.org/xtra3Mgrbeji.bin</item>
++        <item>REALTIME_PSDS_SERVER=https://qualcomm.psds.grapheneos.org/xtra3Mgrbeji.bin</item>
++        <item>ENABLE_PSDS_PERIODIC_DOWNLOAD=true</item>
++
++        <!-- Emergency SUPL -->
++        <item>USE_EMERGENCY_PDN_FOR_EMERGENCY_SUPL=1</item>
++        <item>ENABLE_ACTIVE_SIM_EMERGENCY_SUPL=true</item>
++
++        <!-- A-GLONASS: RRC Control Plane -->
++        <item>A_GLONASS_POS_PROTOCOL_SELECT=15</item><!--0xf || 15-->
+     </string-array>
+ 
+     <integer name="config_chooser_max_targets_per_row">4</integer>
+-- 
+2.47.3
+

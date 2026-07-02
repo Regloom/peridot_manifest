@@ -1,4 +1,17 @@
 LineageOS 23.2
+NOTES: KernelSU-next dismissed, flash provided 'init_boot_kernelsu.img' in fastboot for normal KernelSU.
+Build Date: 30/06/2026
+- Same changes as VoltageOS release by @Guidix (16/06/2026):
+  - Update MIUI Camera & QR Scanner from stock OS3.0.6.0.WNPMIXM
+  - Relax INTERACTION boost
+  - Label More Selinux Denials
+  - Move Charging throttling logic to kernel driver
+
+Kernel
+- Chidori 1.7 (6.1.173)
+- Addon: KernelSu v3.2.5 flash provided 'init_boot_kernelsu.img' in fastboot
+
+LineageOS 23.2
 NOTES: Updater might not work due to FW included, sideload via fastboot  
 Build Date: 25/03/2026
 - Same changes as VoltageOS 5.7 release by @Guidix

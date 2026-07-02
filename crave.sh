@@ -11,7 +11,7 @@ echo "Repo init success"
 echo "=================="
 
 # Clone local_manifests repository
-curl -L --create-dirs https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/peridot.xml -o .repo/local_manifests/local_manifest.xml
+curl -L --create-dirs https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/local_manifest.xml -o .repo/local_manifests/local_manifest.xml
 echo "============================"
 echo "Local manifest clone success"
 echo "============================"
@@ -25,12 +25,12 @@ echo "============================"
 echo "============================"
 
 # KernelSU Next setup
-cd kernel/xiaomi/sm8635
-echo "======== Inside kernel/xiaomi/sm8635 ========"
-curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s v3.1.0
-echo "======== Added KSU successfully ========"
-cd ../../..
-echo "======== Returned to root directory ========"
+# cd kernel/xiaomi/sm8635
+# echo "======== Inside kernel/xiaomi/sm8635 ========"
+# curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s v3.1.0
+# echo "======== Added KSU successfully ========"
+# cd ../../..
+# echo "======== Returned to root directory ========"
 
 # TEMP FIX:
 # vendor/xiaomi/peridot
@@ -59,6 +59,8 @@ patches=(
     "packages/modules/Bluetooth:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/bluetooth_aa/0000-modules_bt_aapriv.patch"
     # AA
     "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/bluetooth_aa/0000-frameworks_base_aa.patch"
+    # GPS (WIP)
+    "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0000-gnss-Switch-PSDS-to-framework-level-download-via-con.patch"
 )
 
 for patch in "${patches[@]}"; do

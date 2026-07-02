@@ -19,6 +19,8 @@ patches=(
     "packages/modules/Bluetooth:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/bluetooth_aa/0000-modules_bt_aapriv.patch"
     # AA
     "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/bluetooth_aa/0000-frameworks_base_aa.patch"
+    # GPS (WIP)
+    "frameworks/base:https://raw.githubusercontent.com/Regloom/peridot_manifest/refs/heads/23/patches/0000-gnss-Switch-PSDS-to-framework-level-download-via-con.patch"
 )
 
 echo "Begin patching..."
