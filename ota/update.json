@@ -1,13 +1,18 @@
-{
-  "response": [
-    {
-      "datetime": 1793129422,
-      "filename": "lineage-24.0-20261027-UNOFFICIAL-peridot.zip",
-      "id": "708e1db5a66e8ffce74f3e52a2eb27f7",
-      "romtype": "UNOFFICIAL",
-      "size": 2614087899,
-      "url": "https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/d/acQhikbU4nCXyA",
-      "version": "24"
-    }
-  ]
-}
+[
+  {
+    "datetime": 1793129422,
+    "files": [
+      {
+        "filename": "lineage-24.0-20261027-UNOFFICIAL-peridot.zip",
+        "os_patch_level": "2026-10-01",
+        "os_sdk_level": 37,
+        "ota_property_files": "payload_metadata.bin:5197:203468,payload.bin:5197:2614079208,payload_properties.txt:2614084463:156,apex_info.pb:2307:1509,care_map.pb:3863:1287,metadata:69:693,metadata.pb:830:1429                        ",
+        "sha256": "7612f9d482bbb603d68dc8120dcbdc0775605bede28853a535b534b17187bdc9",
+        "size": 2614087899,
+        "url": "https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/d/acQhikbU4nCXyA"
+      }
+    ],
+    "type": "UNOFFICIAL",
+    "version": "24.0"
+  }
+]
