@@ -44,6 +44,9 @@
 	<!-- ViPER4AndroidFX fix -->
 	<project path="packages/apps/ViPER4AndroidFX" name="GuidixX/packages_apps_ViPER4AndroidFX" remote="git-hub" revision="v4a"/>
 
+	<!-- DSP hotword trigger: "OK Google" on the ADSP for the default assistant -->
+	<project path="packages/apps/DspHotwordTrigger" name="Regloom/dsphotword" remote="git-hub" revision="main"/>
+
 	<!-- OpenEUICC -->
 	<project path="packages/apps/OpenEUICC" name="PeterCxy/OpenEUICC" remote="angryim" revision="master" sync-s="true"/>
 	<project path="prebuilts/openeuicc-deps" name="PeterCxy/android_prebuilts_openeuicc-deps" remote="angryim" revision="master"/>
