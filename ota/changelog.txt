@@ -1,4 +1,16 @@
 LineageOS 24
+NOTES: microG is now built in. Remove the microG Installer KernelSU/Magisk module before updating
+Build Date: 23/11/2026
+- Android security patch level: 2026-11-01
+- Ship microG (GmsCore + Companion 0.3.18) as system priv-apps, signature spoofing works out of the box
+- Build XTRA daemon from source instead of prebuilt
+- Add DSP hotword trigger
+- CarrierConfig: Fix Viva Armenia match
+- Drop duplicate fastbootd package and unused LineageSDK overlay
+Kernel
+- Chidori 2.3 (6.1.182)
+
+LineageOS 24
 Build Date: 15/11/2026
 - Android security patch level: 2026-11-01
 - Same changes as VoltageOS release by @Guidix (14/11/2026)

@@ -1,15 +1,15 @@
 [
   {
-    "datetime": 1794764799,
+    "datetime": 1795453517,
     "files": [
       {
-        "filename": "lineage-24.0-20261115-UNOFFICIAL-peridot.zip",
+        "filename": "lineage-24.0-20261123-UNOFFICIAL-peridot.zip",
         "os_patch_level": "2026-11-01",
         "os_sdk_level": 37,
-        "ota_property_files": "payload_metadata.bin:5197:193377,payload.bin:5197:2363154362,payload_properties.txt:2363159617:156,apex_info.pb:2307:1509,care_map.pb:3863:1287,metadata:69:693,metadata.pb:830:1429                        ",
-        "sha256": "92afca98f29540c24226655d1f928728ea33794c1a03aec4fd10c2bb2e59b9b9",
-        "size": 2363163053,
-        "url": "https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/d/PB56lq_YP2X2Sw"
+        "ota_property_files": "payload_metadata.bin:5240:202610,payload.bin:5240:2479005538,payload_properties.txt:2479010836:156,apex_info.pb:2307:1509,care_map.pb:3863:1330,metadata:69:693,metadata.pb:830:1429                        ",
+        "sha256": "a483a9ec20f48cac768587d22eec480bbeab36ce322566c627aacd3db2dcf833",
+        "size": 2479014272,
+        "url": "https://getfile.dokpub.com/yandex/get/https://disk.yandex.ru/d/owMCb5velmZJDA"
       }
     ],
     "type": "UNOFFICIAL",
