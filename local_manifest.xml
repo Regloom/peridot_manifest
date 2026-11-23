@@ -51,6 +51,10 @@
 	     Pinned commit; patches 0006 (vendor) + 0007 (device) drop the prebuilt. -->
 	<project path="external/peridot-xtra-daemon" name="Regloom/peridot-xtra-daemon" remote="git-hub" revision="main"/>
 
+	<!-- microG: GmsCore and Companion (FakeStore) as priv-apps. vendorsetup.sh downloads
+	     the official signed APKs on envsetup; device.mk picks the packages. -->
+	<project path="vendor/partner_gms" name="lineageos4microg/android_vendor_partner_gms" remote="git-hub" revision="master"/>
+
 	<!-- OpenEUICC -->
 	<project path="packages/apps/OpenEUICC" name="PeterCxy/OpenEUICC" remote="angryim" revision="master" sync-s="true"/>
 	<project path="prebuilts/openeuicc-deps" name="PeterCxy/android_prebuilts_openeuicc-deps" remote="angryim" revision="master"/>

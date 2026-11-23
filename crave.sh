@@ -21,6 +21,7 @@ echo "====== Patches ======"
 rm -rf "$MANIFEST_DIR"
 git clone -q --depth=1 -b "$BRANCH" "$MANIFEST_URL.git" "$MANIFEST_DIR" || exit 1
 bash "$MANIFEST_DIR/patches/import_patches.sh" || exit 1
+bash "$MANIFEST_DIR/microg_refresh.sh"
 
 echo "====== Envsetup ======"
 export BUILD_USERNAME=regloom

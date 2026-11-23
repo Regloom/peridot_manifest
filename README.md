@@ -13,6 +13,7 @@ projects on top of the LineageOS manifest.
 | `build.sh` | Local build: sync, patches, optional RBE, `m bacon` |
 | `rbe.sh` | RBE via BuildBuddy (Siso native REAPI). Put the API key in `BUILDBUDDY_API_KEY`; with the `xxx` placeholder the build runs without RBE |
 | `crave.sh` | Build on crave.io |
+| `microg_refresh.sh` | Drops stale microG APKs in `vendor/partner_gms` after sync, so envsetup fetches the pinned versions |
 | `yd-upload.sh` | Upload a build to Yandex Disk |
 | `ota/` | OTA metadata |
 

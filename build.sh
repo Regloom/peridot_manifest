@@ -19,6 +19,7 @@ repo sync --force-sync
 
 echo "====== Patches ======"
 bash "$MANIFEST_DIR/patches/import_patches.sh" || exit 1
+bash "$MANIFEST_DIR/microg_refresh.sh"
 
 echo "====== Envsetup ======"
 source build/envsetup.sh
