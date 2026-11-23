@@ -1,0 +1,84 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: regloom <egor.tokarev@outlook.com>
+Date: Mon, 23 Nov 2026 12:00:00 +0000
+Subject: [PATCH] peridot: Drop prebuilt xtra-daemon
+
+The Qualcomm xtra-daemon (QCC/OMA-DM downloader) is replaced by the
+source-built peridot_xtra_daemon (Regloom/peridot-xtra-daemon), which
+installs at the same /vendor/bin/xtra-daemon path. Only the binary and its
+PRODUCT_PACKAGES entry are dropped; loc_launcher, izat.conf, the seccomp
+policy, LOC/GNSS libraries and the rest of QCC stay unchanged.
+---
+ Android.bp        | 43 -------------------------------------------
+ peridot-vendor.mk |  1 -
+ 2 files changed, 44 deletions(-)
+
+diff --git a/Android.bp b/Android.bp
+index 8447a14fe982cd730bb6e685063f5a6bc719660e..92387139e76c37cdfb2f9859745d329f1a5c53c2 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -37763,49 +37763,6 @@ cc_prebuilt_binary {
+     soc_specific: true,
+ }
+ 
+-cc_prebuilt_binary {
+-    name: "xtra-daemon",
+-    owner: "xiaomi",
+-    target: {
+-        android_arm64: {
+-            srcs: [
+-                "proprietary/vendor/bin/xtra-daemon",
+-            ],
+-            shared_libs: [
+-                "libbinder_shim",
+-                "libutils",
+-                "libcutils",
+-                "libcrypto",
+-                "libssl",
+-                "libsqlite",
+-                "libgps.utils",
+-                "libloc_core",
+-                "libizat_core",
+-                "liblbs_core",
+-                "liblog",
+-                "libandroid_net",
+-                "libavservices_minijail",
+-                "libsys_info_cache",
+-                "libpal_net_if",
+-                "libbinder",
+-                "libbinder_ndk",
+-                "libqcc_sdk",
+-                "libqcc_file_agent",
+-                "libc++",
+-                "libc",
+-                "libm",
+-                "libdl",
+-            ],
+-        },
+-    },
+-    compile_multilib: "64",
+-    strip: {
+-        none: true,
+-    },
+-    prefer: true,
+-    soc_specific: true,
+-}
+-
+ cc_prebuilt_binary {
+     name: "xtwifi-client",
+     owner: "xiaomi",
+diff --git a/peridot-vendor.mk b/peridot-vendor.mk
+index 68683505edd8fee0663a05ecdd36f1c18348bdc0..4be3ef0678e71e3321e7656aad3e83c5fb11ef50 100644
+--- a/peridot-vendor.mk
++++ b/peridot-vendor.mk
+@@ -1979,7 +1979,6 @@ PRODUCT_PACKAGES += \
+     wfdhdcphalservice \
+     wfdvndservice \
+     wifidisplayhalservice \
+-    xtra-daemon \
+     xtwifi-client \
+     qccsyshal@1.2-service \
+     wfdservice64 \
+-- 
+2.47.3
+

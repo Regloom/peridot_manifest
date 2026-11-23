@@ -24,6 +24,8 @@ patches=(
     "frameworks/base:0003-SystemUI-Forward-port-HD-wifi-calling-statusbar-icon.patch"
     "packages/apps/Launcher3:0004-Launcher3-Show-clear-all-button-in-recents-overview.patch"
     "packages/apps/Settings:0005-Settings-Expose-radio-info-4636.patch"
+    "vendor/xiaomi/peridot:0006-peridot-Drop-prebuilt-xtra-daemon.patch"
+    "device/xiaomi/peridot:0007-peridot-Build-xtra-daemon-from-source.patch"
 )
 
 fuzzy_apply_commit() {

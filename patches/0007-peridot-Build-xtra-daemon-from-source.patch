@@ -1,0 +1,54 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: regloom <egor.tokarev@outlook.com>
+Date: Mon, 23 Nov 2026 12:00:00 +0000
+Subject: [PATCH] peridot: Build xtra-daemon from source
+
+Install peridot_xtra_daemon (external/peridot-xtra-daemon) as
+/vendor/bin/xtra-daemon and stop extracting the prebuilt. Pairs with the
+vendor patch that drops the prebuilt module.
+---
+ device.mk             | 2 ++
+ extract-files.py      | 1 -
+ proprietary-files.txt | 1 -
+ 3 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/device.mk b/device.mk
+index 33968ff37609947faee2c0a83d6c75eca7d10f99..5cee088e74cb98ae9bd23d512bca4d377f8046cb 100644
+--- a/device.mk
++++ b/device.mk
+@@ -229,6 +229,8 @@ PRODUCT_COPY_FILES += \
+     frameworks/native/data/etc/android.software.opengles.deqp.level-2023-03-01.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.opengles.deqp.level.xml
+ 
+ # GNSS
++PRODUCT_PACKAGES += peridot_xtra_daemon
++
+ PRODUCT_COPY_FILES += \
+     $(LOCAL_PATH)/configs/gps/gps.conf:$(TARGET_COPY_OUT_VENDOR)/etc/gps.conf \
+     frameworks/native/data/etc/android.hardware.location.gps.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.location.gps.xml
+diff --git a/extract-files.py b/extract-files.py
+index 2c3909b14b98edd6fa3afcdae979ebbf49e5e781..b647408e760063b7c05f7530f11250cbc58167c7 100644
+--- a/extract-files.py
++++ b/extract-files.py
+@@ -348,7 +348,6 @@ blob_fixups: blob_fixups_user_type = {
+     (
+         'vendor/bin/qcc-vendor',
+         'vendor/bin/qms',
+-        'vendor/bin/xtra-daemon',
+         'vendor/bin/cnd',
+         'vendor/lib64/libcne.so',
+         'vendor/lib64/libqcc_sdk.so',
+diff --git a/proprietary-files.txt b/proprietary-files.txt
+index c16af4c2e2f4d8d0008c068f7a3c4484a02220bd..ef85a6098206c37581dc8c00d77c4bf99c491dc1 100644
+--- a/proprietary-files.txt
++++ b/proprietary-files.txt
+@@ -1273,7 +1273,6 @@ vendor/bin/loc_launcher
+ vendor/bin/lowi-server
+ vendor/bin/mlid
+ vendor/bin/slim_daemon
+-vendor/bin/xtra-daemon
+ vendor/bin/xtwifi-client
+ vendor/etc/apdr.conf
+ vendor/etc/batching.conf
+-- 
+2.47.3
+

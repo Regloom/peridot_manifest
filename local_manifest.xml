@@ -47,6 +47,10 @@
 	<!-- DSP hotword trigger: "OK Google" on the ADSP for the default assistant -->
 	<project path="packages/apps/DspHotwordTrigger" name="Regloom/dsphotword" remote="git-hub" revision="main"/>
 
+	<!-- XTRA daemon: source-built /vendor/bin/xtra-daemon (GrapheneOS PSDS proxy, no QCC/OMA-DM).
+	     Pinned commit; patches 0006 (vendor) + 0007 (device) drop the prebuilt. -->
+	<project path="external/peridot-xtra-daemon" name="Regloom/peridot-xtra-daemon" remote="git-hub" revision="main"/>
+
 	<!-- OpenEUICC -->
 	<project path="packages/apps/OpenEUICC" name="PeterCxy/OpenEUICC" remote="angryim" revision="master" sync-s="true"/>
 	<project path="prebuilts/openeuicc-deps" name="PeterCxy/android_prebuilts_openeuicc-deps" remote="angryim" revision="master"/>
